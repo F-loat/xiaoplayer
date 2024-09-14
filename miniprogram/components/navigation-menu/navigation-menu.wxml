@@ -1,0 +1,6 @@
+<view style="height: {{ios ? 44 : 48}}px; right:{{safeAreaRight}}px; top:{{safeAreaTop}}px;"
+  class="absolute pr-2 z-10 flex items-center pointer-events-auto">
+  <view url="/pages/setting/index" style="width:{{menuHeight}}px;height:{{menuHeight}}px;">
+    <slot></slot>
+  </view>
+</view>

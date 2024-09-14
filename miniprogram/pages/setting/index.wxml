@@ -1,0 +1,6 @@
+<!--index.wxml-->
+<navigation-bar back title="设置"></navigation-bar>
+
+<scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
+  <view></view>
+</scroll-view>

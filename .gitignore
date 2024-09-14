@@ -1,0 +1,6 @@
+.DS_Store
+.env
+
+dist/
+node_modules/
+project.private.config.json

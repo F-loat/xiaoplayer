@@ -1,0 +1,62 @@
+<vertical-drag-gesture-handler worklet:ongesture="handleVerticalDrag">
+	<view id="expand-container"
+		class="expand-container absolute top-0 left-0 right-0 bottom-0 px-[24px] overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{connected ? 'opacity-100' : 'opacity-0'}}">
+		<view id="nav-bar" class="flex flex-col overflow-hidden box-border">
+			<view style="height: {{statusBarHeight}}px;" />
+			<view class="flex flex-col justify-center flex-1">
+				<image class="w-6 h-6" mode="aspectFill" src="/assets/icon/fanhui.svg" bind:tap="close" />
+			</view>
+		</view>
+
+		<view class="mt-[8px] w-full overflow-hidden" style="height: {{maxCoverSize}}px;">
+			<view class="flex items-center">
+				<image id="cover" mode="aspectFill" class="shrink-0" src="{{musicCover}}" bind:tap="expand" />
+				<view id="title-wrap" class="flex flex-1 min-w-36 justify-between items-center ml-2">
+					<view class="flex flex-col shrink-0 ml-1 min-w-20 flex-1 truncate" bind:tap="expand">
+						<text>{{musicName || 'xiaoplayer'}}</text>
+						<text class="text-xs">{{currentDevice.name}}</text>
+					</view>
+					<view class="flex items-center shrink-0">
+						<image class="w-6 h-6 mr-3"
+							src="{{status === 'paused' ? '/assets/icon/zanting.svg' : '/assets/icon/bofangzhong.svg'}}"
+							bind:tap="handlePlayToggle" />
+						<image class="w-6 h-6" src="/assets/icon/xiayiqu.svg" bind:tap="handlePlayNext" />
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<view class="flex flex-col text-lg mt-12">
+			<view class="flex justify-between">
+				<text>{{musicName || 'xiaoplayer'}}</text>
+				<view class="flex items-center">
+					<image class="w-5 h-5 p-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
+					<image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchSound" />
+				</view>
+			</view>
+			<text class="text-sm">{{currentDevice.name}}</text>
+		</view>
+
+		<view class="mt-2 {{did === 'host' ? 'invisible' : ''}}">
+			<slider value="{{volume}}" activeColor="#eee" block-size="{{16}}" bindchanging="handleVolumeChanging"
+				bindchange="handleVolumeChange"></slider>
+		</view>
+		<view class="flex justify-between items-center px-3 mt-24">
+			<image class="w-6 h-6 opacity-60" src="/assets/icon/{{playOrderIcon}}.svg" bind:tap="handleSwitchOrder" />
+			<image class="w-8 h-8" src="/assets/icon/shangyiqu.svg" bind:tap="handlePlayPrev" />
+			<image class="w-12 h-12"
+				src="{{status === 'paused' ? '/assets/icon/zanting.svg' : '/assets/icon/bofangzhong.svg'}}"
+				bind:tap="handlePlayToggle" />
+			<image class="w-8 h-8" src="/assets/icon/xiayiqu.svg" bind:tap="handlePlayNext" />
+			<image class="w-5 h-5 opacity-60" src="/assets/icon/bofangliebiao.svg" bind:tap="close" />
+		</view>
+	</view>
+</vertical-drag-gesture-handler>
+
+<navigation-menu wx:if="{{menubar}}">
+	<view url="/pages/setting/index"
+		class="w-full h-full rounded-full border-solid border border-gray-100 dark:border-none flex justify-center items-center transition-colors dark:bg-white dark:bg-opacity-60"
+		hover-class="bg-gray-200" bind:tap="handleSetting">
+		<image src="/assets/icon/shezhi.svg" class="w-3/5 h-3/5" />
+</view>
+</navigation-menu>
