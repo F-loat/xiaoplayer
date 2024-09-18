@@ -1,11 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed';
-import {
-  getGlobalData,
-  parseAuthUrl,
-  request,
-  setGlobalData,
-  sleep,
-} from '../utils/util';
+import { getGlobalData, request, sleep } from '../utils/util';
 
 const { shared, timing, Easing } = wx.worklet;
 
@@ -75,8 +69,9 @@ ComponentWithComputed({
     attached() {
       this.initMusic();
 
-      const { statusBarHeight, screenHeight, screenWidth, safeArea, platform } =
-        wx.getSystemInfoSync();
+      const { platform } = wx.getDeviceInfo();
+      const { statusBarHeight, screenHeight, screenWidth, safeArea } =
+        wx.getWindowInfo();
 
       const isAndroid = platform === 'android';
       const progress = shared(0);
@@ -416,24 +411,6 @@ ComponentWithComputed({
         success: async (res) => {
           const { value } = items[res.tapIndex];
           this.sendCommand(`${value}分钟后关机`);
-        },
-      });
-    },
-    handleSetting() {
-      const { domain, username, password } = getGlobalData('serverConfig');
-      const account = username ? `${username}:${password || ''}@` : '';
-      wx.showModal({
-        title: '请输入 xiaomusic 的服务地址',
-        placeholderText: 'user:pass@192.168.1.6:8090',
-        content: `${account}${domain || ''}`,
-        editable: true,
-        success: (res) => {
-          if (!res.confirm) return;
-          if (!res.content) return;
-          const config = parseAuthUrl(res.content);
-          wx.setStorageSync('serverConfig', config);
-          setGlobalData('serverConfig', config);
-          wx.reLaunch({ url: '/pages/index/index' });
         },
       });
     },

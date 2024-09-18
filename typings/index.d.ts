@@ -5,6 +5,9 @@ interface IAppOption {
     musiclist: Record<string, string[]>;
     serverConfig: {
       domain: string;
+      privateDomain?: string;
+      publicDomain?: string;
+      auth?: boolean;
       username?: string;
       password?: string;
     };

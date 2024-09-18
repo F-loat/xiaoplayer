@@ -9,6 +9,7 @@ export const setGlobalData = (
   const { globalData } = getApp();
   if (globalData) globalData[key] = value;
 };
+
 const formatNumber = (n: number) => {
   const s = n.toString();
   return s[1] ? s : '0' + s;
@@ -29,7 +30,8 @@ export const formatTime = (date: Date) => {
   );
 };
 
-export const isPrivateIP = (ip: string) => {
+export const isPrivateDomain = (domain: string) => {
+  const ip = domain.split(':')[0];
   return /^(10|172\.(1[6-9]|2[0-9]|3[0-1])|192\.168)\.\d{1,3}\.\d{1,3}$/.test(
     ip,
   );
@@ -44,14 +46,22 @@ export const sleep = (time?: number) => {
 export const parseAuthUrl = (url: string) => {
   const values = url.split('@');
   if (values.length <= 1) {
+    const domain = values[0];
+    const isPrivate = isPrivateDomain(domain);
     return {
-      domain: values[0],
+      domain,
+      privateDomain: isPrivate ? domain : undefined,
+      publicDomain: isPrivate ? undefined : domain,
     };
   }
   const [account, domain] = values;
   const [username, password] = account.split(':');
+  const isPrivate = isPrivateDomain(domain);
   return {
     domain,
+    privateDomain: isPrivate ? domain : undefined,
+    publicDomain: isPrivate ? undefined : domain,
+    auth: !!username && !!password,
     username,
     password,
   };
@@ -125,7 +135,7 @@ export const request = <T>({
       data,
       timeout,
     };
-    if (isPrivateIP(domain.split(':')[0])) {
+    if (isPrivateDomain(domain)) {
       wx.request({
         ...options,
         header,

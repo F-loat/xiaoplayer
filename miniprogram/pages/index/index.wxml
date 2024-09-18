@@ -32,7 +32,12 @@
     <button class="mt-4" bind:tap="handleSetting">服务配置</button>
   </view>
   <view wx:else>
-    <view class="text-center">网络异常，请在局域网环境下使用</view>
+    <view class="text-center" bind:tap="handleError">
+			{{isPrivateDomain(serverConfig.domain) ? '网络异常，请在局域网环境下使用' : '网络异常，请确认公网地址配置正确'}}
+		</view>
     <button class="mt-4" bind:tap="handleSetting">服务配置</button>
+    <button wx:if="{{serverConfig.privateDomain && serverConfig.publicDomain}}" class="mt-4" bind:tap="handleSwitchDomain">
+		  {{isPrivateDomain(serverConfig.domain) ? '切换为公网连接' : '切换为局域网连接'}}
+		</button>
   </view>
 </view>

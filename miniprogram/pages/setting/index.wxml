@@ -2,5 +2,28 @@
 <navigation-bar back title="设置"></navigation-bar>
 
 <scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
-  <view></view>
+  <xiao-cell borderless>
+		<view>局域网服务地址</view>
+		<input class="flex-1 ml-2" value="{{serverConfig.privateDomain}}" placeholder="请输入" data-name="privateDomain" bind:input="handleFormChange"></input>
+	</xiao-cell>
+	<xiao-cell>
+		<view>公网服务地址</view>
+		<input class="flex-1 ml-2" value="{{serverConfig.publicDomain}}"  placeholder="请输入" data-name="publicDomain" bind:input="handleFormChange"></input>
+	</xiao-cell>
+	<xiao-cell extClass="justify-between">
+		<view>控制台密码验证</view>
+		<switch class="scale-75 absolute right-0 top-3" checked="{{serverConfig.auth}}" data-name="auth" bind:change="handleFormChange" />
+	</xiao-cell>
+	<block wx:if="{{serverConfig.auth}}">
+		<xiao-cell>
+			<view>控制台账户</view>
+			<input class="flex-1 ml-2" value="{{serverConfig.username}}" placeholder="请输入" data-name="username" bind:input="handleFormChange"></input>
+		</xiao-cell>
+		<xiao-cell>
+			<view>控制台密码</view>
+			<input class="flex-1 ml-2" password value="{{serverConfig.password}}" placeholder="请输入" data-name="password" bind:input="handleFormChange"></input>
+		</xiao-cell>
+	</block>
 </scroll-view>
+
+<button class="my-4" bind:tap="handleSaveConfig">保存</button>

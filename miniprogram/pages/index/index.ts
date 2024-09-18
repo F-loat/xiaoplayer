@@ -1,5 +1,6 @@
 import {
   getGlobalData,
+  isPrivateDomain,
   parseAuthUrl,
   request,
   setGlobalData,
@@ -10,6 +11,8 @@ Component({
     list: [] as { name: string; count: number }[],
     connected: true,
     configured: true,
+    serverConfig: getGlobalData('serverConfig') || {},
+    error: null as null | string,
   },
   lifetimes: {
     async attached() {
@@ -19,9 +22,12 @@ Component({
         return;
       }
       try {
+        wx.showLoading({
+          title: '加载中',
+        });
         const res = await request<Record<string, string[]>>({
           url: '/musiclist',
-          timeout: 1500,
+          timeout: 2500,
         });
         if (res.statusCode !== 200) {
           this.setData({ connected: false });
@@ -39,9 +45,21 @@ Component({
         const instance = this.getInstance();
         instance?.setData({ connected: true });
       } catch (err) {
-        this.setData({ connected: false });
+        this.setData({
+          connected: false,
+          error: (err as { errMsg: string }).errMsg,
+        });
         console.error(err);
+      } finally {
+        wx.hideLoading();
       }
+    },
+  },
+  pageLifetimes: {
+    show() {
+      this.setData({
+        serverConfig: getGlobalData('serverConfig') || {},
+      });
     },
   },
   methods: {
@@ -59,6 +77,7 @@ Component({
           'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png',
       };
     },
+    isPrivateDomain,
     getInstance() {
       if (typeof this.getAppBar === 'function') {
         return this.getAppBar();
@@ -71,8 +90,34 @@ Component({
       });
     },
     handleSetting() {
-      const instance = this.getInstance();
-      instance?.handleSetting();
+      const { domain, username, password } = getGlobalData('serverConfig');
+      const account = username ? `${username}:${password || ''}@` : '';
+      wx.showModal({
+        title: '请输入 xiaomusic 的服务地址',
+        placeholderText: 'user:pass@192.168.1.6:8090',
+        content: `${account}${domain || ''}`,
+        editable: true,
+        success: (res) => {
+          if (!res.confirm) return;
+          if (!res.content) return;
+          const config = parseAuthUrl(res.content);
+          wx.setStorageSync('serverConfig', config);
+          setGlobalData('serverConfig', config);
+          wx.reLaunch({ url: '/pages/index/index' });
+        },
+      });
+    },
+    handleSwitchDomain() {
+      const { serverConfig } = this.data;
+      const config = {
+        ...serverConfig,
+        domain: isPrivateDomain(serverConfig.domain)
+          ? serverConfig.publicDomain
+          : serverConfig.privateDomain,
+      };
+      setGlobalData('serverConfig', config);
+      wx.setStorageSync('serverConfig', config);
+      wx.reLaunch({ url: '/pages/index/index' });
     },
     handleRepoLink() {
       wx.setClipboardData({
@@ -80,6 +125,17 @@ Component({
         success: () => {
           wx.showToast({
             title: '链接已复制，请在浏览器中访问～',
+            icon: 'none',
+          });
+        },
+      });
+    },
+    handleError() {
+      wx.setClipboardData({
+        data: this.data.error || '未知异常',
+        success: () => {
+          wx.showToast({
+            title: '错误日志已复制～',
             icon: 'none',
           });
         },

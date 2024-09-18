@@ -1,0 +1,3 @@
+<view class="flex item-center py-4 {{borderless ? '' : 'border-0 border-t border-solid border-gray-100 dark:border-neutral-800 border-opacity-80'}}">
+	<slot></slot>
+</view>

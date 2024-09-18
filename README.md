@@ -1,6 +1,6 @@
 ## xiaoplayer
 
-> [xiaomusic](https://github.com/hanxi/xiaomusic) 客户端，推送本地音乐至小米音箱
+> [xiaomusic](https://github.com/hanxi/xiaomusic) 小程序客户端，使用小爱音箱播放本地/NAS音乐
 
 ## 预览
 

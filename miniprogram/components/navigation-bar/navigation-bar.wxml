@@ -6,26 +6,25 @@
       <block wx:if="{{back || homeButton}}">
         <!-- 返回上一页 -->
         <block wx:if="{{back}}">
-            <view
-              bindtap="back"
-              class="btn_goback_wrapper"
-              hover-class="opacity-50"
-              hover-stay-time="100"
-              aria-role="button"
-              aria-label="返回"
-            >
-              <view class="bar__btn_goback bg-[#333] dark:bg-[#eee] text-xs w-3 h-6"></view>
-            </view>
+					<view
+						bindtap="back"
+						hover-class="opacity-50"
+						hover-stay-time="100"
+						aria-role="button"
+						aria-label="返回"
+					>
+						<image class="w-6 h-6 opacity-80 scale-80 invert-icon" mode="aspectFill" src="/assets/icon/fanhui.svg" />
+					</view>
         </block>
       </block>
       <block wx:if="{{title}}">
-        <text class="truncate font-bold text-[17px]" style="padding-left:{{back || homeButton ? 8 : 0}}px">{{title}}</text>
+        <text class="truncate font-bold text-[17px]">{{title}}</text>
       </block>
       <block wx:else>
         <slot name="left"></slot>
       </block>
     </view>
-    
+
     <!-- 右侧留空 -->
     <view >
       <slot name="right"></slot>

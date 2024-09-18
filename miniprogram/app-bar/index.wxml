@@ -4,7 +4,7 @@
 		<view id="nav-bar" class="flex flex-col overflow-hidden box-border">
 			<view style="height: {{statusBarHeight}}px;" />
 			<view class="flex flex-col justify-center flex-1">
-				<image class="w-6 h-6" mode="aspectFill" src="/assets/icon/fanhui.svg" bind:tap="close" />
+				<image class="w-6 h-6" mode="aspectFill" src="/assets/icon/shouqi.svg" bind:tap="close" />
 			</view>
 		</view>
 
@@ -54,9 +54,9 @@
 </vertical-drag-gesture-handler>
 
 <navigation-menu wx:if="{{menubar}}">
-	<view url="/pages/setting/index"
-		class="w-full h-full rounded-full border-solid border border-gray-100 dark:border-none flex justify-center items-center transition-colors dark:bg-white dark:bg-opacity-60"
+	<navigator url="/pages/setting/index"
+		class="w-full h-full rounded-full border-[0.5px] border-solid border-black border-opacity-10 border-box flex justify-center items-center transition-colors bg-white bg-opacity-60"
 		hover-class="bg-gray-200" bind:tap="handleSetting">
 		<image src="/assets/icon/shezhi.svg" class="w-3/5 h-3/5" />
-</view>
+	</navigator>
 </navigation-menu>

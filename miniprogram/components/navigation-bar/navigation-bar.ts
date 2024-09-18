@@ -80,7 +80,8 @@ Component({
       });
     },
     initLayout() {
-      const { statusBarHeight, platform, windowWidth } = wx.getSystemInfoSync();
+      const { platform } = wx.getDeviceInfo();
+      const { statusBarHeight, windowWidth } = wx.getWindowInfo();
       const isAndroid = platform === 'android';
       const rect = wx.getMenuButtonBoundingClientRect();
       this.setData({

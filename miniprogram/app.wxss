@@ -10,3 +10,9 @@ page {
   padding-bottom: calc(env(safe-area-inset-bottom) + 76);
   box-sizing: border-box;
 }
+
+@media (prefers-color-scheme: dark) {
+  .invert-icon {
+    filter: invert(1);
+  }
+}
