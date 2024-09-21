@@ -1,3 +1,5 @@
+import { getGlobalData } from '@/miniprogram/utils/util';
+
 Component({
   data: {
     ios: false,
@@ -7,6 +9,7 @@ Component({
   },
   lifetimes: {
     attached() {
+      const isPC = getGlobalData('isPC');
       const { platform } = wx.getDeviceInfo();
       const { statusBarHeight, windowWidth } = wx.getWindowInfo();
 
@@ -17,7 +20,7 @@ Component({
 
       this.setData({
         ios: isIOS,
-        safeAreaRight: windowWidth - rect.left,
+        safeAreaRight: isPC ? 0 : windowWidth - rect.left,
         safeAreaTop: statusBarHeight,
         menuHeight: rect.height,
       });

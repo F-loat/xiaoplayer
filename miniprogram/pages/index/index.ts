@@ -13,6 +13,7 @@ Component({
     configured: true,
     serverConfig: getGlobalData('serverConfig') || {},
     error: null as null | string,
+    isPC: getGlobalData('isPC'),
   },
   lifetimes: {
     async attached() {
@@ -65,19 +66,18 @@ Component({
   methods: {
     onShareAppMessage() {
       return {
-        title: 'xiaomusic 客户端，轻松投放本地音乐至小米音箱',
+        title: 'xiaomusic 客户端，轻松投放本地/NAS音乐至小米音箱',
         imageUrl:
           'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png',
       };
     },
     onShareTimeline() {
       return {
-        title: 'xiaomusic 客户端，轻松投放本地音乐至小米音箱',
+        title: 'xiaomusic 客户端，轻松投放本地音乐/NAS至小米音箱',
         imageUrl:
           'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png',
       };
     },
-    isPrivateDomain,
     getInstance() {
       if (typeof this.getAppBar === 'function') {
         return this.getAppBar();
@@ -98,9 +98,11 @@ Component({
         content: `${account}${domain || ''}`,
         editable: true,
         success: (res) => {
-          if (!res.confirm) return;
-          if (!res.content) return;
-          const config = parseAuthUrl(res.content);
+          if (!res.confirm || !res.content) return;
+          const config = {
+            ...this.data.serverConfig,
+            ...parseAuthUrl(res.content),
+          };
           wx.setStorageSync('serverConfig', config);
           setGlobalData('serverConfig', config);
           wx.reLaunch({ url: '/pages/index/index' });

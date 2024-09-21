@@ -51,6 +51,7 @@ ComponentWithComputed({
     playOrder: PLAY_TYPE_ALL,
     connected: false,
     menubar: true,
+    isPC: getGlobalData('isPC'),
   },
 
   computed: {
@@ -100,12 +101,9 @@ ComponentWithComputed({
       this.applyAnimatedStyle('#expand-container', () => {
         'worklet';
         const t = progress.value;
-        const maxRadius = 30;
-        const radius = isIOS ? maxRadius * t : 0;
         const initBarHeight = initCoverSize + 8 * 2 + safeAreaInsetBottom;
         return {
           top: `${(screenHeight - initBarHeight) * (1 - t)}px`,
-          borderRadius: `${radius}px ${radius}px 0px 0px`,
         };
       });
 

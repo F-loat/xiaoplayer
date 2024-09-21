@@ -50,8 +50,7 @@ export const parseAuthUrl = (url: string) => {
     const isPrivate = isPrivateDomain(domain);
     return {
       domain,
-      privateDomain: isPrivate ? domain : undefined,
-      publicDomain: isPrivate ? undefined : domain,
+      [isPrivate ? 'privateDomain' : 'publicDomain']: domain,
     };
   }
   const [account, domain] = values;
@@ -59,8 +58,7 @@ export const parseAuthUrl = (url: string) => {
   const isPrivate = isPrivateDomain(domain);
   return {
     domain,
-    privateDomain: isPrivate ? domain : undefined,
-    publicDomain: isPrivate ? undefined : domain,
+    [isPrivate ? 'privateDomain' : 'publicDomain']: domain,
     auth: !!username && !!password,
     username,
     password,

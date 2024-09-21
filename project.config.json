@@ -5,7 +5,6 @@
   "cloudfunctionRoot": "cloudfunctions/",
   "compileType": "miniprogram",
   "setting": {
-    "useCompilerPlugins": ["typescript"],
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],

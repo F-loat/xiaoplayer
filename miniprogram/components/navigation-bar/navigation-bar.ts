@@ -1,3 +1,5 @@
+import { getGlobalData } from '@/miniprogram/utils/util';
+
 Component({
   options: {
     multipleSlots: true, // 在组件定义时的选项中启用多slot支持
@@ -52,10 +54,16 @@ Component({
    */
   data: {
     displayStyle: '',
+    isPC: getGlobalData('isPC'),
   },
   lifetimes: {
     attached() {
       this.initLayout();
+      if (this.data.isPC) {
+        wx.setNavigationBarTitle({
+          title: this.data.title,
+        });
+      }
     },
   },
   pageLifetimes: {

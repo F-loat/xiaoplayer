@@ -11,6 +11,7 @@ interface IAppOption {
       username?: string;
       password?: string;
     };
+    isPC: boolean;
   };
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback;
 }

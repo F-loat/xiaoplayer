@@ -1,22 +1,13 @@
-<view class="overflow-hidden flex-none {{extClass}}">
-  <view class="relative top-0 left-0 flex items-center justify-center w-full box-border" style="color: {{color}}; background: {{background}}; {{displayStyle}}; {{innerPaddingRight}}; {{safeAreaTop}};">
+<view wx:if="{{!isPC}}" class="overflow-hidden flex-none {{extClass}}">
+  <view class="relative top-0 left-0 flex items-center justify-center w-full box-border"
+    style="color: {{color}}; background: {{background}}; {{displayStyle}}; {{innerPaddingRight}}; {{safeAreaTop}};">
 
     <!-- 左侧按钮 -->
     <view class='flex-1 pr-10 relative pl-4 flex items-center h-full box-border' style="{{leftWidth}};">
-      <block wx:if="{{back || homeButton}}">
-        <!-- 返回上一页 -->
-        <block wx:if="{{back}}">
-					<view
-						bindtap="back"
-						hover-class="opacity-50"
-						hover-stay-time="100"
-						aria-role="button"
-						aria-label="返回"
-					>
-						<image class="w-6 h-6 opacity-80 scale-80 invert-icon" mode="aspectFill" src="/assets/icon/fanhui.svg" />
-					</view>
-        </block>
-      </block>
+      <view wx:if="{{back}}" bindtap="back" class="mr-1" hover-class="opacity-50" hover-stay-time="100" aria-role="button"
+        aria-label="返回">
+        <image class="w-6 h-6 opacity-80 scale-80 invert-icon" mode="aspectFill" src="/assets/icon/fanhui.svg" />
+      </view>
       <block wx:if="{{title}}">
         <text class="truncate font-bold text-[17px]">{{title}}</text>
       </block>
@@ -26,7 +17,7 @@
     </view>
 
     <!-- 右侧留空 -->
-    <view >
+    <view>
       <slot name="right"></slot>
     </view>
   </view>
