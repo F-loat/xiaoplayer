@@ -32,9 +32,9 @@ export const formatTime = (date: Date) => {
 
 export const isPrivateDomain = (domain: string) => {
   const ip = domain.split(':')[0];
-  return /^(10|172\.(1[6-9]|2[0-9]|3[0-1])|192\.168)\.\d{1,3}\.\d{1,3}$/.test(
-    ip,
-  );
+  const privateIPRegex =
+    /^(?:10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2[0-9]|3[0-1])(?:\.\d{1,3}){2}|192\.168(?:\.\d{1,3}){2})$/;
+  return privateIPRegex.test(ip);
 };
 
 export const sleep = (time?: number) => {

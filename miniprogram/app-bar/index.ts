@@ -350,7 +350,7 @@ ComponentWithComputed({
       innerAudioContext?.destroy();
       innerAudioContext = wx.createInnerAudioContext();
       const { domain } = getGlobalData('serverConfig');
-      innerAudioContext.src = res.data.url.replace(
+      innerAudioContext.src = res.data.url?.replace(
         /:\/\/.*?\//,
         `://${domain}/`,
       );
@@ -361,17 +361,17 @@ ComponentWithComputed({
 
     async handleSwitchSound() {
       const { devices } = this.data.settings;
-      if (!devices) return;
-      const items = Object.values(devices).concat([
-        { name: '本机', did: 'host' },
-      ]);
+      const items = Object.values(devices || {})
+        .slice(0, 5)
+        .concat([{ name: '本机', did: 'host' }]) as {
+        name: string | number;
+        did: string;
+      }[];
       wx.showActionSheet({
         alertText: '设备投放',
-        itemList: items.map((i) => i.name),
+        itemList: items.map((i) => String(i.name || i.did)),
         success: async (res) => {
-          const device = items[res.tapIndex] as {
-            did: string;
-          };
+          const device = items[res.tapIndex];
           if (device.did === this.data.did) {
             return;
           }
