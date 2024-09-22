@@ -16,44 +16,8 @@ Component({
     isPC: getGlobalData('isPC'),
   },
   lifetimes: {
-    async attached() {
-      const { domain } = getGlobalData('serverConfig');
-      if (!domain) {
-        this.setData({ configured: false });
-        return;
-      }
-      try {
-        wx.showLoading({
-          title: '加载中',
-        });
-        const res = await request<Record<string, string[]>>({
-          url: '/musiclist',
-          timeout: 2500,
-        });
-        if (res.statusCode !== 200) {
-          this.setData({ connected: false });
-          return;
-        }
-        this.setData({
-          list: Object.entries(res.data)
-            .map(([name, items]) => ({
-              name,
-              count: items.length,
-            }))
-            .sort(({ name }) => (name === '全部' ? -1 : 1)),
-        });
-        setGlobalData('musiclist', res.data);
-        const instance = this.getInstance();
-        instance?.setData({ connected: true });
-      } catch (err) {
-        this.setData({
-          connected: false,
-          error: (err as { errMsg: string }).errMsg,
-        });
-        console.error(err);
-      } finally {
-        wx.hideLoading();
-      }
+    attached() {
+      this.fetchMusicList();
     },
   },
   pageLifetimes: {
@@ -83,7 +47,61 @@ Component({
         return this.getAppBar();
       }
     },
-    async handleViewTap(e) {
+    async fetchMusicList() {
+      const { domain } = getGlobalData('serverConfig');
+      this.setData({ configured: !!domain });
+      if (!domain) return;
+      try {
+        wx.showLoading({
+          title: '加载中',
+        });
+        const res = await request<Record<string, string[]>>({
+          url: '/musiclist',
+          timeout: 2500,
+        });
+        if (res.statusCode !== 200) {
+          this.setData({ connected: false });
+          return;
+        }
+        this.setData({
+          list: Object.entries(res.data)
+            .map(([name, items]) => ({
+              name,
+              count: items.length,
+            }))
+            .filter(({ name }) => name !== '全部')
+            .sort(({ name }) => (name === '所有歌曲' ? -1 : 1)),
+        });
+        setGlobalData('musiclist', res.data);
+        const instance = this.getInstance();
+        instance?.setData({ connected: true });
+      } catch (err) {
+        this.setData({
+          connected: false,
+          error: (err as { errMsg: string }).errMsg,
+        });
+        console.error(err);
+      } finally {
+        wx.hideLoading();
+      }
+    },
+    handleRefresh() {
+      wx.createSelectorQuery()
+        .select('#scrollview')
+        .node()
+        .exec(async (res) => {
+          const scrollView = res[0].node;
+          const instance = this.getInstance();
+          await instance?.sendCommand('刷新列表');
+          await this.fetchMusicList();
+          scrollView.closeRefresh();
+          wx.showToast({
+            title: '列表刷新成功',
+            icon: 'none',
+          });
+        });
+    },
+    handleViewTap(e) {
       const { name } = e.currentTarget.dataset;
       wx.navigateTo({
         url: `/pages/list/index?name=${name}`,
@@ -105,7 +123,14 @@ Component({
           };
           wx.setStorageSync('serverConfig', config);
           setGlobalData('serverConfig', config);
-          wx.reLaunch({ url: '/pages/index/index' });
+          this.fetchMusicList();
+          const isPrivate = isPrivateDomain(config.domain);
+          if (isPrivate && this.data.isPC) {
+            wx.showToast({
+              title: 'PC 端可能不支持局域网访问，可尝试配置公网服务地址',
+              icon: 'none',
+            });
+          }
         },
       });
     },
@@ -119,7 +144,7 @@ Component({
       };
       setGlobalData('serverConfig', config);
       wx.setStorageSync('serverConfig', config);
-      wx.reLaunch({ url: '/pages/index/index' });
+      this.fetchMusicList();
     },
     handleRepoLink() {
       wx.setClipboardData({

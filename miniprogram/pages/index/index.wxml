@@ -1,8 +1,9 @@
 <!--index.wxml-->
 <navigation-bar back="{{false}}" title="音乐列表"></navigation-bar>
 
-<scroll-view wx:if="{{!!list.length}}" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list"
-  show-scrollbar="{{false}}" style="padding-bottom: {{isPC ? 76 : 0}}px;">
+<scroll-view wx:if="{{!!list.length}}" id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y refresher-enabled
+  type="list" show-scrollbar="{{false}}" style="padding-bottom: {{isPC ? 76 : 0}}px;"
+  bind:refresherrefresh="handleRefresh">
   <view wx:for="{{list}}" wx:key="*this"
     class="flex items-baseline py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none"
     data-name="{{item.name}}" bind:tap="handleViewTap">
@@ -33,12 +34,13 @@
   </view>
   <view wx:else>
     <view class="text-center" bind:tap="handleError">
-			{{serverConfig.domain === serverConfig.privateDomain ? '网络异常，请在局域网环境下使用' : '网络异常，请确认公网地址配置正确'}}
-		</view>
+      {{serverConfig.domain === serverConfig.privateDomain ? '网络异常，请在局域网环境下使用' : '网络异常，请确认公网地址配置正确'}}
+    </view>
     <button class="mt-4" bind:tap="handleSetting">服务配置</button>
-    <button wx:if="{{serverConfig.privateDomain && serverConfig.publicDomain}}" class="mt-4" bind:tap="handleSwitchDomain">
-		  {{serverConfig.domain === serverConfig.privateDomain ? '切换为公网连接' : '切换为局域网连接'}}
-		</button>
+    <button wx:if="{{serverConfig.privateDomain && serverConfig.publicDomain}}" class="mt-4"
+      bind:tap="handleSwitchDomain">
+      {{serverConfig.domain === serverConfig.privateDomain ? '切换为公网连接' : '切换为局域网连接'}}
+    </button>
   </view>
 </view>
 
