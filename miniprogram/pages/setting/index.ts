@@ -1,47 +1,42 @@
-import {
-  getGlobalData,
-  isPrivateDomain,
-  setGlobalData,
-} from '@/miniprogram/utils/util';
+import { store } from '@/miniprogram/stores';
+import { ServerConfig } from '@/miniprogram/types';
+import { isPrivateDomain } from '@/miniprogram/utils';
+import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
-Component({
+ComponentWithStore({
   data: {
-    serverConfig: {} as IAppOption['globalData']['serverConfig'],
+    serverConfig: {} as ServerConfig,
   },
   lifetimes: {
     attached() {
-      const instance = this.getInstance();
-      instance?.setData({ menubar: false });
+      store.setData({ menubar: false });
       this.setData({
-        serverConfig: getGlobalData('serverConfig') || {},
+        serverConfig: { ...store.serverConfig },
       });
     },
     detached() {
-      const instance = this.getInstance();
-      instance?.setData({ menubar: true });
+      store.setData({ menubar: true });
     },
   },
   methods: {
-    getInstance() {
-      if (typeof this.getAppBar === 'function') {
-        return this.getAppBar();
-      }
-    },
-    setServerConfig(
-      key: keyof IAppOption['globalData']['serverConfig'],
-      value: any,
-    ) {
-      const newServerConfig = {
-        ...this.data.serverConfig,
-        [key]: value,
+    handleFormChange(e: {
+      currentTarget: {
+        dataset: {
+          name: string;
+        };
       };
-      this.setData({
-        serverConfig: newServerConfig,
-      });
-    },
-    handleFormChange(e) {
+      detail: {
+        value: string;
+      };
+    }) {
       const { name } = e.currentTarget.dataset;
-      if (name) this.setServerConfig(name, e.detail.value);
+      if (!name) return;
+      this.setData({
+        serverConfig: {
+          ...this.data.serverConfig,
+          [name]: e.detail.value,
+        },
+      });
     },
     handleSaveConfig() {
       wx.showToast({
@@ -52,11 +47,10 @@ Component({
       const config = {
         ...serverConfig,
         domain: isPrivateDomain(serverConfig.domain)
-          ? serverConfig.privateDomain
-          : serverConfig.publicDomain,
+          ? serverConfig.privateDomain!
+          : serverConfig.publicDomain!,
       };
-      setGlobalData('serverConfig', config);
-      wx.setStorageSync('serverConfig', config);
+      store.setServerConfig(config);
       wx.reLaunch({ url: '/pages/index/index' });
     },
   },

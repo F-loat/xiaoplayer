@@ -1,6 +1,7 @@
-import { getGlobalData } from '@/miniprogram/utils/util';
+import { store } from '@/miniprogram/stores';
+import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
-Component({
+ComponentWithStore({
   options: {
     multipleSlots: true, // 在组件定义时的选项中启用多slot支持
   },
@@ -49,17 +50,18 @@ Component({
       value: 1,
     },
   },
-  /**
-   * 组件的初始数据
-   */
   data: {
     displayStyle: '',
-    isPC: getGlobalData('isPC'),
+  },
+  storeBindings: {
+    store,
+    fields: ['isPC'] as const,
+    actions: [] as const,
   },
   lifetimes: {
     attached() {
       this.initLayout();
-      if (this.data.isPC) {
+      if (store.isPC) {
         wx.setNavigationBarTitle({
           title: this.data.title,
         });

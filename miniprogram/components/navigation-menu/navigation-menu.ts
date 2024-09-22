@@ -1,4 +1,4 @@
-import { getGlobalData } from '@/miniprogram/utils/util';
+import { store } from '@/miniprogram/stores';
 
 Component({
   data: {
@@ -9,7 +9,6 @@ Component({
   },
   lifetimes: {
     attached() {
-      const isPC = getGlobalData('isPC');
       const { platform } = wx.getDeviceInfo();
       const { statusBarHeight, windowWidth } = wx.getWindowInfo();
 
@@ -20,7 +19,7 @@ Component({
 
       this.setData({
         ios: isIOS,
-        safeAreaRight: isPC ? 0 : windowWidth - rect.left,
+        safeAreaRight: store.isPC ? 0 : windowWidth - rect.left,
         safeAreaTop: statusBarHeight,
         menuHeight: rect.height,
       });

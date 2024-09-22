@@ -1,30 +1,27 @@
+import { store } from '@/miniprogram/stores';
 import {
-  getGlobalData,
   isPrivateDomain,
   parseAuthUrl,
   request,
   setGlobalData,
-} from '@/miniprogram/utils/util';
+} from '@/miniprogram/utils';
+import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
-Component({
+ComponentWithStore({
   data: {
     list: [] as { name: string; count: number }[],
     connected: true,
     configured: true,
-    serverConfig: getGlobalData('serverConfig') || {},
     error: null as null | string,
-    isPC: getGlobalData('isPC'),
+  },
+  storeBindings: {
+    store,
+    fields: ['serverConfig', 'isPC'] as const,
+    actions: [] as const,
   },
   lifetimes: {
     attached() {
       this.fetchMusicList();
-    },
-  },
-  pageLifetimes: {
-    show() {
-      this.setData({
-        serverConfig: getGlobalData('serverConfig') || {},
-      });
     },
   },
   methods: {
@@ -42,13 +39,8 @@ Component({
           'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png',
       };
     },
-    getInstance() {
-      if (typeof this.getAppBar === 'function') {
-        return this.getAppBar();
-      }
-    },
     async fetchMusicList() {
-      const { domain } = getGlobalData('serverConfig');
+      const { domain } = store.serverConfig;
       this.setData({ configured: !!domain });
       if (!domain) return;
       try {
@@ -73,8 +65,7 @@ Component({
             .sort(({ name }) => (name === '所有歌曲' ? -1 : 1)),
         });
         setGlobalData('musiclist', res.data);
-        const instance = this.getInstance();
-        instance?.setData({ connected: true });
+        store.setData({ connected: true });
       } catch (err) {
         this.setData({
           connected: false,
@@ -91,8 +82,7 @@ Component({
         .node()
         .exec(async (res) => {
           const scrollView = res[0].node;
-          const instance = this.getInstance();
-          await instance?.sendCommand('刷新列表');
+          await store.sendCommand('刷新列表');
           await this.fetchMusicList();
           scrollView.closeRefresh();
           wx.showToast({
@@ -101,14 +91,20 @@ Component({
           });
         });
     },
-    handleViewTap(e) {
+    handleViewTap(e: {
+      currentTarget: {
+        dataset: {
+          name: string;
+        };
+      };
+    }) {
       const { name } = e.currentTarget.dataset;
       wx.navigateTo({
         url: `/pages/list/index?name=${name}`,
       });
     },
     handleSetting() {
-      const { domain, username, password } = getGlobalData('serverConfig');
+      const { domain, username, password } = store.serverConfig;
       const account = username ? `${username}:${password || ''}@` : '';
       wx.showModal({
         title: '请输入 xiaomusic 的服务地址',
@@ -121,8 +117,7 @@ Component({
             ...this.data.serverConfig,
             ...parseAuthUrl(res.content),
           };
-          wx.setStorageSync('serverConfig', config);
-          setGlobalData('serverConfig', config);
+          store.setServerConfig(config);
           this.fetchMusicList();
           const isPrivate = isPrivateDomain(config.domain);
           if (isPrivate && this.data.isPC) {
@@ -142,8 +137,7 @@ Component({
           ? serverConfig.publicDomain
           : serverConfig.privateDomain,
       };
-      setGlobalData('serverConfig', config);
-      wx.setStorageSync('serverConfig', config);
+      store.setServerConfig(config);
       this.fetchMusicList();
     },
     handleRepoLink() {

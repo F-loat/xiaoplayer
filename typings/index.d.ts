@@ -3,15 +3,12 @@
 interface IAppOption {
   globalData: {
     musiclist: Record<string, string[]>;
-    serverConfig: {
-      domain: string;
-      privateDomain?: string;
-      publicDomain?: string;
-      auth?: boolean;
-      username?: string;
-      password?: string;
-    };
-    isPC: boolean;
   };
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback;
 }
+
+declare const process = {} as {
+  env: {
+    WX_CLOUD_ENV: string;
+  };
+};

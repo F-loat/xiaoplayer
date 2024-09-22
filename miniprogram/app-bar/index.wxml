@@ -1,6 +1,6 @@
 <vertical-drag-gesture-handler worklet:ongesture="handleVerticalDrag">
 	<view id="expand-container"
-		class="expand-container absolute top-0 left-0 right-0 bottom-0 px-[24px] overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{(connected || isPC) ? 'opacity-100' : 'opacity-0'}}">
+		class="absolute top-0 left-0 right-0 bottom-0 px-[24px] overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{connected ? 'opacity-100' : 'opacity-0'}}">
 		<view id="nav-bar" class="flex flex-col overflow-hidden box-border">
 			<view style="height: {{statusBarHeight}}px;" />
 			<view class="flex flex-col justify-center flex-1">
@@ -41,8 +41,9 @@
 			<slider value="{{volume}}" activeColor="#eee" block-size="{{16}}" bindchanging="handleVolumeChanging"
 				bindchange="handleVolumeChange"></slider>
 		</view>
-		<view class="flex justify-between items-center px-3 mt-24">
-			<image class="w-6 h-6 opacity-60" src="/assets/icon/{{playOrderIcon}}.svg" bind:tap="handleSwitchOrder" />
+		<view class="flex justify-between items-center px-3 mt-20">
+			<image class="w-6 h-6 opacity-60" src="/assets/icon/{{orderIconMap[playOrder] || 'liebiaoxunhuan'}}.svg"
+				bind:tap="handleSwitchOrder" />
 			<image class="w-8 h-8" src="/assets/icon/shangyiqu.svg" bind:tap="handlePlayPrev" />
 			<image class="w-12 h-12"
 				src="{{status === 'paused' ? '/assets/icon/zanting.svg' : '/assets/icon/bofangzhong.svg'}}"

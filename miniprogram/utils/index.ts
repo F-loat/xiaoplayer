@@ -1,3 +1,5 @@
+import { store } from '../stores';
+
 export const getGlobalData = (key: keyof IAppOption['globalData']) => {
   return getApp().globalData?.[key];
 };
@@ -9,6 +11,8 @@ export const setGlobalData = (
   const { globalData } = getApp();
   if (globalData) globalData[key] = value;
 };
+
+export const noop = () => {};
 
 const formatNumber = (n: number) => {
   const s = n.toString();
@@ -121,7 +125,7 @@ export const request = <T>({
   const header: {
     Authorization?: string;
   } = {};
-  const { domain, username, password } = getGlobalData('serverConfig');
+  const { domain, username, password } = store.serverConfig;
   if (!domain) return Promise.reject('domain error');
   if (username && password) {
     header.Authorization = `Basic ${weBtoa(username + ':' + password)}`;

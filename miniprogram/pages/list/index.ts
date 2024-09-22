@@ -1,6 +1,8 @@
-import { getGlobalData } from '@/miniprogram/utils/util';
+import { store } from '@/miniprogram/stores';
+import { getGlobalData } from '@/miniprogram/utils';
+import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
-Component({
+ComponentWithStore({
   properties: {
     name: String,
   },
@@ -14,21 +16,15 @@ Component({
     },
   },
   methods: {
-    getInstance() {
-      if (typeof this.getAppBar === 'function') {
-        return this.getAppBar();
-      }
-    },
-    async handleViewTap(e) {
+    async handleViewTap(e: {
+      target: {
+        dataset: {
+          name: string;
+        };
+      };
+    }) {
       const { name } = e.target.dataset;
-      const instance = this.getInstance();
-      if (!instance) return;
-      if (instance.data.did === 'host') {
-        instance.hostPlay(name);
-      } else {
-        await instance.sendCommand(`播放列表${this.data.name}|${name}`);
-        instance.syncMusic();
-      }
+      store.playMusic(name, this.data.name);
     },
   },
 });
