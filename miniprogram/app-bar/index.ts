@@ -20,8 +20,6 @@ const clamp = function (cur: number, lowerBound: number, upperBound: number) {
   return cur;
 };
 
-let innerAudioContext: WechatMiniprogram.InnerAudioContext;
-
 let progress = shared(0);
 
 ComponentWithStore({
@@ -44,6 +42,7 @@ ComponentWithStore({
     store,
     fields: [
       'did',
+      'volume',
       'status',
       'currentDevice',
       'musicName',
@@ -179,30 +178,26 @@ ComponentWithStore({
 
     async handlePlayToggle() {
       if (store.status === 'paused') {
-        if (store.did === 'host') {
-          innerAudioContext?.play();
-          store.setData({ status: 'playing' });
-        } else {
-          await store.sendCommand('播放歌曲|');
-        }
+        await store.playMusic();
       } else {
-        if (store.did === 'host') {
-          innerAudioContext?.pause();
-          store.setData({ status: 'paused' });
-        } else {
-          await store.sendCommand('关机');
-        }
+        await store.pauseMusic();
       }
       store.syncMusic();
     },
 
     async handlePlayNext() {
-      await store.sendCommand('下一首');
+      if (store.did === 'host') {
+      } else {
+        await store.sendCommand('下一首');
+      }
       store.syncMusic();
     },
 
     async handlePlayPrev() {
-      await store.sendCommand('上一首');
+      if (store.did === 'host') {
+      } else {
+        await store.sendCommand('上一首');
+      }
       store.syncMusic();
     },
 

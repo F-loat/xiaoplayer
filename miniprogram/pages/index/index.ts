@@ -118,6 +118,7 @@ ComponentWithStore({
             ...parseAuthUrl(res.content),
           };
           store.setServerConfig(config);
+          store.initSettings();
           this.fetchMusicList();
           const isPrivate = isPrivateDomain(config.domain);
           if (isPrivate && this.data.isPC) {
@@ -138,6 +139,7 @@ ComponentWithStore({
           : serverConfig.privateDomain,
       };
       store.setServerConfig(config);
+      store.initSettings();
       this.fetchMusicList();
     },
     handleRepoLink() {

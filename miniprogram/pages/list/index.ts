@@ -10,7 +10,7 @@ ComponentWithStore({
     list: [] as string[],
   },
   lifetimes: {
-    async attached() {
+    attached() {
       const list = getGlobalData('musiclist');
       this.setData({ list: list[this.data.name] });
     },
@@ -24,7 +24,8 @@ ComponentWithStore({
       };
     }) {
       const { name } = e.target.dataset;
-      store.playMusic(name, this.data.name);
+      await store.playMusic(name, this.data.name);
+      store.syncMusic();
     },
   },
 });

@@ -9,7 +9,7 @@ export const store = observable({
   did: null as null | string,
   volume: 20,
   status: 'paused',
-  musicName: '',
+  musicName: wx.getStorageSync('musicName') || '',
   devices: {} as Record<string, { name: string; did: string }>,
   playOrder: PlayOrderType.All,
   serverConfig: (wx.getStorageSync('serverConfig') || {}) as ServerConfig,
@@ -79,17 +79,24 @@ export const store = observable({
     });
   },
 
-  playMusic: async (name: string, album: string = '') => {
+  playMusic: async (name: string = '', album: string = '') => {
     if (store.did !== 'host') {
       await store.sendCommand(`播放列表${album}|${name}`);
-      store.syncMusic();
       return;
     }
+
+    if (!name && innerAudioContext?.src) {
+      innerAudioContext.play();
+      store.setData({ status: 'playing' });
+      return;
+    }
+
+    let musicName = name || store.musicName;
 
     const res = await request<{
       url: string;
     }>({
-      url: `/musicinfo?name=${name}`,
+      url: `/musicinfo?name=${musicName}`,
     });
 
     innerAudioContext?.destroy();
@@ -100,7 +107,17 @@ export const store = observable({
       : res.data.url?.replace(/:\/\/.*?\//, `://${domain}/`);
     innerAudioContext.play();
 
-    store.setData({ musicName: name, status: 'playing' });
+    store.setData({ musicName, status: 'playing' });
+    wx.setStorageSync('musicName', musicName);
+  },
+
+  pauseMusic: async () => {
+    if (store.did === 'host') {
+      innerAudioContext?.pause();
+      store.setData({ status: 'paused' });
+    } else {
+      await store.sendCommand('关机');
+    }
   },
 
   syncMusic: async () => {
