@@ -103,20 +103,24 @@ export const store = observable({
     }
   },
 
-  sendCommand(cmd: String) {
+  sendCommand(cmd: String, did?: string) {
     return request({
       url: '/cmd',
       method: 'POST',
       data: {
         cmd,
-        did: store.did,
+        did: did || store.did,
       },
     });
   },
 
   playMusic: async (name: string = '', album: string = '') => {
     if (store.did !== 'host') {
-      await store.sendCommand(`播放列表${album}|${name}`);
+      if (name) {
+        await store.sendCommand(`播放列表${album}|${name}`);
+      } else {
+        await store.sendCommand('播放歌曲');
+      }
       return;
     }
 

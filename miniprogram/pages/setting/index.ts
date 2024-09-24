@@ -1,10 +1,11 @@
 import { store } from '@/miniprogram/stores';
 import { Device, ServerConfig } from '@/miniprogram/types';
-import { isPrivateDomain } from '@/miniprogram/utils';
+import { isPrivateDomain, request } from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 ComponentWithStore({
   data: {
+    status: {} as Record<string, boolean>,
     devices: [] as Device[],
     serverConfig: {} as ServerConfig,
   },
@@ -20,12 +21,29 @@ ComponentWithStore({
         devices: Object.values(store.devices),
         serverConfig: { ...store.serverConfig },
       });
+      this.syncDeviceStatus();
     },
     detached() {
       store.setData({ menubar: true });
     },
   },
   methods: {
+    syncDeviceStatus() {
+      this.data.devices.forEach(async (device) => {
+        const res = await request<{
+          cur_music: string;
+          is_playing: boolean;
+        }>({
+          url: `/playingmusic?did=${device.did}`,
+        });
+        this.setData({
+          status: {
+            ...this.data.status,
+            [device.did]: res.data.is_playing,
+          },
+        });
+      });
+    },
     handleFormChange(e: {
       currentTarget: {
         dataset: {
@@ -60,6 +78,26 @@ ComponentWithStore({
       store.setServerConfig(config);
       store.initSettings();
       wx.reLaunch({ url: '/pages/index/index' });
+    },
+    handleSwitchDevice(e: {
+      currentTarget: {
+        dataset: {
+          did: string;
+        };
+      };
+    }) {
+      const { did } = e.currentTarget.dataset;
+      if (did) store.setData({ did });
+      store.syncMusic();
+      store.syncVolume();
+    },
+    async handleStopMusic() {
+      const queue = Object.entries(this.data.status).map(([did, playing]) => {
+        if (!playing) return Promise.resolve();
+        return store.sendCommand('关机', did);
+      });
+      await Promise.all(queue);
+      this.syncDeviceStatus();
     },
   },
 });
