@@ -1,6 +1,6 @@
 import { observable, action } from 'mobx-miniprogram';
 import { isPrivateDomain, request } from '../utils';
-import { PlayOrderType, ServerConfig } from '../types';
+import { Device, PlayOrderType, ServerConfig } from '../types';
 
 const { platform } = wx.getDeviceInfo();
 let innerAudioContext: WechatMiniprogram.InnerAudioContext;
@@ -10,12 +10,13 @@ export const store = observable({
   volume: 20,
   status: 'paused',
   musicName: wx.getStorageSync('musicName') || '',
-  devices: {} as Record<string, { name: string; did: string }>,
+  devices: {} as Record<string, Device>,
   playOrder: PlayOrderType.All,
   serverConfig: (wx.getStorageSync('serverConfig') || {}) as ServerConfig,
 
   menubar: true,
   connected: false,
+  version: null as null | string,
   isPC: platform === 'windows' || platform === 'mac',
 
   get currentDevice() {
@@ -32,40 +33,74 @@ export const store = observable({
     wx.setStorageSync('serverConfig', config);
   }),
 
-  initSettings: async () => {
-    const res = await request<{
-      detail?: string;
-      devices: Record<string, any>;
-    }>({
-      url: '/getsetting',
-    });
-    console.info('@@@ settings', res.data);
-
-    if (res.data.detail === 'Not authenticated') {
-      wx.showModal({
-        title: '鉴权失败',
-        content: '请确认账号密码是否配置正确',
-      });
+  autoDetecteDomain: async () => {
+    const config = store.serverConfig;
+    if (!config.privateDomain || !config.publicDomain) {
       return;
     }
-
-    let did = wx.getStorageSync('did');
-    const devices = res.data.devices || {};
-
-    if (!did) {
-      did = Object.keys(devices)[0];
-      wx.setStorageSync('did', did);
+    const { networkType } = await wx.getNetworkType();
+    if (networkType !== 'wifi') return;
+    try {
+      store.setServerConfig({
+        ...config,
+        domain: config.privateDomain,
+      });
+      const res = await request<{ version: string }>({ url: '/getversion' });
+      store.setData({ version: res.data.version });
+    } catch (err) {
+      console.log(err);
+      store.setServerConfig({
+        ...config,
+        domain: config.publicDomain,
+      });
+      const res = await request<{ version: string }>({ url: '/getversion' });
+      store.setData({ version: res.data.version });
     }
+  },
 
-    store.setData({
-      did,
-      devices,
-      playOrder: devices[did]?.play_type ?? PlayOrderType.All,
-    });
+  initSettings: async () => {
+    try {
+      const res = await request<{
+        detail?: string;
+        devices: Record<string, any>;
+      }>({
+        url: '/getsetting',
+      });
+      console.info('@@@ settings', res.data);
 
-    store.syncMusic();
-    store.syncVolume();
-    setInterval(() => store.syncMusic(), 10 * 1000);
+      if (res.statusCode !== 200) {
+        store.setData({ connected: false });
+        if (res.statusCode === 401) {
+          wx.showModal({
+            title: '鉴权失败',
+            content: '请确认账号密码是否配置正确',
+          });
+        }
+        return;
+      }
+
+      let did = wx.getStorageSync('did');
+      const devices = res.data.devices || {};
+
+      if (!did) {
+        did = Object.keys(devices)[0];
+        wx.setStorageSync('did', did);
+      }
+
+      store.setData({
+        did,
+        devices,
+        connected: true,
+        playOrder: devices[did]?.play_type ?? PlayOrderType.All,
+      });
+
+      store.syncMusic();
+      store.syncVolume();
+      setInterval(() => store.syncMusic(), 10 * 1000);
+    } catch (err) {
+      store.setData({ connected: false });
+      console.error(err);
+    }
   },
 
   sendCommand(cmd: String) {

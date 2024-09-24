@@ -1,16 +1,23 @@
 import { store } from '@/miniprogram/stores';
-import { ServerConfig } from '@/miniprogram/types';
+import { Device, ServerConfig } from '@/miniprogram/types';
 import { isPrivateDomain } from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 ComponentWithStore({
   data: {
+    devices: [] as Device[],
     serverConfig: {} as ServerConfig,
+  },
+  storeBindings: {
+    store,
+    fields: ['did', 'version'] as const,
+    actions: [] as const,
   },
   lifetimes: {
     attached() {
       store.setData({ menubar: false });
       this.setData({
+        devices: Object.values(store.devices),
         serverConfig: { ...store.serverConfig },
       });
     },
@@ -51,6 +58,7 @@ ComponentWithStore({
           : serverConfig.publicDomain!,
       };
       store.setServerConfig(config);
+      store.initSettings();
       wx.reLaunch({ url: '/pages/index/index' });
     },
   },

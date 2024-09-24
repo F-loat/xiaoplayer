@@ -10,13 +10,11 @@ import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 ComponentWithStore({
   data: {
     list: [] as { name: string; count: number }[],
-    connected: true,
-    configured: true,
     error: null as null | string,
   },
   storeBindings: {
     store,
-    fields: ['serverConfig', 'isPC'] as const,
+    fields: ['serverConfig', 'connected', 'isPC'] as const,
     actions: [] as const,
   },
   lifetimes: {
@@ -40,9 +38,6 @@ ComponentWithStore({
       };
     },
     async fetchMusicList() {
-      const { domain } = store.serverConfig;
-      this.setData({ configured: !!domain });
-      if (!domain) return;
       try {
         wx.showLoading({
           title: '加载中',
@@ -52,7 +47,6 @@ ComponentWithStore({
           timeout: 2500,
         });
         if (res.statusCode !== 200) {
-          this.setData({ connected: false });
           return;
         }
         this.setData({
@@ -65,10 +59,8 @@ ComponentWithStore({
             .sort(({ name }) => (name === '所有歌曲' ? -1 : 1)),
         });
         setGlobalData('musiclist', res.data);
-        store.setData({ connected: true });
       } catch (err) {
         this.setData({
-          connected: false,
           error: (err as { errMsg: string }).errMsg,
         });
         console.error(err);
@@ -130,7 +122,7 @@ ComponentWithStore({
         },
       });
     },
-    handleSwitchDomain() {
+    async handleSwitchDomain() {
       const { serverConfig } = this.data;
       const config = {
         ...serverConfig,
@@ -139,7 +131,7 @@ ComponentWithStore({
           : serverConfig.privateDomain,
       };
       store.setServerConfig(config);
-      store.initSettings();
+      await store.initSettings();
       this.fetchMusicList();
     },
     handleRepoLink() {

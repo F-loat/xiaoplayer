@@ -12,3 +12,12 @@ export interface ServerConfig {
   username?: string;
   password?: string;
 }
+
+export interface Device {
+  name: string;
+  did: string;
+  cur_playlist?: string;
+  cur_music?: string;
+  hardware: string;
+  play_type?: PlayOrderType;
+}

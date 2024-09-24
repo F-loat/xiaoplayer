@@ -4,10 +4,11 @@ App<IAppOption>({
   globalData: {
     musiclist: {},
   },
-  onLaunch() {
+  async onLaunch() {
     wx.cloud.init({
       env: process.env.WX_CLOUD_ENV,
     });
-    store.initSettings();
+    await store.autoDetecteDomain();
+    await store.initSettings();
   },
 });

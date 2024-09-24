@@ -298,5 +298,9 @@ ComponentWithStore({
         },
       });
     },
+
+    handleSetting() {
+      if (progress.value) this.close();
+    },
   },
 });

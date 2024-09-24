@@ -1,21 +1,8 @@
 <!--index.wxml-->
-<navigation-bar back="{{false}}" title="音乐列表"></navigation-bar>
+<navigation-bar back="{{false}}" title="音乐列表" bind:tap="handleSwitchDomain"></navigation-bar>
 
-<scroll-view wx:if="{{!!list.length}}" id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y refresher-enabled
-  type="list" show-scrollbar="{{false}}" style="padding-bottom: {{isPC ? 76 : 0}}px;"
-  bind:refresherrefresh="handleRefresh">
-  <view wx:for="{{list}}" wx:key="*this"
-    class="flex items-baseline py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none"
-    data-name="{{item.name}}" bind:tap="handleViewTap">
-    <view class="truncate">
-      {{item.name}}
-    </view>
-    <view class="text-xs scale-90 opacity-80 flex-shrink-0">(共 {{item.count}} 首)</view>
-  </view>
-</scroll-view>
-
-<view wx:if="{{!configured || !connected}}" class="flex-1 flex justify-center items-center">
-  <view wx:if="{{!configured}}" class="p-4">
+<view wx:if="{{!serverConfig.domain || !connected}}" class="flex-1 flex justify-center items-center">
+  <view wx:if="{{!serverConfig.domain}}" class="p-4">
     <view class="flex items-center justify-center">
       <text>该小程序需配合</text>
       <text class="mx-1 -mb-1 text-blue-600" bind:tap="handleRepoLink">xiaomusic</text>
@@ -34,7 +21,7 @@
   </view>
   <view wx:else>
     <view class="text-center" bind:tap="handleError">
-      {{serverConfig.domain === serverConfig.privateDomain ? '网络异常，请在局域网环境下使用' : '网络异常，请确认公网地址配置正确'}}
+      网络异常，请确认服务地址配置正确
     </view>
     <button class="mt-4" bind:tap="handleSetting">服务配置</button>
     <button wx:if="{{serverConfig.privateDomain && serverConfig.publicDomain}}" class="mt-4"
@@ -43,5 +30,18 @@
     </button>
   </view>
 </view>
+
+<scroll-view wx:elif="{{!!list.length}}" id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y refresher-enabled
+  type="list" show-scrollbar="{{false}}" style="padding-bottom: {{isPC ? 76 : 0}}px;"
+  bind:refresherrefresh="handleRefresh">
+  <view wx:for="{{list}}" wx:key="name"
+    class="flex items-baseline py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none"
+    data-name="{{item.name}}" bind:tap="handleViewTap">
+    <view class="truncate">
+      {{item.name}}
+    </view>
+    <view class="text-xs scale-90 opacity-80 flex-shrink-0">(共 {{item.count}} 首)</view>
+  </view>
+</scroll-view>
 
 <app-bar wx:if="{{isPC}}"></app-bar>
