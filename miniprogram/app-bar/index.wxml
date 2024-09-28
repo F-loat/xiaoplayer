@@ -1,6 +1,6 @@
 <vertical-drag-gesture-handler worklet:ongesture="handleVerticalDrag">
 	<view id="expand-container"
-		class="absolute top-0 left-0 right-0 bottom-0 px-[24px] overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{connected ? 'opacity-100' : 'opacity-0'}}">
+		class="absolute top-0 left-0 right-0 bottom-0 px-[24px] overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}">
 		<view id="nav-bar" class="flex flex-col overflow-hidden box-border">
 			<view style="height: {{statusBarHeight}}px;" />
 			<view class="flex flex-col justify-center flex-1">

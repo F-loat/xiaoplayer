@@ -7,8 +7,10 @@ interface IAppOption {
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback;
 }
 
-declare const process = {} as {
+interface ImportMeta {
   env: {
-    WX_CLOUD_ENV: string;
+    VITE_CLOUD_ENV?: string;
+    VITE_CLOUD_RESOURCE_APPID?: string;
+    VITE_CLOUD_RESOURCE_ENV?: string;
   };
-};
+}

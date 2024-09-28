@@ -63,7 +63,7 @@ ComponentWithStore({
         },
       });
     },
-    handleSaveConfig() {
+    async handleSaveConfig() {
       wx.showToast({
         title: '保存成功',
         icon: 'none',
@@ -72,11 +72,12 @@ ComponentWithStore({
       const config = {
         ...serverConfig,
         domain: isPrivateDomain(serverConfig.domain)
-          ? serverConfig.privateDomain!
+          ? serverConfig.privateDomain || serverConfig.publicDomain!
           : serverConfig.publicDomain!,
       };
       store.setServerConfig(config);
-      store.initSettings();
+      await store.autoDetecteDomain();
+      await store.initSettings();
       wx.reLaunch({ url: '/pages/index/index' });
     },
     handleSwitchDevice(e: {

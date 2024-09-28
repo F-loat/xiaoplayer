@@ -15,7 +15,6 @@ export const store = observable({
   serverConfig: (wx.getStorageSync('serverConfig') || {}) as ServerConfig,
 
   menubar: true,
-  connected: false,
   version: null as null | string,
   isPC: platform === 'windows' || platform === 'mac',
 
@@ -69,7 +68,6 @@ export const store = observable({
       console.info('@@@ settings', res.data);
 
       if (res.statusCode !== 200) {
-        store.setData({ connected: false });
         if (res.statusCode === 401) {
           wx.showModal({
             title: '鉴权失败',
@@ -90,7 +88,6 @@ export const store = observable({
       store.setData({
         did,
         devices,
-        connected: true,
         playOrder: devices[did]?.play_type ?? PlayOrderType.All,
       });
 
@@ -98,7 +95,6 @@ export const store = observable({
       store.syncVolume();
       setInterval(() => store.syncMusic(), 10 * 1000);
     } catch (err) {
-      store.setData({ connected: false });
       console.error(err);
     }
   },

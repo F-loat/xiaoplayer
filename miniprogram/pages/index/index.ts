@@ -9,12 +9,13 @@ import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 ComponentWithStore({
   data: {
+    connected: true,
     list: [] as { name: string; count: number }[],
     error: null as null | string,
   },
   storeBindings: {
     store,
-    fields: ['serverConfig', 'connected', 'isPC'] as const,
+    fields: ['serverConfig', 'isPC'] as const,
     actions: [] as const,
   },
   lifetimes: {
@@ -50,6 +51,7 @@ ComponentWithStore({
           return;
         }
         this.setData({
+          connected: true,
           list: Object.entries(res.data)
             .map(([name, items]) => ({
               name,
@@ -61,6 +63,7 @@ ComponentWithStore({
         setGlobalData('musiclist', res.data);
       } catch (err) {
         this.setData({
+          connected: false,
           error: (err as { errMsg: string }).errMsg,
         });
         console.error(err);

@@ -48,7 +48,6 @@ ComponentWithStore({
       'musicName',
       'playOrder',
       'menubar',
-      'connected',
     ] as const,
     actions: [] as const,
   },
