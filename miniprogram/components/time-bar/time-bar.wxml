@@ -1,0 +1,19 @@
+<wxs module="render">
+  module.exports = {
+    renderTime: function (time) {
+      var minute = parseInt(time / 60);
+      var seconds = parseInt(time % 60);
+      var sminute = minute < 10 ? '0' + minute : minute;
+      var sseconds = seconds < 10 ? '0' + seconds : seconds;
+      return sminute + ':' + sseconds;
+    }
+  }
+</wxs>
+
+<view class="bg-white bg-opacity-40 h-0.5 rounded">
+	<view class="bg-white h-full transition-all rounded origin-left" style="transform: scale({{currentTime ? currentTime / duration : 0}}, 1)"></view>
+</view>
+<view class="flex justify-between text-xs mt-1 opacity-80">
+	<view>{{render.renderTime(currentTime)}}</view>
+	<view>{{render.renderTime(duration)}}</view>
+</view>

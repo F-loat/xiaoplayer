@@ -29,8 +29,6 @@ ComponentWithStore({
     maxCoverSize: 0,
     statusBarHeight: 0,
     screenHeight: 0,
-    musicCover:
-      'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201812%2F12%2F20181212223741_etgxt.jpg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1705583419&t=8b8402f169f865f34c2f16649b0ba6d8',
     orderIconMap: {
       [PlayOrderType.One]: 'danquxunhuan',
       [PlayOrderType.Rnd]: 'suijibofang',
@@ -46,6 +44,9 @@ ComponentWithStore({
       'status',
       'currentDevice',
       'musicName',
+      'musicCover',
+      'musicLyric',
+      'duration',
       'playOrder',
       'menubar',
     ] as const,

@@ -46,7 +46,7 @@ const getSharedCloudInstance = async () => {
   return cloud;
 };
 
-const getCloudInstance = () => {
+export const getCloudInstance = () => {
   if (cachedCloudInstance) {
     return cachedCloudInstance;
   }

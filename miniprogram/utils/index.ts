@@ -1,4 +1,5 @@
-export { request } from './request';
+export { request, getCloudInstance } from './request';
+export { parse as parseLrc } from './lyric';
 
 export const getGlobalData = (key: keyof IAppOption['globalData']) => {
   return getApp().globalData?.[key];
