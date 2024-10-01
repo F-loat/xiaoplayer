@@ -31,9 +31,9 @@
   </view>
 </view>
 
-<scroll-view wx:elif="{{!!list.length}}" id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y refresher-enabled
-  type="list" show-scrollbar="{{false}}" style="padding-bottom: {{isPC ? 76 : 0}}px;"
-  bind:refresherrefresh="handleRefresh">
+<scroll-view wx:elif="{{!!list.length}}" id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y
+  refresher-enabled bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}"
+  style="padding-bottom: {{isPC ? 76 : 0}}px;" bind:refresherrefresh="handleRefresh">
   <view wx:for="{{list}}" wx:key="name"
     class="flex items-baseline py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none"
     data-name="{{item.name}}" bind:tap="handleViewTap">

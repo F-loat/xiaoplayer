@@ -7,10 +7,18 @@ import {
 } from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
+interface Item {
+  name: string;
+  count: number;
+}
+
+let list: Item[] = [];
+const pageSize = 40;
+
 ComponentWithStore({
   data: {
     connected: true,
-    list: [] as { name: string; count: number }[],
+    list: [] as Item[],
     error: null as null | string,
   },
   storeBindings: {
@@ -50,15 +58,16 @@ ComponentWithStore({
         if (res.statusCode !== 200) {
           return;
         }
+        const list = Object.entries(res.data)
+          .map(([name, items]) => ({
+            name,
+            count: items.length,
+          }))
+          .filter(({ name }) => name !== '全部')
+          .sort(({ name }) => (name === '所有歌曲' ? -1 : 1));
         this.setData({
           connected: true,
-          list: Object.entries(res.data)
-            .map(([name, items]) => ({
-              name,
-              count: items.length,
-            }))
-            .filter(({ name }) => name !== '全部')
-            .sort(({ name }) => (name === '所有歌曲' ? -1 : 1)),
+          list: list.slice(0, pageSize),
         });
         setGlobalData('musiclist', res.data);
       } catch (err) {
@@ -70,6 +79,12 @@ ComponentWithStore({
       } finally {
         wx.hideLoading();
       }
+    },
+    handleLoadMore() {
+      const loadedCount = this.data.list.length;
+      if (loadedCount >= list.length) return;
+      const count = (loadedCount / pageSize + 1) * pageSize;
+      this.setData({ list: list.slice(0, count) });
     },
     handleRefresh() {
       wx.createSelectorQuery()
