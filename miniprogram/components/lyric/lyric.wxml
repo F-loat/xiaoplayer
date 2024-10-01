@@ -2,7 +2,7 @@
 <scroll-view type="list" scroll-y scroll-with-animation show-scrollbar="{{false}}" 
 scroll-top="{{currentIndex * 22}}" class="flex h-40">
   <view class="flex flex-col items-center py-16">
-    <view wx:for="{{lrcArr}}" wx:key="time" class="transition-opacity {{index === currentIndex ? 'opacity-100': 'opacity-60'}}">{{item.lrc||'·'}}</view>
+    <view wx:for="{{lrcArr}}" wx:key="time" class="transition-opacity {{index === currentIndex ? 'opacity-100': 'opacity-60'}}">{{item.lrc}}</view>
   </view>
 </scroll-view>
 <view class="h-8 -mt-8 z-10 pointer-events-none" style="background: linear-gradient(to top, #7e7a91, transparent);"></view>

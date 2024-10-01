@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx-miniprogram';
+import { observable, action, reaction } from 'mobx-miniprogram';
 import { getCloudInstance, isPrivateDomain, request } from '../utils';
 import { Device, PlayOrderType, ServerConfig } from '../types';
 
@@ -255,3 +255,10 @@ export const store = observable({
     });
   },
 });
+
+reaction(
+  () => store.musicName,
+  (name) => {
+    store.fetchMusicTag(name);
+  },
+);

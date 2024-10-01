@@ -1,9 +1,9 @@
 <view wx:if="{{!isPC}}" class="overflow-hidden flex-none {{extClass}}">
   <view class="relative top-0 left-0 flex items-center justify-center w-full box-border"
-    style="color: {{color}}; background: {{background}}; {{displayStyle}}; {{innerPaddingRight}}; {{safeAreaTop}};">
+    style="color: {{color}}; background: {{background}}; {{displayStyle}}; {{wrapperStyle}};">
 
     <!-- 左侧按钮 -->
-    <view class='flex-1 pr-10 relative pl-4 flex items-center h-full box-border' style="{{leftWidth}};">
+    <view class='flex-1 pr-10 relative pl-4 flex items-center h-full box-border' style="{{titleWidth}};">
       <view wx:if="{{back}}" bindtap="back" class="mr-1" hover-class="opacity-50" hover-stay-time="100" aria-role="button"
         aria-label="返回">
         <image class="w-6 h-6 opacity-80 scale-80 invert-icon" mode="aspectFill" src="/assets/icon/fanhui.svg" />

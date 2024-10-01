@@ -52,6 +52,8 @@ ComponentWithStore({
   },
   data: {
     displayStyle: '',
+    wrapperStyle: '',
+    titleWidth: '',
   },
   storeBindings: {
     store,
@@ -90,14 +92,15 @@ ComponentWithStore({
       });
     },
     initLayout() {
-      const { platform } = wx.getDeviceInfo();
-      const { statusBarHeight, windowWidth } = wx.getWindowInfo();
-      const isAndroid = platform === 'android';
+      const { windowWidth } = wx.getWindowInfo();
       const rect = wx.getMenuButtonBoundingClientRect();
       this.setData({
-        innerPaddingRight: `padding-right: ${windowWidth - rect.left}px`,
-        leftWidth: `width: ${windowWidth - rect.left}px`,
-        safeAreaTop: `height: calc(${isAndroid ? 48 : 44} + ${statusBarHeight}px); padding-top: ${statusBarHeight}px`,
+        wrapperStyle: `
+          height: calc(${rect.height} + ${rect.top}px);
+          padding-top: ${rect.top}px;
+          padding-right: ${windowWidth - rect.left}px
+        `,
+        titleWidth: `width: ${windowWidth - rect.left}px`,
       });
     },
     back() {

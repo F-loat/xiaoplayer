@@ -23,5 +23,5 @@ export function parse(lrcContent: string): Lyric[] {
       }
       return null;
     })
-    .filter((item): item is Lyric => item !== null);
+    .filter((item): item is Lyric => !!item?.lrc);
 }
