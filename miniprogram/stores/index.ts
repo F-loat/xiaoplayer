@@ -39,6 +39,8 @@ export class Store {
   hostPlayer: MusicPlayer;
   xiaomusicPlayer: MusicPlayer;
 
+  playTimer: number | null = null;
+
   constructor() {
     makeAutoObservable(this);
 
@@ -209,6 +211,17 @@ export class Store {
   get playNextMusic() {
     return this.currentPlayer.playNextMusic;
   }
+
+  updateCurrentTime = () => {
+    if (this.playTimer) clearTimeout(this.playTimer);
+    if (this.status !== 'playing') {
+      return;
+    }
+    this.setData({
+      currentTime: this.currentTime + 0.1,
+    });
+    this.playTimer = setTimeout(() => this.updateCurrentTime(), 100);
+  };
 }
 
 export const store = new Store();

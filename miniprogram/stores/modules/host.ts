@@ -52,8 +52,21 @@ export class HostPlayerModule implements MusicPlayer {
     innerAudioContext.onCanplay(() => {
       wx.hideLoading();
     });
-    innerAudioContext.onPlay(() => {
-      this.updateCurrentTime();
+    innerAudioContext.onTimeUpdate(() => {
+      const duration = innerAudioContext.duration;
+      if (duration !== this.store.duration) {
+        this.store.setData({
+          duration,
+          currentTime: innerAudioContext.currentTime,
+        });
+        this.store.updateCurrentTime();
+      }
+    });
+    innerAudioContext.onPause(() => {
+      this.store.setData({ status: 'paused' });
+      if (this.store.playTimer) {
+        clearTimeout(this.store.playTimer);
+      }
     });
     innerAudioContext.onError((err) => {
       this.store.setData({ status: 'paused' });
@@ -101,16 +114,5 @@ export class HostPlayerModule implements MusicPlayer {
   pauseMusic = async () => {
     innerAudioContext?.pause();
     this.store.setData({ status: 'paused' });
-  };
-
-  private updateCurrentTime = () => {
-    if (this.store.status !== 'playing') {
-      return;
-    }
-    this.store.setData({
-      duration: innerAudioContext.duration,
-      currentTime: innerAudioContext.currentTime,
-    });
-    setTimeout(() => this.updateCurrentTime(), 100);
   };
 }

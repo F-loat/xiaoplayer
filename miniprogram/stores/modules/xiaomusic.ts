@@ -5,7 +5,6 @@ import { request } from '@/miniprogram/utils';
 export class XiaomusicPlayerModule implements MusicPlayer {
   store: Store;
   syncTimer: number | null = null;
-  playTimer: number | null = null;
 
   constructor(store: Store) {
     makeAutoObservable(this);
@@ -56,20 +55,6 @@ export class XiaomusicPlayerModule implements MusicPlayer {
     this.syncMusic();
   };
 
-  private updateCurrentTime = () => {
-    if (this.store.did === 'host') {
-      return;
-    }
-    if (this.store.status !== 'playing') {
-      return;
-    }
-    if (this.playTimer) clearTimeout(this.playTimer);
-    this.store.setData({
-      currentTime: this.store.currentTime + 0.1,
-    });
-    this.playTimer = setTimeout(() => this.updateCurrentTime(), 100);
-  };
-
   private syncMusic = async () => {
     const res = await request<{
       cur_music: string;
@@ -87,7 +72,7 @@ export class XiaomusicPlayerModule implements MusicPlayer {
       currentTime: offset > 0 ? offset : 0,
       duration: duration > 0 ? duration : 0,
     });
-    this.updateCurrentTime();
+    this.store.updateCurrentTime();
   };
 
   private syncVolume = async () => {
