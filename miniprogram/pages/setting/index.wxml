@@ -35,7 +35,7 @@
 		<view wx:for="{{devices}}" wx:key="did" class="p-2 my-2 border border-solid rounded-lg {{item.did === did ? 'border-blue-400' : 'border-gray-100 dark:border-neutral-800'}}" data-did="{{item.did}}" bind:tap="handleSwitchDevice">
 			<view class="flex items-center justify-between text-sm">
 				<view>{{item.name}}</view>
-				<view>{{status[item.did] === true ? '播放中' : ''}}</view>
+				<view class="text-xs">{{status[item.did] === true ? '播放中' : ''}}</view>
 			</view>
 			<view class="flex text-xs" >
 				<block wx:if="{{item.cur_music}}">

@@ -1,6 +1,7 @@
 import { store } from '@/miniprogram/stores';
 import { Device, ServerConfig } from '@/miniprogram/types';
 import { isPrivateDomain, request } from '@/miniprogram/utils';
+import { reaction } from 'mobx-miniprogram';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 ComponentWithStore({
@@ -22,12 +23,25 @@ ComponentWithStore({
         serverConfig: { ...store.serverConfig },
       });
       this.syncDeviceStatus();
+      this._disposer = reaction(
+        () => store.status,
+        (status) => {
+          this.setData({
+            status: {
+              ...this.data.status,
+              [store.did!]: status === 'playing',
+            },
+          });
+        },
+      );
     },
     detached() {
       store.setData({ menubar: true });
+      this._disposer();
     },
   },
   methods: {
+    _disposer() {},
     syncDeviceStatus() {
       this.data.devices.forEach(async (device) => {
         const res = await request<{
@@ -89,15 +103,24 @@ ComponentWithStore({
     }) {
       const { did } = e.currentTarget.dataset;
       if (did) store.setData({ did });
-      store.syncMusic();
-      store.syncVolume();
     },
     async handleStopMusic() {
       const queue = Object.entries(this.data.status).map(([did, playing]) => {
         if (!playing) return Promise.resolve();
         return store.sendCommand('关机', did);
       });
-      await Promise.all(queue);
+      const res = await Promise.all(queue);
+      if (res.every((r) => !r)) {
+        wx.showToast({
+          title: '暂无设备播放中',
+          icon: 'none',
+        });
+      } else {
+        wx.showToast({
+          title: '设备已全部关闭',
+          icon: 'none',
+        });
+      }
       this.syncDeviceStatus();
     },
   },

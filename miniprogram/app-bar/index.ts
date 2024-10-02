@@ -50,7 +50,7 @@ ComponentWithStore({
       'playOrder',
       'menubar',
     ] as const,
-    actions: [] as const,
+    actions: ['playPrevMusic', 'playNextMusic'] as const,
   },
 
   lifetimes: {
@@ -182,23 +182,6 @@ ComponentWithStore({
       } else {
         await store.pauseMusic();
       }
-      store.syncMusic();
-    },
-
-    async handlePlayNext() {
-      if (store.did === 'host') {
-      } else {
-        await store.sendCommand('下一首');
-      }
-      store.syncMusic();
-    },
-
-    async handlePlayPrev() {
-      if (store.did === 'host') {
-      } else {
-        await store.sendCommand('上一首');
-      }
-      store.syncMusic();
     },
 
     handleVolumeChanging(e: {
@@ -254,12 +237,14 @@ ComponentWithStore({
     },
 
     async handleSwitchSound() {
-      const items = Object.values(store.devices || {})
+      const items = (
+        Object.values(store.devices || {}) as {
+          name: string | number;
+          did: string;
+        }[]
+      )
         .slice(0, 5)
-        .concat([{ name: '本机', did: 'host' }]) as {
-        name: string | number;
-        did: string;
-      }[];
+        .concat([{ name: '本机', did: 'host' }]);
       wx.showActionSheet({
         alertText: '设备投放',
         itemList: items.map((i) => String(i.name || i.did)),
@@ -273,12 +258,9 @@ ComponentWithStore({
           store.setData({
             did: device.did,
           });
-          wx.setStorageSync('did', device.did);
           if (store.status === 'playing') {
             await store.playMusic(store.musicName);
           }
-          store.syncMusic();
-          store.syncVolume();
         },
       });
     },

@@ -27,8 +27,8 @@ ComponentWithStore({
       };
     }) {
       const { name } = e.target.dataset;
-      await store.playMusic(name, this.data.name);
-      store.syncMusic();
+      const { name: album, list } = this.data;
+      await store.playMusic(name, album, list);
     },
     handleLoadMore() {
       const musiclist = getGlobalData('musiclist');
