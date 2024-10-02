@@ -46,7 +46,6 @@ ComponentWithStore({
       'musicName',
       'musicCover',
       'musicLyric',
-      'duration',
       'playOrder',
       'menubar',
     ] as const,

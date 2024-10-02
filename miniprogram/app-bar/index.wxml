@@ -41,7 +41,7 @@
 			<lyric value="{{musicLyric}}"></lyric>
 		</view>
 		<view class="mt-2">
-			<time-bar duration="{{duration}}" playing="{{status === 'playing'}}"></time-bar>
+			<time-bar></time-bar>
 		</view>
 		<view class="flex justify-between items-center px-3 mt-2">
 			<image class="w-6 h-6 opacity-60" src="/assets/icon/{{orderIconMap[playOrder] || 'liebiaoxunhuan'}}.svg"
