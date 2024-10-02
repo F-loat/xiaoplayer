@@ -15,6 +15,18 @@ export const setGlobalData = (
 
 export const noop = () => {};
 
+export const safeJSONParse = <T>(
+  str: string,
+  defaultValue?: T,
+): T | undefined => {
+  try {
+    return JSON.parse(str);
+  } catch (err) {
+    console.log(err);
+    return defaultValue;
+  }
+};
+
 const formatNumber = (n: number) => {
   const s = n.toString();
   return s[1] ? s : '0' + s;

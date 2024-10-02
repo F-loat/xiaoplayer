@@ -25,14 +25,15 @@
 		</xiao-cell>
 	</block>
 	<div class="flex justify-center my-4">
-		<button bind:tap="handleSaveConfig">保存</button>
+		<button open-type="share">分享</button>
+		<button style="margin-left: 12px;" bind:tap="handleSaveConfig">保存</button>
 	</div>
 	<view wx:if="{{!!devices.length}}" class="mt-2">
 		<view class="flex items-center justify-between">
 			<view>设备列表</view>
-			<view class="text-xs rounded-lg bg-gray-100 dark:bg-gray-800 py-1 px-2" hover-class="bg-opacity-80" bind:tap="handleStopMusic">一键关闭</view>
+			<view class="text-xs rounded-lg bg-gray-100 dark:bg-neutral-700 py-1 px-2" hover-class="bg-opacity-80" bind:tap="handleStopMusic">一键关闭</view>
 		</view>
-		<view wx:for="{{devices}}" wx:key="did" class="p-2 my-2 border border-solid rounded-lg {{item.did === did ? 'border-blue-400' : 'border-gray-100 dark:border-neutral-800'}}" data-did="{{item.did}}" bind:tap="handleSwitchDevice">
+		<view wx:for="{{devices}}" wx:key="did" class="p-2 my-2 border border-solid rounded-lg {{item.did === did ? 'border-neutral-800 dark:border-gray-100' : 'border-gray-100 dark:border-neutral-800'}}" data-did="{{item.did}}" bind:tap="handleSwitchDevice">
 			<view class="flex items-center justify-between text-sm">
 				<view>{{item.name}}</view>
 				<view class="text-xs">{{status[item.did] === true ? '播放中' : ''}}</view>

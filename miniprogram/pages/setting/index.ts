@@ -42,6 +42,14 @@ ComponentWithStore({
   },
   methods: {
     _disposer() {},
+    onShareAppMessage() {
+      return {
+        title: '我的 xiaomusic，轻松投放本地/NAS音乐至小米音箱',
+        serverConfig: JSON.stringify(this.data.serverConfig),
+        imageUrl:
+          'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png',
+      };
+    },
     syncDeviceStatus() {
       this.data.devices.forEach(async (device) => {
         const res = await request<{
