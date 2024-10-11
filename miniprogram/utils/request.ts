@@ -90,8 +90,9 @@ export const request = <T>({
   }
   return new Promise<{ data: T; statusCode: number }>(
     async (resolve, reject) => {
+      const prefix = domain.startsWith('http') ? '' : 'http://';
       const options = {
-        url: `http://${domain}${url}`,
+        url: `${prefix}${domain}${url}`,
         method,
         data,
         timeout,

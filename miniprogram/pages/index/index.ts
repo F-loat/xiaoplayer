@@ -133,7 +133,7 @@ ComponentWithStore({
           const isPrivate = isPrivateDomain(config.domain);
           if (isPrivate && this.data.isPC) {
             wx.showToast({
-              title: 'PC 端可能不支持局域网访问，可尝试配置公网服务地址',
+              title: 'PC 端可能不支持内网访问，可尝试配置公网服务地址',
               icon: 'none',
             });
           }
@@ -142,15 +142,27 @@ ComponentWithStore({
     },
     async handleSwitchDomain() {
       const { serverConfig } = this.data;
+      if (!serverConfig.privateDomain || !serverConfig.publicDomain) {
+        return;
+      }
+      const isPrivate = isPrivateDomain(serverConfig.domain);
       const config = {
         ...serverConfig,
-        domain: isPrivateDomain(serverConfig.domain)
-          ? serverConfig.publicDomain
-          : serverConfig.privateDomain,
+        domain: isPrivate
+          ? serverConfig.publicDomain!
+          : serverConfig.privateDomain!,
       };
+      wx.showLoading({
+        title: '网络切换中',
+      });
       store.setServerConfig(config);
       await store.initSettings();
       this.fetchMusicList();
+      wx.hideLoading();
+      wx.showToast({
+        title: isPrivate ? '已切换为公网连接' : '已切换为内网连接',
+        icon: 'none',
+      });
     },
     handleRepoLink() {
       wx.setClipboardData({
