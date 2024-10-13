@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
 import { isPrivateDomain, request } from '@/miniprogram/utils';
+import { PlayOrderType } from '@/miniprogram/types';
 
 let innerAudioContext: WechatMiniprogram.InnerAudioContext;
 
@@ -66,6 +67,13 @@ export class HostPlayerModule implements MusicPlayer {
       this.store.setData({ status: 'paused' });
       if (this.store.playTimer) {
         clearTimeout(this.store.playTimer);
+      }
+    });
+    innerAudioContext.onEnded(() => {
+      if (this.store.playOrder === PlayOrderType.One) {
+        this.playMusic();
+      } else {
+        this.playNextMusic();
       }
     });
     innerAudioContext.onError((err) => {

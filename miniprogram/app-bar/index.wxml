@@ -37,10 +37,11 @@
 			<text class="text-sm">{{currentDevice.name}}</text>
 		</view>
 
-		<view class="mt-2 px-8">
+		<view class="mt-2">
 			<lyric value="{{musicLyric}}"></lyric>
 		</view>
-		<view class="mt-2">
+		
+		<view class="mt-4">
 			<time-bar></time-bar>
 		</view>
 		<view class="flex justify-between items-center px-3 mt-2">

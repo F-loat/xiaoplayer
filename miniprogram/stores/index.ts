@@ -50,7 +50,8 @@ export class Store {
     reaction(
       () => this.musicName,
       (name) => {
-        this.setData({ musicLyric: '' });
+        if (this.playTimer) clearTimeout(this.playTimer);
+        this.setData({ musicLyric: '', currentTime: 0, duration: 0 });
         if (name) {
           this.fetchMusicTag(name, this.musicAlbum);
         } else {
@@ -214,9 +215,8 @@ export class Store {
 
   updateCurrentTime = () => {
     if (this.playTimer) clearTimeout(this.playTimer);
-    if (this.status !== 'playing') {
-      return;
-    }
+    if (this.status !== 'playing') return;
+    if (this.currentTime >= this.duration) return;
     this.setData({
       currentTime: this.currentTime + 0.1,
     });
