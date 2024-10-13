@@ -11,7 +11,6 @@ App<IAppOption>({
       const config = safeJSONParse<ServerConfig>(e.query.serverConfig);
       if (config) store.setServerConfig(config);
     }
-    await store.autoDetecteDomain();
     await store.initSettings();
   },
 });

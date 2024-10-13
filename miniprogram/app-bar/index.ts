@@ -71,6 +71,13 @@ ComponentWithStore({
         maxCoverSize,
       });
 
+      wx.onDeviceMotionChange((res) => {
+        wx.showToast({
+          title: JSON.stringify(res),
+          icon: 'none',
+        });
+      });
+
       this.applyAnimatedStyle('#cover', () => {
         'worklet';
         const height =
@@ -278,6 +285,17 @@ ComponentWithStore({
           store.sendCommand(`${value}分钟后关机`);
         },
       });
+    },
+
+    handlePlayingList() {
+      if (progress.value) this.close();
+      const pages = getCurrentPages();
+      const currentPage = pages[pages.length - 1];
+      if (currentPage.route !== 'pages/list/playing') {
+        wx.navigateTo({
+          url: '/pages/list/playing',
+        });
+      }
     },
 
     handleSetting() {

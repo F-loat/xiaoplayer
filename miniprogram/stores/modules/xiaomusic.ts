@@ -27,6 +27,9 @@ export class XiaomusicPlayerModule implements MusicPlayer {
           if (this.syncTimer) clearInterval(this.syncTimer);
         };
       },
+      {
+        fireImmediately: true,
+      },
     );
   }
 
@@ -58,16 +61,18 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   private syncMusic = async () => {
     const res = await request<{
       cur_music: string;
+      cur_playlist?: string;
       is_playing: boolean;
       offset: number;
       duration: number;
     }>({
       url: `/playingmusic?did=${this.store.did}`,
     });
-    const { cur_music, is_playing, offset, duration } = res.data;
+    const { cur_music, cur_playlist, is_playing, offset, duration } = res.data;
     if (this.store.did === 'host') return;
     this.store.setData({
       musicName: cur_music,
+      musicAlbum: cur_playlist,
       status: is_playing ? 'playing' : 'paused',
       currentTime: offset > 0 ? offset : 0,
       duration: duration > 0 ? duration : 0,

@@ -1,10 +1,9 @@
 import { store } from '@/miniprogram/stores';
 import { getGlobalData } from '@/miniprogram/utils';
-import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 const pageSize = 40;
 
-ComponentWithStore({
+Component({
   properties: {
     name: String,
   },

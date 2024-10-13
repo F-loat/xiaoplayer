@@ -100,31 +100,6 @@ export class Store {
     wx.setStorageSync('serverConfig', config);
   };
 
-  autoDetecteDomain = async () => {
-    const config = this.serverConfig;
-    if (!config.privateDomain || !config.publicDomain) {
-      return;
-    }
-    const { networkType } = await wx.getNetworkType();
-    if (networkType !== 'wifi') return;
-    try {
-      this.setServerConfig({
-        ...config,
-        domain: config.privateDomain,
-      });
-      const res = await request<{ version: string }>({ url: '/getversion' });
-      this.setData({ version: res.data.version });
-    } catch (err) {
-      console.log(err);
-      this.setServerConfig({
-        ...config,
-        domain: config.publicDomain,
-      });
-      const res = await request<{ version: string }>({ url: '/getversion' });
-      this.setData({ version: res.data.version });
-    }
-  };
-
   initSettings = async () => {
     try {
       const res = await request<{

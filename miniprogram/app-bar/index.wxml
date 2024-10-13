@@ -52,7 +52,7 @@
 				src="{{status === 'paused' ? '/assets/icon/zanting.svg' : '/assets/icon/bofangzhong.svg'}}"
 				bind:tap="handlePlayToggle" />
 			<image class="w-8 h-8" src="/assets/icon/xiayiqu.svg" bind:tap="playNextMusic" />
-			<image class="w-5 h-5 opacity-60" src="/assets/icon/bofangliebiao.svg" bind:tap="close" />
+			<image class="w-5 h-5 opacity-60" src="/assets/icon/bofangliebiao.svg" bind:tap="handlePlayingList" />
 		</view>
 
 		<view class="mt-5 {{did === 'host' ? 'invisible' : ''}}">

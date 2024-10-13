@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/list/index",
+    "pages/list/playing",
     "pages/setting/index",
     "app-bar/index"
   ],

@@ -98,7 +98,6 @@ ComponentWithStore({
           : serverConfig.publicDomain!,
       };
       store.setServerConfig(config);
-      await store.autoDetecteDomain();
       await store.initSettings();
       wx.reLaunch({ url: '/pages/index/index' });
     },
