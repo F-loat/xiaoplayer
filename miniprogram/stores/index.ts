@@ -1,4 +1,4 @@
-import { reaction, makeAutoObservable } from 'mobx-miniprogram';
+import { reaction, makeAutoObservable, action } from 'mobx-miniprogram';
 import { getCloudInstance, request } from '../utils';
 import { Device, PlayOrderType, ServerConfig } from '../types';
 import { HostPlayerModule } from './modules/host';
@@ -22,6 +22,7 @@ export class Store {
   status: 'paused' | 'playing' = 'paused';
   musicAlbum = wx.getStorageSync('musicAlbum') || '';
   musicLyric = wx.getStorageSync('musicLyric') || '';
+  musicLyricLoading = false;
   musicName = wx.getStorageSync('musicName') || '';
   musicCover = wx.getStorageSync('musicCover') || DEFAULT_COVER;
   duration = 0;
@@ -149,6 +150,7 @@ export class Store {
   };
 
   private fetchMusicTag = async (name: string, album: string = '') => {
+    this.musicLyricLoading = true;
     const cloud = await getCloudInstance();
     cloud.callFunction({
       name: 'musictag',
@@ -169,6 +171,9 @@ export class Store {
           musicCover,
         });
       },
+      complete: action(() => {
+        this.musicLyricLoading = false;
+      }),
     });
   };
 

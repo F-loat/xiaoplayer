@@ -14,7 +14,7 @@
 				<view id="title-wrap" class="flex flex-1 min-w-36 justify-between items-center ml-2">
 					<view class="flex flex-col shrink-0 ml-1 min-w-20 flex-1 truncate" bind:tap="expand">
 						<text>{{musicName || 'xiaoplayer'}}</text>
-						<text class="text-xs">{{currentDevice.name}}</text>
+						<text class="text-xs truncate opacity-80">{{status === 'playing' && lrc ? lrc : currentDevice.name}}</text>
 					</view>
 					<view class="flex items-center shrink-0">
 						<image class="w-6 h-6 mr-3"
@@ -38,9 +38,9 @@
 		</view>
 
 		<view class="mt-2">
-			<lyric value="{{musicLyric}}"></lyric>
+			<lyric value="{{musicLyric}}" loading="{{musicLyricLoading}}" bind:change="handleLrcChange"></lyric>
 		</view>
-		
+
 		<view class="mt-4">
 			<time-bar></time-bar>
 		</view>
@@ -56,8 +56,8 @@
 		</view>
 
 		<view class="mt-5 {{did === 'host' ? 'invisible' : ''}}">
-			<slider value="{{volume}}" activeColor="#fff" backgroundColor="#fff6" block-size="{{16}}" bindchanging="handleVolumeChanging"
-				bindchange="handleVolumeChange"></slider>
+			<slider value="{{volume}}" activeColor="#fff" backgroundColor="#fff6" block-size="{{16}}"
+				bindchanging="handleVolumeChanging" bindchange="handleVolumeChange"></slider>
 		</view>
 	</view>
 </vertical-drag-gesture-handler>

@@ -8,6 +8,10 @@ ComponentWithStore({
       type: String,
       value: '',
     },
+    loading: {
+      type: Boolean,
+      value: false,
+    },
   },
   data: {
     lrcArr: [] as { time: number; lrc: string }[],
@@ -20,19 +24,23 @@ ComponentWithStore({
   },
   observers: {
     value(val = '') {
+      const lrcArr = parseLrc(val);
       this.setData({
-        lrcArr: parseLrc(val),
+        lrcArr,
         currentIndex: 0,
       });
+      this.triggerEvent('change', { value: lrcArr[0]?.lrc });
     },
     currentTime(val = 0) {
       const { lrcArr, currentIndex } = this.data;
       const currentTime = val * 1000;
-      const nextTime = lrcArr[currentIndex + 1]?.time;
+      const nextIndex = currentIndex + 1;
+      const nextTime = lrcArr[nextIndex]?.time;
       if (nextTime && nextTime < currentTime) {
         this.setData({
-          currentIndex: currentIndex + 1,
+          currentIndex: nextIndex,
         });
+        this.triggerEvent('change', { value: lrcArr[nextIndex]?.lrc });
       }
     },
   },

@@ -26,6 +26,7 @@ ComponentWithStore({
   properties: {},
 
   data: {
+    lrc: '',
     maxCoverSize: 0,
     statusBarHeight: 0,
     screenHeight: 0,
@@ -46,6 +47,7 @@ ComponentWithStore({
       'musicName',
       'musicCover',
       'musicLyric',
+      'musicLyricLoading',
       'playOrder',
       'menubar',
     ] as const,
@@ -296,6 +298,16 @@ ComponentWithStore({
           url: '/pages/list/playing',
         });
       }
+    },
+
+    handleLrcChange(e: {
+      detail: {
+        value?: string;
+      };
+    }) {
+      this.setData({
+        lrc: e.detail.value,
+      });
     },
 
     handleSetting() {

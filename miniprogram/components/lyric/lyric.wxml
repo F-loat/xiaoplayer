@@ -9,7 +9,7 @@
         class="transition-opacity {{index === currentIndex ? 'opacity-100': 'opacity-60'}}">
         {{item.lrc}}</view>
     </block>
-    <view wx:else>暂无歌词</view>
+    <view wx:else>{{loading ? '歌词加载中...' : '暂无歌词'}}</view>
   </view>
 </view>
 
