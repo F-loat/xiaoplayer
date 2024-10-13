@@ -58,7 +58,7 @@ ComponentWithStore({
         if (res.statusCode !== 200) {
           return;
         }
-        const list = Object.entries(res.data)
+        list = Object.entries(res.data)
           .map(([name, items]) => ({
             name,
             count: items.length,
