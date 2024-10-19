@@ -37,22 +37,29 @@ ComponentWithStore({
     },
   },
 
-  storeBindings: {
-    store,
-    fields: [
-      'did',
-      'volume',
-      'status',
-      'currentDevice',
-      'musicName',
-      'musicCover',
-      'musicLyric',
-      'musicLyricLoading',
-      'playOrder',
-      'menubar',
-    ] as const,
-    actions: ['playPrevMusic', 'playNextMusic'] as const,
-  },
+  storeBindings: [
+    {
+      store,
+      fields: [
+        'did',
+        'volume',
+        'status',
+        'currentDevice',
+        'musicName',
+        'musicCover',
+        'musicLyric',
+        'musicLyricLoading',
+        'playOrder',
+        'menubar',
+      ] as const,
+      actions: [] as const,
+    },
+    {
+      store: store.player,
+      fields: [] as const,
+      actions: ['playPrevMusic', 'playNextMusic'] as const,
+    },
+  ],
 
   lifetimes: {
     attached() {
@@ -186,9 +193,9 @@ ComponentWithStore({
 
     async handlePlayToggle() {
       if (store.status === 'paused') {
-        await store.playMusic();
+        await store.player.playMusic();
       } else {
-        await store.pauseMusic();
+        await store.player.pauseMusic();
       }
     },
 
@@ -261,13 +268,15 @@ ComponentWithStore({
           if (device.did === store.did) {
             return;
           }
-          await store.sendCommand('关机');
+          const status = store.status;
+          const album = store.musicAlbum;
+          await store.player.pauseMusic();
           await sleep(300);
           store.setData({
             did: device.did,
           });
-          if (store.status === 'playing') {
-            await store.playMusic(store.musicName);
+          if (status === 'playing') {
+            await store.player.playMusic(store.musicName, album);
           }
         },
       });

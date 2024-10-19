@@ -64,7 +64,10 @@ ComponentWithStore({
             count: items.length,
           }))
           .filter(({ name }) => name !== '全部')
-          .sort(({ name }) => (name === '所有歌曲' ? -1 : 1));
+          .sort((a, b) => {
+            if (a.name === '所有歌曲') return -1;
+            return a.name === '收藏' && b.name !== '所有歌曲' ? -1 : 1;
+          });
         this.setData({
           connected: true,
           list: list.slice(0, pageSize),
@@ -118,7 +121,7 @@ ComponentWithStore({
       const account = username ? `${username}:${password || ''}@` : '';
       wx.showModal({
         title: '请输入 xiaomusic 的服务地址',
-        placeholderText: 'user:pass@192.168.1.6:8090',
+        placeholderText: '192.168.1.6:8090',
         content: `${account}${domain || ''}`,
         editable: true,
         success: (res) => {

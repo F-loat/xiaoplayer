@@ -5,6 +5,9 @@ import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 const pageSize = 40;
 
 ComponentWithStore({
+  properties: {
+    title: String,
+  },
   data: {
     list: [] as string[],
   },
@@ -42,8 +45,7 @@ ComponentWithStore({
       };
     }) {
       const { name } = e.target.dataset;
-      const { list } = this.data;
-      await store.playMusic(name, store.musicAlbum, list);
+      await store.player.playMusic(name, store.musicAlbum);
     },
     handleLoadMore() {
       const musiclist = getGlobalData('musiclist');

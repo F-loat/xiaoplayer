@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
-import { isPrivateDomain, request } from '@/miniprogram/utils';
+import { getGlobalData, isPrivateDomain, request } from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
 
 let innerAudioContext: WechatMiniprogram.InnerAudioContext;
@@ -19,20 +19,27 @@ export class HostPlayerModule implements MusicPlayer {
     wx.setStorageSync('musicList', value);
   }
 
-  playMusic = async (name = '', album = '', list?: string[]) => {
+  playMusic = async (name?: string, album?: string) => {
     const musicName = name || this.store.musicName;
+    const musicAlbum = album || this.store.musicAlbum;
 
     this.store.setData({
       musicName,
-      musicAlbum: album || this.store.musicAlbum,
+      musicAlbum,
       status: 'playing',
     });
-    if (list) this.setList(list);
 
     if (!name && innerAudioContext?.src) {
+      this.store.setData({
+        currentTime: innerAudioContext.currentTime,
+      });
       innerAudioContext.play();
+      this.store.updateCurrentTime();
       return;
     }
+
+    const musiclist = getGlobalData('musiclist');
+    this.setList(musiclist[album] || []);
 
     const res = await request<{
       url: string;
@@ -69,13 +76,7 @@ export class HostPlayerModule implements MusicPlayer {
         clearTimeout(this.store.playTimer);
       }
     });
-    innerAudioContext.onEnded(() => {
-      if (this.store.playOrder === PlayOrderType.One) {
-        this.playMusic();
-      } else {
-        this.playNextMusic();
-      }
-    });
+    innerAudioContext.onEnded(() => this.handleMusicEnd());
     innerAudioContext.onError((err) => {
       this.store.setData({ status: 'paused' });
       wx.showToast({
@@ -83,6 +84,14 @@ export class HostPlayerModule implements MusicPlayer {
         icon: 'none',
       });
     });
+  };
+
+  handleMusicEnd = async () => {
+    if (this.store.playOrder === PlayOrderType.One) {
+      this.playMusic();
+    } else {
+      this.playNextMusic();
+    }
   };
 
   playPrevMusic = async () => {
@@ -95,11 +104,11 @@ export class HostPlayerModule implements MusicPlayer {
     }
     const index = this.list.indexOf(this.store.musicName);
     if (index === -1) {
-      this.playMusic(this.list[0], this.store.musicAlbum);
+      this.playMusic(this.list[0]);
       return;
     }
     const preIndex = index ? index - 1 : this.list.length - 1;
-    this.playMusic(this.list[preIndex], this.store.musicAlbum);
+    this.playMusic(this.list[preIndex]);
   };
 
   playNextMusic = async () => {

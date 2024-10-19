@@ -1,5 +1,6 @@
 <!--index.wxml-->
-<navigation-bar back="{{false}}" title="{{serverConfig.domain === serverConfig.privateDomain ? '音乐列表' : '音乐列表*'}}" bind:tap="handleSwitchDomain"></navigation-bar>
+<navigation-bar back="{{false}}" title="{{serverConfig.domain === serverConfig.privateDomain ? '音乐列表' : '音乐列表*'}}"
+  bind:tap="handleSwitchDomain"></navigation-bar>
 
 <view wx:if="{{!serverConfig.domain || !connected}}" class="flex-1 flex justify-center items-center">
   <view wx:if="{{!serverConfig.domain}}" class="p-4">

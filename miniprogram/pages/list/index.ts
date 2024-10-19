@@ -6,6 +6,7 @@ const pageSize = 40;
 Component({
   properties: {
     name: String,
+    title: String,
   },
   data: {
     list: [] as string[],
@@ -26,8 +27,8 @@ Component({
       };
     }) {
       const { name } = e.target.dataset;
-      const { name: album, list } = this.data;
-      await store.playMusic(name, album, list);
+      const { name: album } = this.data;
+      await store.player.playMusic(name, album);
     },
     handleLoadMore() {
       const musiclist = getGlobalData('musiclist');

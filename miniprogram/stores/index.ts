@@ -10,10 +10,11 @@ const DEFAULT_COVER =
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201812%2F12%2F20181212223741_etgxt.jpg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1705583419&t=8b8402f169f865f34c2f16649b0ba6d8';
 
 export interface MusicPlayer {
-  playMusic(name?: string, album?: string, list?: string[]): Promise<void>;
+  playMusic(name?: string, album?: string): Promise<void>;
   pauseMusic(): Promise<void>;
   playPrevMusic(): Promise<void>;
   playNextMusic(): Promise<void>;
+  handleMusicEnd(): Promise<void>;
 }
 
 export class Store {
@@ -80,7 +81,7 @@ export class Store {
     );
   }
 
-  get currentPlayer() {
+  get player() {
     if (this.did === 'host') return this.hostPlayer;
     return this.xiaomusicPlayer;
   }
@@ -116,6 +117,12 @@ export class Store {
           wx.showModal({
             title: '鉴权失败',
             content: '请确认账号密码是否配置正确',
+            success: (res) => {
+              if (!res.confirm) return;
+              wx.navigateTo({
+                url: '/pages/setting/index',
+              });
+            },
           });
         }
         return;
@@ -177,26 +184,13 @@ export class Store {
     });
   };
 
-  get playMusic() {
-    return this.currentPlayer.playMusic;
-  }
-
-  get pauseMusic() {
-    return this.currentPlayer.pauseMusic;
-  }
-
-  get playPrevMusic() {
-    return this.currentPlayer.playPrevMusic;
-  }
-
-  get playNextMusic() {
-    return this.currentPlayer.playNextMusic;
-  }
-
   updateCurrentTime = () => {
     if (this.playTimer) clearTimeout(this.playTimer);
     if (this.status !== 'playing') return;
-    if (this.currentTime >= this.duration) return;
+    if (this.currentTime && this.currentTime >= this.duration) {
+      this.player.handleMusicEnd();
+      return;
+    }
     this.setData({
       currentTime: this.currentTime + 0.1,
     });

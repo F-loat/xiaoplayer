@@ -17,15 +17,13 @@ export class XiaomusicPlayerModule implements MusicPlayer {
         version: this.store.version,
       }),
       ({ did }) => {
+        if (this.syncTimer) clearInterval(this.syncTimer);
         if (did === 'host') return;
         this.syncMusic();
         this.syncVolume();
         this.syncTimer = setInterval(() => {
           this.syncMusic();
         }, 10 * 1000);
-        return () => {
-          if (this.syncTimer) clearInterval(this.syncTimer);
-        };
       },
       {
         fireImmediately: true,
@@ -33,14 +31,19 @@ export class XiaomusicPlayerModule implements MusicPlayer {
     );
   }
 
-  playMusic = async (name = '', album = '') => {
+  playMusic = async (name?: string, album?: string) => {
     if (name) {
-      await this.store.sendCommand(`播放列表${album}|${name}`);
+      const list = album || this.store.musicAlbum;
+      await this.store.sendCommand(`播放列表${list}|${name}`);
     } else {
       await this.store.sendCommand('播放歌曲');
     }
     if (album) this.store.setData({ musicAlbum: album });
     this.syncMusic();
+  };
+
+  handleMusicEnd = async () => {
+    await this.syncMusic();
   };
 
   playPrevMusic = async () => {
