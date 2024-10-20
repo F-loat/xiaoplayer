@@ -55,7 +55,7 @@
 			<image class="w-5 h-5 opacity-60" src="/assets/icon/bofangliebiao.svg" bind:tap="handlePlayingList" />
 		</view>
 
-		<view class="mt-5 {{did === 'host' ? 'invisible' : ''}}">
+		<view class="mt-5">
 			<slider value="{{volume}}" activeColor="#fff" backgroundColor="#fff6" block-size="{{16}}"
 				bindchanging="handleVolumeChanging" bindchange="handleVolumeChange"></slider>
 		</view>

@@ -42,7 +42,6 @@ ComponentWithStore({
       store,
       fields: [
         'did',
-        'volume',
         'status',
         'currentDevice',
         'musicName',
@@ -56,7 +55,7 @@ ComponentWithStore({
     },
     {
       store: store.player,
-      fields: [] as const,
+      fields: ['volume'] as const,
       actions: ['playPrevMusic', 'playNextMusic'] as const,
     },
   ],
@@ -217,14 +216,7 @@ ComponentWithStore({
       };
     }) {
       const volume = e.detail.value;
-      await request({
-        url: '/setvolume',
-        method: 'POST',
-        data: {
-          volume,
-          did: store.did,
-        },
-      });
+      await store.player.setVolume(volume);
       wx.showToast({
         title: `音量已调整为 ${volume}`,
         icon: 'none',

@@ -1,9 +1,10 @@
-import { makeAutoObservable, reaction } from 'mobx-miniprogram';
+import { makeAutoObservable, reaction, runInAction } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
 import { request } from '@/miniprogram/utils';
 
 export class XiaomusicPlayerModule implements MusicPlayer {
   store: Store;
+  volume = 20;
   syncTimer: number | null = null;
 
   constructor(store: Store) {
@@ -89,8 +90,19 @@ export class XiaomusicPlayerModule implements MusicPlayer {
     }>({
       url: `/getvolume?did=${this.store.did}`,
     });
-    this.store.setData({
-      volume: res.data.volume,
+    runInAction(() => {
+      this.volume = res.data.volume;
+    });
+  };
+
+  setVolume = (volume: number) => {
+    return request({
+      url: '/setvolume',
+      method: 'POST',
+      data: {
+        volume,
+        did: this.store.did,
+      },
     });
   };
 }

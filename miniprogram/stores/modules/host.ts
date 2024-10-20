@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx-miniprogram';
+import { action, makeAutoObservable, reaction } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
 import { getGlobalData, isPrivateDomain, request } from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
@@ -7,11 +7,17 @@ let innerAudioContext: WechatMiniprogram.InnerAudioContext;
 
 export class HostPlayerModule implements MusicPlayer {
   store: Store;
+  volume = wx.getStorageSync('hostVolume') || 80;
   list: string[] = wx.getStorageSync('musicList') || [];
 
   constructor(store: Store) {
     this.store = store;
     makeAutoObservable(this);
+
+    reaction(
+      () => this.volume,
+      (val) => wx.setStorageSync('hostVolume', val),
+    );
   }
 
   setList(value: string[]) {
@@ -27,6 +33,7 @@ export class HostPlayerModule implements MusicPlayer {
       musicName,
       musicAlbum,
       status: 'playing',
+      currentTime: 0,
     });
 
     if (!name && innerAudioContext?.src) {
@@ -39,7 +46,7 @@ export class HostPlayerModule implements MusicPlayer {
     }
 
     const musiclist = getGlobalData('musiclist');
-    this.setList(musiclist[album] || []);
+    this.setList(musiclist[musicAlbum] || []);
 
     const res = await request<{
       url: string;
@@ -52,6 +59,7 @@ export class HostPlayerModule implements MusicPlayer {
     });
     innerAudioContext?.destroy();
     innerAudioContext = wx.createInnerAudioContext();
+    innerAudioContext.volume = this.volume / 100;
     const { domain } = this.store.serverConfig;
     innerAudioContext.src = isPrivateDomain(domain)
       ? res.data.url
@@ -131,5 +139,12 @@ export class HostPlayerModule implements MusicPlayer {
   pauseMusic = async () => {
     innerAudioContext?.pause();
     this.store.setData({ status: 'paused' });
+  };
+
+  @action setVolume = (volume: number) => {
+    this.volume = volume;
+    if (innerAudioContext) {
+      innerAudioContext.volume = volume / 100;
+    }
   };
 }

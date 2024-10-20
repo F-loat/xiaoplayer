@@ -10,6 +10,7 @@ const DEFAULT_COVER =
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201812%2F12%2F20181212223741_etgxt.jpg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1705583419&t=8b8402f169f865f34c2f16649b0ba6d8';
 
 export interface MusicPlayer {
+  setVolume: (volume: number) => Promise<any> | void;
   playMusic(name?: string, album?: string): Promise<void>;
   pauseMusic(): Promise<void>;
   playPrevMusic(): Promise<void>;
@@ -19,13 +20,14 @@ export interface MusicPlayer {
 
 export class Store {
   did: null | string = wx.getStorageSync('did');
-  volume = 20;
   status: 'paused' | 'playing' = 'paused';
-  musicAlbum = wx.getStorageSync('musicAlbum') || '';
-  musicLyric = wx.getStorageSync('musicLyric') || '';
+
+  musicName: string;
+  musicCover: string;
+  musicAlbum: string;
+  musicLyric: string;
   musicLyricLoading = false;
-  musicName = wx.getStorageSync('musicName') || '';
-  musicCover = wx.getStorageSync('musicCover') || DEFAULT_COVER;
+
   duration = 0;
   currentTime = 0;
 
@@ -49,6 +51,13 @@ export class Store {
     this.hostPlayer = new HostPlayerModule(this);
     this.xiaomusicPlayer = new XiaomusicPlayerModule(this);
 
+    const musicInfo = wx.getStorageSync('musicInfo') || {};
+
+    this.musicName = musicInfo.name || '';
+    this.musicAlbum = musicInfo.album || '';
+    this.musicLyric = musicInfo.lyric || '';
+    this.musicCover = musicInfo.cover || DEFAULT_COVER;
+
     reaction(
       () => this.musicName,
       (name) => {
@@ -59,7 +68,6 @@ export class Store {
         } else {
           this.setData({ musicCover: DEFAULT_COVER });
         }
-        wx.setStorageSync('musicName', name);
       },
     );
 
@@ -68,16 +76,13 @@ export class Store {
       (val) => wx.setStorageSync('did', val),
     );
     reaction(
-      () => this.musicAlbum,
-      (val) => wx.setStorageSync('musicAlbum', val),
-    );
-    reaction(
-      () => this.musicLyric,
-      (val) => wx.setStorageSync('musicLyric', val),
-    );
-    reaction(
-      () => this.musicCover,
-      (val) => wx.setStorageSync('musicCover', val),
+      () => ({
+        name: this.musicName,
+        album: this.musicAlbum,
+        lyric: this.musicLyric,
+        cover: this.musicCover,
+      }),
+      (val) => wx.setStorageSync('musicInfo', val),
     );
   }
 
