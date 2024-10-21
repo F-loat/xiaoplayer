@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, reaction } from 'mobx-miniprogram';
+import { makeAutoObservable, reaction } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
 import { getGlobalData, isPrivateDomain, request } from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
@@ -7,6 +7,8 @@ let innerAudioContext: WechatMiniprogram.InnerAudioContext;
 
 export class HostPlayerModule implements MusicPlayer {
   store: Store;
+  stopAt: number = 0;
+  speed = 1;
   volume = wx.getStorageSync('hostVolume') || 80;
   list: string[] = wx.getStorageSync('musicList') || [];
 
@@ -20,9 +22,13 @@ export class HostPlayerModule implements MusicPlayer {
     );
   }
 
-  setList(value: string[]) {
-    this.list = value;
-    wx.setStorageSync('musicList', value);
+  setList(value: string[] = []) {
+    const list =
+      this.store.playOrder === PlayOrderType.Rnd
+        ? value.sort(() => Math.random() - 0.5)
+        : value;
+    this.list = list;
+    wx.setStorageSync('musicList', list);
   }
 
   playMusic = async (name?: string, album?: string) => {
@@ -60,6 +66,7 @@ export class HostPlayerModule implements MusicPlayer {
     innerAudioContext?.destroy();
     innerAudioContext = wx.createInnerAudioContext();
     innerAudioContext.volume = this.volume / 100;
+    innerAudioContext.playbackRate = this.speed;
     const { domain } = this.store.serverConfig;
     innerAudioContext.src = isPrivateDomain(domain)
       ? res.data.url
@@ -95,6 +102,10 @@ export class HostPlayerModule implements MusicPlayer {
   };
 
   handleMusicEnd = async () => {
+    if (this.stopAt && this.stopAt < Date.now()) {
+      this.stopAt = 0;
+      return;
+    }
     if (this.store.playOrder === PlayOrderType.One) {
       this.playMusic();
     } else {
@@ -141,10 +152,21 @@ export class HostPlayerModule implements MusicPlayer {
     this.store.setData({ status: 'paused' });
   };
 
-  @action setVolume = (volume: number) => {
+  setVolume = (volume: number) => {
     this.volume = volume;
     if (innerAudioContext) {
       innerAudioContext.volume = volume / 100;
     }
+  };
+
+  setSpeed = (speed: number) => {
+    this.speed = speed;
+    if (innerAudioContext) {
+      innerAudioContext.playbackRate = speed;
+    }
+  };
+
+  setStopAt = (minute: number) => {
+    this.stopAt = Date.now() + minute * 60 * 1000;
   };
 }

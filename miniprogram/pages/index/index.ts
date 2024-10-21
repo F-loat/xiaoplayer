@@ -63,7 +63,9 @@ ComponentWithStore({
             name,
             count: items.length,
           }))
-          .filter(({ name }) => name !== '全部')
+          .filter(({ name, count }) => {
+            return count && !['全部', '临时搜索列表'].includes(name);
+          })
           .sort((a, b) => {
             if (a.name === '所有歌曲') return -1;
             return a.name === '收藏' && b.name !== '所有歌曲' ? -1 : 1;
@@ -72,6 +74,7 @@ ComponentWithStore({
           connected: true,
           list: list.slice(0, pageSize),
         });
+        store.favorite.setMusics(res.data['收藏']);
         setGlobalData('musiclist', res.data);
       } catch (err) {
         this.setData({

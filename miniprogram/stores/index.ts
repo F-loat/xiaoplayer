@@ -1,8 +1,9 @@
-import { reaction, makeAutoObservable, action } from 'mobx-miniprogram';
+import { reaction, action, makeAutoObservable } from 'mobx-miniprogram';
 import { getCloudInstance, request } from '../utils';
 import { Device, PlayOrderType, ServerConfig } from '../types';
 import { HostPlayerModule } from './modules/host';
 import { XiaomusicPlayerModule } from './modules/xiaomusic';
+import { FavoriteModule } from './modules/favorite';
 
 const { platform } = wx.getDeviceInfo();
 
@@ -10,8 +11,12 @@ const DEFAULT_COVER =
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201812%2F12%2F20181212223741_etgxt.jpg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1705583419&t=8b8402f169f865f34c2f16649b0ba6d8';
 
 export interface MusicPlayer {
+  speed: number;
+  volume: number;
+  setSpeed: (speed: number) => void;
+  setStopAt: (minute: number) => void;
   setVolume: (volume: number) => Promise<any> | void;
-  playMusic(name?: string, album?: string): Promise<void>;
+  playMusic: (name?: string, album?: string) => Promise<void>;
   pauseMusic(): Promise<void>;
   playPrevMusic(): Promise<void>;
   playNextMusic(): Promise<void>;
@@ -40,6 +45,7 @@ export class Store {
   version: null | string = null;
   isPC = platform === 'windows' || platform === 'mac';
 
+  favorite: FavoriteModule;
   hostPlayer: MusicPlayer;
   xiaomusicPlayer: MusicPlayer;
 
@@ -48,6 +54,7 @@ export class Store {
   constructor() {
     makeAutoObservable(this);
 
+    this.favorite = new FavoriteModule(this);
     this.hostPlayer = new HostPlayerModule(this);
     this.xiaomusicPlayer = new XiaomusicPlayerModule(this);
 
@@ -89,6 +96,18 @@ export class Store {
   get player() {
     if (this.did === 'host') return this.hostPlayer;
     return this.xiaomusicPlayer;
+  }
+
+  get speed() {
+    return this.player.speed;
+  }
+
+  get volume() {
+    return this.player.volume;
+  }
+
+  get isFavorite() {
+    return this.favorite.isFavorite(this.musicName);
   }
 
   get currentDevice() {
@@ -197,7 +216,7 @@ export class Store {
       return;
     }
     this.setData({
-      currentTime: this.currentTime + 0.1,
+      currentTime: this.currentTime + 0.1 * this.speed,
     });
     this.playTimer = setTimeout(() => this.updateCurrentTime(), 100);
   };

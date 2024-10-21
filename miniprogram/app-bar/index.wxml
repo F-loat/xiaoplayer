@@ -30,7 +30,9 @@
 			<view class="flex justify-between">
 				<text>{{musicName || 'xiaoplayer'}}</text>
 				<view class="flex items-center">
-					<image class="w-5 h-5 p-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
+					<image wx:if="{{did === 'host'}}" class="w-[36rpx] h-[36rpx] p-1" src="/assets/icon/beisu{{speed}}.svg" bind:tap="handleSpeed" />
+					<image wx:else class="w-5 h-5 p-1" src="/assets/icon/{{isFavorite ? 'yishoucang' : 'shoucang'}}.svg" bind:tap="handleToggleFavorite" />
+					<image class="w-5 h-5 p-1 ml-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
 					<image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchSound" />
 				</view>
 			</view>

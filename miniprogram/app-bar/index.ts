@@ -1,5 +1,5 @@
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
-import { request, sleep } from '../utils';
+import { sleep } from '../utils';
 import { store } from '../stores';
 import { PlayOrderType } from '../types';
 
@@ -50,12 +50,15 @@ ComponentWithStore({
         'musicLyricLoading',
         'playOrder',
         'menubar',
+        'speed',
+        'volume',
+        'isFavorite',
       ] as const,
       actions: [] as const,
     },
     {
       store: store.player,
-      fields: ['volume'] as const,
+      fields: [] as const,
       actions: ['playPrevMusic', 'playNextMusic'] as const,
     },
   ],
@@ -243,6 +246,23 @@ ComponentWithStore({
       await store.sendCommand(cmd);
     },
 
+    handleSpeed() {
+      const items = [
+        { label: '0.5', value: 0.5 },
+        { label: '1.0', value: 1.0 },
+        { label: '1.5', value: 1.5 },
+        { label: '2.0', value: 2.0 },
+      ];
+      wx.showActionSheet({
+        alertText: '倍速播放',
+        itemList: items.map((i) => i.label),
+        success: (res) => {
+          const { value } = items[res.tapIndex];
+          store.player.setSpeed(value);
+        },
+      });
+    },
+
     async handleSwitchSound() {
       const items = (
         Object.values(store.devices || {}) as {
@@ -285,9 +305,13 @@ ComponentWithStore({
         itemList: items.map((i) => i.label),
         success: (res) => {
           const { value } = items[res.tapIndex];
-          store.sendCommand(`${value}分钟后关机`);
+          store.player.setStopAt(value);
         },
       });
+    },
+
+    handleToggleFavorite() {
+      store.favorite.toggleFavorite(store.musicName);
     },
 
     handlePlayingList() {

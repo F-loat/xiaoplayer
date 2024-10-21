@@ -4,6 +4,7 @@ import { request } from '@/miniprogram/utils';
 
 export class XiaomusicPlayerModule implements MusicPlayer {
   store: Store;
+  speed = 1;
   volume = 20;
   syncTimer: number | null = null;
 
@@ -105,4 +106,10 @@ export class XiaomusicPlayerModule implements MusicPlayer {
       },
     });
   };
+
+  setSpeed() {}
+
+  setStopAt(minute: number) {
+    this.store.sendCommand(`${minute}分钟后关机`);
+  }
 }
