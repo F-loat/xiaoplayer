@@ -1,0 +1,22 @@
+<vertical-drag-gesture-handler worklet:ongesture="handleGesture">
+	<view
+		class="px-4 overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}"
+		bind:tap="handleExpand">
+		<view class="flex items-center py-2">
+			<image mode="aspectFill" class="shrink-0 rounded-full w-14 h-14" src="{{musicCover}}" />
+			<view class="flex flex-1 min-w-36 justify-between items-center ml-2">
+				<view class="flex flex-col shrink-0 ml-1 min-w-20 flex-1 truncate">
+					<text>{{musicName || 'xiaoplayer'}}</text>
+					<text class="text-xs truncate opacity-80 leading-5 h-5 -mt-0.5">{{status === 'playing' && musicLyricCurrent.lrc ?
+						musicLyricCurrent.lrc : currentDevice.name}}</text>
+				</view>
+				<view class="flex items-center shrink-0">
+					<image class="w-6 h-6 mr-3"
+						src="{{status === 'paused' ? '/assets/icon/zanting.svg' : '/assets/icon/bofangzhong.svg'}}"
+						bind:tap="handlePlayToggle" />
+					<image class="w-6 h-6" src="/assets/icon/xiayiqu.svg" bind:tap="playNextMusic" />
+				</view>
+			</view>
+		</view>
+	</view>
+</vertical-drag-gesture-handler>

@@ -3,14 +3,13 @@
     "pages/index/index",
     "pages/list/index",
     "pages/list/playing",
-    "pages/setting/index",
-    "app-bar/index"
+    "pages/player/index",
+    "pages/setting/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom"
   },
-  "appBar": {},
   "style": "v2",
   "darkmode": true,
   "renderer": "skyline",

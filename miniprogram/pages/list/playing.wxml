@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<navigation-bar back title="{{title || '正在播放'}}"></navigation-bar>
+<navigation-bar back half title="{{title || '正在播放'}}"></navigation-bar>
 
 <scroll-view wx:if="{{!!list.length}}" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list"
   show-scrollbar="{{false}}" bind:scrolltolower="handleLoadMore">

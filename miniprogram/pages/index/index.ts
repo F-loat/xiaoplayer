@@ -77,10 +77,23 @@ ComponentWithStore({
         store.favorite.setMusics(res.data['收藏']);
         setGlobalData('musiclist', res.data);
       } catch (err) {
+        const message = (err as { errMsg: string }).errMsg;
         this.setData({
           connected: false,
-          error: (err as { errMsg: string }).errMsg,
+          error: message,
         });
+        if (message === 'request:fail url not in domain list') {
+          wx.showModal({
+            title: '网络异常',
+            content: '局域网访问请确保小程序与 xiaomusic 服务在同一网段下',
+          });
+        }
+        if (message.includes('-109')) {
+          wx.showModal({
+            title: '请求异常',
+            content: '局域网访问请确认【系统设置-隐私-本地网络】权限已授予微信',
+          });
+        }
         console.error(err);
       } finally {
         wx.hideLoading();

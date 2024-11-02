@@ -1,0 +1,50 @@
+<vertical-drag-gesture-handler worklet:ongesture="handleGesture">
+<view
+  class="absolute top-0 left-0 right-0 bottom-0 px-4 overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}">
+  <view class="flex flex-col overflow-hidden box-border">
+    <view style="height: {{statusBarHeight}}px;" />
+    <view class="flex flex-col justify-center flex-1">
+      <image class="w-6 h-6" mode="aspectFill" src="/assets/icon/shouqi.svg" bind:tap="handleClose" />
+    </view>
+  </view>
+
+  <image mode="aspectFill" class="w-[686rpx] h-[686rpx] rounded-full mt-4" src="{{musicCover}}" />
+
+  <view class="flex flex-col text-lg mt-4">
+    <view class="flex justify-between">
+      <text>{{musicName || 'xiaoplayer'}}</text>
+      <view class="flex items-center">
+        <image wx:if="{{did === 'host'}}" class="w-[36rpx] h-[36rpx] p-1" src="/assets/icon/beisu{{speed}}.svg"
+          bind:tap="handleSpeed" />
+        <image wx:else class="w-5 h-5 p-1" src="/assets/icon/{{isFavorite ? 'yishoucang' : 'shoucang'}}.svg"
+          bind:tap="handleToggleFavorite" />
+        <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
+        <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchSound" />
+      </view>
+    </view>
+    <text class="text-sm">{{currentDevice.name}}</text>
+  </view>
+
+  <view class="mt-2">
+    <lyric></lyric>
+  </view>
+
+  <view class="mt-4">
+    <time-bar></time-bar>
+  </view>
+  <view class="flex justify-between items-center px-3 mt-2">
+    <image class="w-6 h-6 opacity-60" src="/assets/icon/{{orderIconMap[playOrder] || 'liebiaoxunhuan'}}.svg"
+      bind:tap="handleSwitchOrder" />
+    <image class="w-8 h-8" src="/assets/icon/shangyiqu.svg" bind:tap="playPrevMusic" />
+    <image class="w-12 h-12" src="{{status === 'paused' ? '/assets/icon/zanting.svg' : '/assets/icon/bofangzhong.svg'}}"
+      bind:tap="handlePlayToggle" />
+    <image class="w-8 h-8" src="/assets/icon/xiayiqu.svg" bind:tap="playNextMusic" />
+    <image class="w-5 h-5 opacity-60" src="/assets/icon/bofangliebiao.svg" bind:tap="handlePlayingList" />
+  </view>
+
+  <view class="mt-5">
+    <slider value="{{volume}}" activeColor="#fff" backgroundColor="#fff6" block-size="{{16}}"
+      bindchanging="handleVolumeChanging" bindchange="handleVolumeChange"></slider>
+  </view>
+</view>
+</vertical-drag-gesture-handler>

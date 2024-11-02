@@ -29,6 +29,10 @@ ComponentWithStore({
       type: Boolean,
       value: true,
     },
+    half: {
+      type: Boolean,
+      value: false,
+    },
     loading: {
       type: Boolean,
       value: false,
@@ -54,6 +58,7 @@ ComponentWithStore({
     displayStyle: '',
     wrapperStyle: '',
     titleWidth: '',
+    menuHeight: 0,
   },
   storeBindings: {
     store,
@@ -94,13 +99,15 @@ ComponentWithStore({
     initLayout() {
       const { windowWidth } = wx.getWindowInfo();
       const rect = wx.getMenuButtonBoundingClientRect();
+      const top = this.data.half ? 12 : rect.top;
       this.setData({
         wrapperStyle: `
-          height: calc(${rect.height} + ${rect.top}px);
-          padding-top: ${rect.top}px;
+          height: calc(${rect.height} + ${top}px);
+          padding-top: ${top}px;
           padding-right: ${windowWidth - rect.left}px
         `,
         titleWidth: `width: ${windowWidth - rect.left}px`,
+        menuHeight: rect.height,
       });
     },
     back() {

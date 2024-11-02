@@ -17,7 +17,7 @@
     </view>
 
     <!-- 右侧留空 -->
-    <view>
+    <view class="mr-2" style="width:{{menuHeight}}px;height:{{menuHeight}}px;">
       <slot name="right"></slot>
     </view>
   </view>

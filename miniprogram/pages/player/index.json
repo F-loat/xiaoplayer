@@ -3,7 +3,6 @@
   "styleIsolation": "apply-shared",
   "usingComponents": {
     "lyric": "/components/lyric/lyric",
-    "time-bar": "/components/time-bar/time-bar",
-    "navigation-menu": "/components/navigation-menu/navigation-menu"
+    "time-bar": "/components/time-bar/time-bar"
   }
 }

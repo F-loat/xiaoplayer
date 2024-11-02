@@ -1,0 +1,68 @@
+import { ComponentWithStore } from 'mobx-miniprogram-bindings';
+import { store } from '../../stores';
+import { GestureState, PlayOrderType } from '../../types';
+
+const progress = wx.worklet.shared(0);
+
+ComponentWithStore({
+  properties: {},
+
+  data: {
+    orderIconMap: {
+      [PlayOrderType.One]: 'danquxunhuan',
+      [PlayOrderType.Rnd]: 'suijibofang',
+      [PlayOrderType.All]: 'liebiaoxunhuan',
+    },
+  },
+
+  storeBindings: [
+    {
+      store,
+      fields: [
+        'did',
+        'status',
+        'currentDevice',
+        'musicName',
+        'musicCover',
+        'musicLyricCurrent',
+      ] as const,
+      actions: [] as const,
+    },
+    {
+      store: store.player,
+      fields: [] as const,
+      actions: ['playPrevMusic', 'playNextMusic'] as const,
+    },
+  ],
+
+  methods: {
+    handleExpand() {
+      wx.navigateTo({
+        url: '/pages/player/index',
+        routeType: 'wx://upwards',
+      });
+    },
+
+    handleGesture(evt: {
+      deltaY: number;
+      velocityY: number;
+      state: GestureState;
+    }) {
+      'worklet';
+      if (evt.state === GestureState.ACTIVE) {
+        progress.value = progress.value + evt.deltaY;
+      } else if (evt.state === GestureState.END && progress.value < -5) {
+        progress.value = 0;
+        wx.worklet.runOnJS(this.handleExpand)('Skyline');
+      }
+    },
+
+    async handlePlayToggle() {
+      if (store.status === 'paused') {
+        await store.player.playMusic();
+      } else {
+        await store.player.pauseMusic();
+      }
+    },
+  },
+});

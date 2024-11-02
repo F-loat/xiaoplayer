@@ -1,5 +1,5 @@
 import { reaction, action, makeAutoObservable } from 'mobx-miniprogram';
-import { getCloudInstance, request } from '../utils';
+import { getCloudInstance, parseLrc, request } from '../utils';
 import { Device, PlayOrderType, ServerConfig } from '../types';
 import { HostPlayerModule } from './modules/host';
 import { XiaomusicPlayerModule } from './modules/xiaomusic';
@@ -30,7 +30,8 @@ export class Store {
   musicName: string;
   musicCover: string;
   musicAlbum: string;
-  musicLyric: string;
+  musicLyric: { time: number; lrc: string }[] = [];
+  musicLyricCurrent: { index: number; lrc: string } = { index: 0, lrc: '' };
   musicLyricLoading = false;
 
   duration = 0;
@@ -62,18 +63,48 @@ export class Store {
 
     this.musicName = musicInfo.name || '';
     this.musicAlbum = musicInfo.album || '';
-    this.musicLyric = musicInfo.lyric || '';
+    this.musicLyric = musicInfo.lyric || [];
     this.musicCover = musicInfo.cover || DEFAULT_COVER;
 
     reaction(
       () => this.musicName,
       (name) => {
         if (this.playTimer) clearTimeout(this.playTimer);
-        this.setData({ musicLyric: '', currentTime: 0, duration: 0 });
+        this.setData({ musicLyric: [], currentTime: 0, duration: 0 });
         if (name) {
           this.fetchMusicTag(name, this.musicAlbum);
         } else {
           this.setData({ musicCover: DEFAULT_COVER });
+        }
+      },
+    );
+
+    reaction(
+      () => this.musicLyric,
+      (val) => {
+        this.setData({
+          musicLyricCurrent: {
+            index: 0,
+            lrc: val[0]?.lrc,
+          },
+        });
+      },
+    );
+    reaction(
+      () => this.currentTime,
+      (val) => {
+        const { index: currentIndex } = this.musicLyricCurrent;
+        const currentTime = val * 1000;
+        const nextIndex = currentIndex + 1;
+        const nextLyric = this.musicLyric[nextIndex];
+        const { time: nextTime, lrc } = nextLyric || {};
+        if (nextTime && nextTime < currentTime) {
+          this.setData({
+            musicLyricCurrent: {
+              lrc,
+              index: nextIndex,
+            },
+          });
         }
       },
     );
@@ -164,6 +195,15 @@ export class Store {
         devices,
         playOrder: devices[did]?.play_type ?? PlayOrderType.All,
       });
+
+      const { data } = await request<{
+        version: string;
+      }>({
+        url: '/getversion',
+      });
+      this.setData({
+        version: data.version,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -182,12 +222,49 @@ export class Store {
 
   private fetchMusicTag = async (name: string, album: string = '') => {
     this.musicLyricLoading = true;
+
+    let musicName = name.replace(/^\d+\.\s?/g, '').trim();
+    let musicAlbum = album.replace(/（.*）/g, '').trim();
+    let musicArtist;
+
+    if (this.version) {
+      const [a, b, c] = this.version.split('.').map(Number);
+      if (a > 0 || b > 3 || (b > 2 && c > 37)) {
+        const res = await request<{
+          tags: {
+            album?: string;
+            artist?: string;
+            genre?: string;
+            lyrics?: string;
+            picture?: string;
+            title?: string;
+            year?: string;
+          };
+        }>({
+          url: `/musicinfo?name=${name}&musictag=true`,
+        });
+        const { tags } = res.data;
+        if (tags.title) musicName = tags.title;
+        if (tags.album) musicAlbum = tags.album;
+        if (tags.artist) musicArtist = tags.artist;
+        if (tags.picture && tags.lyrics) {
+          this.setData({
+            musicLyric: parseLrc(tags.lyrics),
+            musicCover: tags.picture,
+          });
+          this.musicLyricLoading = false;
+          return;
+        }
+      }
+    }
+
     const cloud = await getCloudInstance();
     cloud.callFunction({
       name: 'musictag',
       data: {
-        title: name.replace(/^\d+\.\s?/g, '').trim(),
-        album,
+        title: musicName,
+        album: musicAlbum,
+        artist: musicArtist,
       },
       success: (res) => {
         const result = res.result as {
@@ -195,7 +272,7 @@ export class Store {
           album_img?: string;
         };
         if (!result) return;
-        const musicLyric = result.lyric;
+        const musicLyric = parseLrc(result.lyric);
         const musicCover = result.album_img || DEFAULT_COVER;
         this.setData({
           musicLyric,

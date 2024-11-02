@@ -1,6 +1,12 @@
 <!--index.wxml-->
 <navigation-bar back="{{false}}" title="{{serverConfig.domain === serverConfig.privateDomain ? '音乐列表' : '音乐列表*'}}"
-  bind:tap="handleSwitchDomain"></navigation-bar>
+  bind:tap="handleSwitchDomain">
+  <navigator slot="right" url="/pages/setting/index"
+    class="w-full h-full rounded-full border-[0.5px] border-solid border-black border-opacity-10 box-border flex justify-center items-center transition-colors bg-white bg-opacity-60"
+    hover-class="bg-gray-200">
+    <image src="/assets/icon/shezhi.svg" class="w-3/5 h-3/5" />
+  </navigator>
+</navigation-bar>
 
 <view wx:if="{{!serverConfig.domain || !connected}}" class="flex-1 flex justify-center items-center">
   <view wx:if="{{!serverConfig.domain}}" class="p-4">
@@ -34,7 +40,7 @@
 
 <scroll-view wx:elif="{{!!list.length}}" id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y
   refresher-enabled bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}"
-  style="padding-bottom: {{isPC ? 76 : 0}}px;" bind:refresherrefresh="handleRefresh">
+  bind:refresherrefresh="handleRefresh">
   <view wx:for="{{list}}" wx:key="name"
     class="flex items-baseline py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none"
     data-name="{{item.name}}" bind:tap="handleViewTap">
@@ -45,4 +51,4 @@
   </view>
 </scroll-view>
 
-<app-bar wx:if="{{isPC}}"></app-bar>
+<music-bar></music-bar>

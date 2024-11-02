@@ -61,7 +61,7 @@ export const sleep = (time?: number) => {
 };
 
 export const parseAuthUrl = (url: string) => {
-  const values = url.split('@');
+  const values = url.trim().replace(/\/$/, '').split('@');
   if (values.length <= 1) {
     const domain = values[0];
     const isPrivate = isPrivateDomain(domain);

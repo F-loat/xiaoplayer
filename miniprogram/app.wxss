@@ -7,7 +7,6 @@ page {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 76);
   box-sizing: border-box;
 }
 
