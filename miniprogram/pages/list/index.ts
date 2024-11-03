@@ -10,6 +10,7 @@ Component({
   },
   data: {
     list: [] as string[],
+    filterValue: '',
   },
   lifetimes: {
     attached() {
@@ -31,12 +32,32 @@ Component({
       await store.player.playMusic(name, album);
     },
     handleLoadMore() {
+      const { filterValue } = this.data;
       const musiclist = getGlobalData('musiclist');
       const curlist = musiclist[this.data.name] || [];
+      const filteredList = filterValue
+        ? curlist.filter((item: string) => item.includes(filterValue))
+        : curlist;
       const loadedCount = this.data.list.length;
-      if (loadedCount >= curlist.length) return;
+      if (loadedCount >= filteredList.length) return;
       const count = (loadedCount / pageSize + 1) * pageSize;
-      this.setData({ list: curlist.slice(0, count) });
+      this.setData({ list: filteredList.slice(0, count) });
+    },
+    handleFilter(e: {
+      detail: {
+        value: string;
+      };
+    }) {
+      const { value } = e.detail;
+      const musiclist = getGlobalData('musiclist');
+      const curlist = musiclist[this.data.name] || [];
+      const filteredList = value
+        ? curlist.filter((item: string) => item.includes(value))
+        : curlist;
+      this.setData({
+        filterValue: value,
+        list: filteredList.slice(0, pageSize),
+      });
     },
   },
 });

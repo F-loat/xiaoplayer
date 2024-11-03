@@ -20,6 +20,7 @@ ComponentWithStore({
     connected: true,
     list: [] as Item[],
     error: null as null | string,
+    filterValue: '',
   },
   storeBindings: {
     store,
@@ -70,14 +71,18 @@ ComponentWithStore({
             if (a.name === '所有歌曲') return -1;
             return a.name === '收藏' && b.name !== '所有歌曲' ? -1 : 1;
           });
+        const { filterValue } = this.data;
+        const filteredList = filterValue
+          ? list.filter((item) => item.name.includes(filterValue))
+          : list;
         this.setData({
           connected: true,
-          list: list.slice(0, pageSize),
+          list: filteredList.slice(0, pageSize),
         });
         store.favorite.setMusics(res.data['收藏']);
         setGlobalData('musiclist', res.data);
       } catch (err) {
-        const message = (err as { errMsg: string }).errMsg;
+        const message = (err as { errMsg: string }).errMsg || '';
         this.setData({
           connected: false,
           error: message,
@@ -100,10 +105,14 @@ ComponentWithStore({
       }
     },
     handleLoadMore() {
+      const { filterValue } = this.data;
       const loadedCount = this.data.list.length;
-      if (loadedCount >= list.length) return;
+      const filteredList = filterValue
+        ? list.filter((item) => item.name.includes(filterValue))
+        : list;
+      if (loadedCount >= filteredList.length) return;
       const count = (loadedCount / pageSize + 1) * pageSize;
-      this.setData({ list: list.slice(0, count) });
+      this.setData({ list: filteredList.slice(0, count) });
     },
     handleRefresh() {
       wx.createSelectorQuery()
@@ -204,6 +213,27 @@ ComponentWithStore({
           });
         },
       });
+    },
+    handleFilter(e: {
+      detail: {
+        value: string;
+      };
+    }) {
+      const { value } = e.detail;
+      const filteredList = value
+        ? list.filter((item) => item.name.includes(value))
+        : list;
+      this.setData({
+        filterValue: value,
+        list: filteredList.slice(0, pageSize),
+      });
+    },
+    handleSearch(e: {
+      detail: {
+        value: string;
+      };
+    }) {
+      store.player.playMusic(e.detail.value);
     },
   },
 });

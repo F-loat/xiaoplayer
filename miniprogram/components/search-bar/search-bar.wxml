@@ -1,0 +1,4 @@
+<view class="flex items-center">
+  <input class="flex-1 h-8 leading-8 px-2 bg-[#f3f3f3] dark:bg-[#2c2c2c] rounded-2xl text-sm" placeholder="{{placeholder}}" placeholder-style="font-size: 14px;" bind:focus="handleFocus" bind:blur="handleBlur" bind:confirm="handleConfirm" bind:input="handleInput"></input>
+  <button wx:if="{{focus && value}}" size="mini" class="ml-2" bind:tap="handleSearch">{{btnText}}</button>
+</view>

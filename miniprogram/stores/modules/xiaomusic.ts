@@ -7,6 +7,7 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   speed = 1;
   volume = 20;
   syncTimer: number | null = null;
+  deboTimer: number | null = null;
 
   constructor(store: Store) {
     makeAutoObservable(this);
@@ -64,25 +65,30 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   };
 
   private syncMusic = async () => {
-    const res = await request<{
-      cur_music: string;
-      cur_playlist?: string;
-      is_playing: boolean;
-      offset: number;
-      duration: number;
-    }>({
-      url: `/playingmusic?did=${this.store.did}`,
-    });
-    const { cur_music, cur_playlist, is_playing, offset, duration } = res.data;
     if (this.store.did === 'host') return;
-    this.store.setData({
-      musicName: cur_music,
-      musicAlbum: cur_playlist,
-      status: is_playing ? 'playing' : 'paused',
-      currentTime: offset > 0 ? offset : 0,
-      duration: duration > 0 ? duration : 0,
-    });
-    this.store.updateCurrentTime();
+    if (this.deboTimer) clearTimeout(this.deboTimer);
+    this.deboTimer = setTimeout(async () => {
+      const res = await request<{
+        cur_music: string;
+        cur_playlist?: string;
+        is_playing: boolean;
+        offset: number;
+        duration: number;
+      }>({
+        url: `/playingmusic?did=${this.store.did}`,
+      });
+      const { cur_music, cur_playlist, is_playing, offset, duration } =
+        res.data;
+      if (this.store.did === 'host') return;
+      this.store.setData({
+        musicName: cur_music,
+        musicAlbum: cur_playlist,
+        status: is_playing ? 'playing' : 'paused',
+        currentTime: offset > 0 ? offset : 0,
+        duration: duration > 0 ? duration : 0,
+      });
+      this.store.updateCurrentTime();
+    }, 100);
   };
 
   private syncVolume = async () => {

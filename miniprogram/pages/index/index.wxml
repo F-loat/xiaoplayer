@@ -41,7 +41,10 @@
 <scroll-view wx:else id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y
   refresher-enabled bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}"
   bind:refresherrefresh="handleRefresh">
-  <view wx:for="{{list}}" wx:key="name"
+  <view class="mt-2">
+    <search-bar placeholder="请输入关键词" btnText="播放" bind:change="handleFilter" bind:search="handleSearch"></search-bar>
+  </view>
+  <view wx:for="{{list}}" wx:key="name" list-item
     class="flex items-baseline py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none"
     data-name="{{item.name}}" bind:tap="handleViewTap">
     <view class="truncate">

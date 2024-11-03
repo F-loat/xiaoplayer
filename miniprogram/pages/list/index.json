@@ -1,6 +1,7 @@
 {
   "usingComponents": {
     "fallback-app-bar": "/app-bar/fallback",
+    "search-bar": "/components/search-bar/search-bar",
     "navigation-bar": "/components/navigation-bar/navigation-bar"
   }
 }
