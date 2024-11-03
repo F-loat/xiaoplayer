@@ -17,7 +17,7 @@ ComponentWithStore({
   },
   lifetimes: {
     attached() {
-      store.setData({ menubar: false });
+      store.setData({ showAppBar: false });
       this.setData({
         devices: Object.values(store.devices),
         serverConfig: { ...store.serverConfig },
@@ -36,7 +36,7 @@ ComponentWithStore({
       );
     },
     detached() {
-      store.setData({ menubar: true });
+      store.setData({ showAppBar: true });
       this._disposer();
     },
   },

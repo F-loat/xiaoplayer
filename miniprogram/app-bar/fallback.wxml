@@ -1,0 +1,4 @@
+<music-bar wx:if="isPC"></music-bar>
+<view wx:else class="pb-[env(safe-area-inset-bottom)]">
+  <view class="py-2 h-14"></view>
+</view>

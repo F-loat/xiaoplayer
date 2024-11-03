@@ -1,9 +1,11 @@
 <!--index.wxml-->
 <navigation-bar back title="{{title || name}}"></navigation-bar>
 
-<scroll-view wx:if="{{!!list.length}}" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list"
+<scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list"
   show-scrollbar="{{false}}" bind:scrolltolower="handleLoadMore">
   <view wx:for="{{list}}" wx:key="*this" class="py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none" data-name="{{item}}" bind:tap="handleViewTap">
     {{item}}
   </view>
 </scroll-view>
+
+<fallback-app-bar></fallback-app-bar>

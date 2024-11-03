@@ -99,11 +99,17 @@ ComponentWithStore({
     initLayout() {
       const { windowWidth } = wx.getWindowInfo();
       const rect = wx.getMenuButtonBoundingClientRect();
-      const top = this.data.half ? 12 : rect.top;
+      if (this.data.half) {
+        this.setData({
+          wrapperStyle: 'padding: 8px 0;',
+          menuHeight: rect.height,
+        });
+        return;
+      }
       this.setData({
         wrapperStyle: `
-          height: calc(${rect.height} + ${top}px);
-          padding-top: ${top}px;
+          height: calc(${rect.height} + ${rect.top}px);
+          padding-top: ${rect.top}px;
           padding-right: ${windowWidth - rect.left}px
         `,
         titleWidth: `width: ${windowWidth - rect.left}px`,

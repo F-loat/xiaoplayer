@@ -28,7 +28,6 @@ ComponentWithStore({
         'musicName',
         'musicCover',
         'playOrder',
-        'menubar',
         'speed',
         'volume',
         'isFavorite',
@@ -50,6 +49,11 @@ ComponentWithStore({
         statusBarHeight,
         screenHeight,
       });
+
+      store.setData({ showAppBar: false });
+    },
+    detached() {
+      store.setData({ showAppBar: true });
     },
   },
 

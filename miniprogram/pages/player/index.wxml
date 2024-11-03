@@ -1,6 +1,6 @@
 <vertical-drag-gesture-handler worklet:ongesture="handleGesture">
 <view
-  class="absolute top-0 left-0 right-0 bottom-0 px-4 overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}">
+  class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}">
   <view class="flex flex-col overflow-hidden box-border">
     <view style="height: {{statusBarHeight}}px;" />
     <view class="flex flex-col justify-center flex-1">
@@ -8,7 +8,9 @@
     </view>
   </view>
 
-  <image mode="aspectFill" class="w-[686rpx] h-[686rpx] rounded-full mt-4" src="{{musicCover}}" />
+  <view class="mt-4">
+    <image mode="aspectFill" class="w-[680rpx] h-[680rpx] mx-auto rounded-full bg-[#8a859f]" src="{{musicCover}}" />
+  </view>
 
   <view class="flex flex-col text-lg mt-4">
     <view class="flex justify-between">
@@ -42,7 +44,7 @@
     <image class="w-5 h-5 opacity-60" src="/assets/icon/bofangliebiao.svg" bind:tap="handlePlayingList" />
   </view>
 
-  <view class="mt-5">
+  <view class="mt-2 pb-2">
     <slider value="{{volume}}" activeColor="#fff" backgroundColor="#fff6" block-size="{{16}}"
       bindchanging="handleVolumeChanging" bindchange="handleVolumeChange"></slider>
   </view>

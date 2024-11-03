@@ -1,19 +1,11 @@
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 import { store } from '../../stores';
-import { GestureState, PlayOrderType } from '../../types';
+import { GestureState } from '../../types';
 
 const progress = wx.worklet.shared(0);
 
 ComponentWithStore({
   properties: {},
-
-  data: {
-    orderIconMap: {
-      [PlayOrderType.One]: 'danquxunhuan',
-      [PlayOrderType.Rnd]: 'suijibofang',
-      [PlayOrderType.All]: 'liebiaoxunhuan',
-    },
-  },
 
   storeBindings: [
     {

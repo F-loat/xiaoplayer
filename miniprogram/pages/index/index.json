@@ -1,6 +1,6 @@
 {
   "usingComponents": {
-    "music-bar": "/components/music-bar/music-bar",
+    "fallback-app-bar": "/app-bar/fallback",
     "navigation-bar": "/components/navigation-bar/navigation-bar"
   }
 }

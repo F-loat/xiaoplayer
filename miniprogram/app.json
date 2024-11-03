@@ -10,6 +10,7 @@
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom"
   },
+  "appBar": {},
   "style": "v2",
   "darkmode": true,
   "renderer": "skyline",

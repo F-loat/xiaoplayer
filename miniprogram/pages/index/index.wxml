@@ -38,7 +38,7 @@
   </view>
 </view>
 
-<scroll-view wx:elif="{{!!list.length}}" id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y
+<scroll-view wx:else id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y
   refresher-enabled bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}"
   bind:refresherrefresh="handleRefresh">
   <view wx:for="{{list}}" wx:key="name"
@@ -51,4 +51,4 @@
   </view>
 </scroll-view>
 
-<music-bar></music-bar>
+<fallback-app-bar></fallback-app-bar>

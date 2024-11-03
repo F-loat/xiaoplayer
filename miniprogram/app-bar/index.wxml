@@ -1,0 +1,3 @@
+<view wx:if="{{showAppBar}}" class="absolute left-0 bottom-0 right-0">
+  <music-bar></music-bar>
+</view>

@@ -42,9 +42,9 @@ export class Store {
 
   serverConfig: ServerConfig = wx.getStorageSync('serverConfig') || {};
 
-  menubar = true;
   version: null | string = null;
   isPC = platform === 'windows' || platform === 'mac';
+  showAppBar = true;
 
   favorite: FavoriteModule;
   hostPlayer: MusicPlayer;
