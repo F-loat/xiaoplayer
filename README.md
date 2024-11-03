@@ -2,6 +2,8 @@
 
 > [xiaomusic](https://github.com/hanxi/xiaomusic) 小程序客户端，使用小爱音箱播放本地/NAS音乐
 
+原生小程序开发，采用 Skyline 渲染模式，支持全局工具栏及自定义路由效果，感谢由 [weapp-vite](https://github.com/weapp-vite/weapp-vite) 及 [weapp-tailwindcss](https://github.com/sonofmagic/weapp-tailwindcss) 提供的开箱即用的现代化开发体验
+
 ## 预览
 
 ### 小程序码
