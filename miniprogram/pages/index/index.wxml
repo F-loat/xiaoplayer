@@ -1,11 +1,15 @@
 <!--index.wxml-->
-<navigation-bar back="{{false}}" title="{{serverConfig.domain === serverConfig.privateDomain ? '音乐列表' : '音乐列表*'}}"
-  bind:tap="handleSwitchDomain">
+<template name="setting">
   <navigator slot="right" url="/pages/setting/index"
     class="w-full h-full rounded-full border-[0.5px] border-solid border-black border-opacity-10 box-border flex justify-center items-center transition-colors bg-white bg-opacity-60"
     hover-class="bg-gray-200">
     <image src="/assets/icon/shezhi.svg" class="w-3/5 h-3/5" />
   </navigator>
+</template>
+
+<navigation-bar back="{{false}}" title="{{serverConfig.domain === serverConfig.privateDomain ? '音乐列表' : '音乐列表*'}}"
+  bind:tap="handleSwitchDomain">
+  <template is="setting" />
 </navigation-bar>
 
 <view wx:if="{{!serverConfig.domain || !connected}}" class="flex-1 flex justify-center items-center">
@@ -38,11 +42,14 @@
   </view>
 </view>
 
-<scroll-view wx:else id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y
-  refresher-enabled bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}"
-  bind:refresherrefresh="handleRefresh">
+<scroll-view wx:else id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y refresher-enabled
+  bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}" bind:refresherrefresh="handleRefresh">
   <view class="mt-2">
-    <search-bar placeholder="请输入关键词" btnText="播放" bind:change="handleFilter" bind:search="handleSearch"></search-bar>
+    <search-bar placeholder="请输入关键词" btnText="播放" bind:change="handleFilter" bind:search="handleSearch">
+      <view wx:if="{{isPC}}" class="h-7 w-7 ml-2">
+        <template is="setting" />
+      </view>
+    </search-bar>
   </view>
   <view wx:for="{{list}}" wx:key="name" list-item
     class="flex items-baseline py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none"

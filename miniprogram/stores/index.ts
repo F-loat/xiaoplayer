@@ -34,6 +34,8 @@ export class Store {
   musicLyricCurrent: { index: number; lrc: string } = { index: 0, lrc: '' };
   musicLyricLoading = false;
 
+  musicM3U8Url?: string;
+
   duration = 0;
   currentTime = 0;
 
@@ -272,7 +274,7 @@ export class Store {
           album_img?: string;
         };
         if (!result) return;
-        const musicLyric = parseLrc(result.lyric);
+        const musicLyric = this.musicM3U8Url ? [] : parseLrc(result.lyric);
         const musicCover = result.album_img || DEFAULT_COVER;
         this.setData({
           musicLyric,

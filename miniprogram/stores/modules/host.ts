@@ -1,6 +1,11 @@
 import { makeAutoObservable, reaction } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
-import { getGlobalData, isPrivateDomain, request } from '@/miniprogram/utils';
+import {
+  getGlobalData,
+  isPrivateDomain,
+  removeProtocol,
+  request,
+} from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
 
 let innerAudioContext: WechatMiniprogram.InnerAudioContext;
@@ -60,17 +65,23 @@ export class HostPlayerModule implements MusicPlayer {
       url: `/musicinfo?name=${musicName}`,
     });
 
+    const url = res.data.url || '';
+    innerAudioContext?.destroy();
+    const isM3U8 = url.split('?')[0].endsWith('m3u8');
+    if (isM3U8) {
+      this.store.setData({ musicM3U8Url: url });
+      return;
+    }
     wx.showLoading({
       title: '加载中',
     });
-    innerAudioContext?.destroy();
     innerAudioContext = wx.createInnerAudioContext();
     innerAudioContext.volume = this.volume / 100;
     innerAudioContext.playbackRate = this.speed;
-    const { domain } = this.store.serverConfig;
+    const { domain, publicDomain = '' } = this.store.serverConfig;
     innerAudioContext.src = isPrivateDomain(domain)
-      ? res.data.url
-      : res.data.url?.replace(/:\/\/.*?\//, `://${domain}/`);
+      ? url
+      : url.replace(removeProtocol(domain), removeProtocol(publicDomain));
     innerAudioContext.play();
     innerAudioContext.onCanplay(() => {
       wx.hideLoading();

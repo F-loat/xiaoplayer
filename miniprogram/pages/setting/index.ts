@@ -19,7 +19,13 @@ ComponentWithStore({
     attached() {
       store.setData({ showAppBar: false });
       this.setData({
-        devices: Object.values(store.devices),
+        devices: Object.values(store.devices).concat({
+          name: '本机',
+          did: 'host',
+          hardware: '本机',
+          cur_music: store.did === 'host' ? store.musicName : undefined,
+          cur_playlist: store.did === 'host' ? store.musicAlbum : undefined,
+        }),
         serverConfig: { ...store.serverConfig },
       });
       this.syncDeviceStatus();
@@ -52,6 +58,10 @@ ComponentWithStore({
     },
     syncDeviceStatus() {
       this.data.devices.forEach(async (device) => {
+        if (device.did === 'host') {
+          store.player.pauseMusic();
+          return;
+        }
         const res = await request<{
           cur_music: string;
           is_playing: boolean;
@@ -81,7 +91,7 @@ ComponentWithStore({
       this.setData({
         serverConfig: {
           ...this.data.serverConfig,
-          [name]: e.detail.value.trim().replace(/\/$/, ''),
+          [name]: e.detail.value,
         },
       });
     },
@@ -91,11 +101,14 @@ ComponentWithStore({
         icon: 'none',
       });
       const { serverConfig } = this.data;
+      const { privateDomain, publicDomain } = serverConfig;
       const config = {
         ...serverConfig,
+        publicDomain: publicDomain?.trim().replace(/\/$/, ''),
+        privateDomain: privateDomain?.trim().replace(/\/$/, ''),
         domain: isPrivateDomain(serverConfig.domain)
-          ? serverConfig.privateDomain || serverConfig.publicDomain!
-          : serverConfig.publicDomain!,
+          ? privateDomain || publicDomain!
+          : publicDomain!,
       };
       store.setServerConfig(config);
       await store.initSettings();

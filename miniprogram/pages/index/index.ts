@@ -233,7 +233,7 @@ ComponentWithStore({
         value: string;
       };
     }) {
-      store.player.playMusic(e.detail.value);
+      store.player.playMusic(e.detail.value, '');
     },
   },
 });

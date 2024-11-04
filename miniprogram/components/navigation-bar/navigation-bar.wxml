@@ -22,7 +22,3 @@
     </view>
   </view>
 </view>
-
-<view wx:else class="absolute top-2 right-2" style="width:{{menuHeight}}px;height:{{menuHeight}}px;">
-  <slot name="right"></slot>
-</view>
