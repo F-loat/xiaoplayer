@@ -1,13 +1,14 @@
-import { reaction, action, makeAutoObservable } from 'mobx-miniprogram';
-import { getCloudInstance, parseLrc, request } from '../utils';
+import { reaction, makeAutoObservable } from 'mobx-miniprogram';
+import { request } from '../utils';
 import { Device, PlayOrderType, ServerConfig } from '../types';
 import { HostPlayerModule } from './modules/host';
 import { XiaomusicPlayerModule } from './modules/xiaomusic';
 import { FavoriteModule } from './modules/favorite';
+import { LyricModule } from './modules/lyric';
 
 const { platform } = wx.getDeviceInfo();
 
-const DEFAULT_COVER =
+export const DEFAULT_COVER =
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201812%2F12%2F20181212223741_etgxt.jpg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1705583419&t=8b8402f169f865f34c2f16649b0ba6d8';
 
 export interface MusicPlayer {
@@ -38,25 +39,24 @@ export class Store {
 
   duration = 0;
   currentTime = 0;
-
-  devices: Record<string, Device> = {};
   playOrder: PlayOrderType = PlayOrderType.All;
+  playTimer: number | null = null;
 
+  showAppBar = true;
+  version: null | string = null;
+  devices: Record<string, Device> = {};
+  isPC = platform === 'windows' || platform === 'mac';
   serverConfig: ServerConfig = wx.getStorageSync('serverConfig') || {};
 
-  version: null | string = null;
-  isPC = platform === 'windows' || platform === 'mac';
-  showAppBar = true;
-
+  lyric: LyricModule;
   favorite: FavoriteModule;
   hostPlayer: MusicPlayer;
   xiaomusicPlayer: MusicPlayer;
 
-  playTimer: number | null = null;
-
   constructor() {
     makeAutoObservable(this);
 
+    this.lyric = new LyricModule(this);
     this.favorite = new FavoriteModule(this);
     this.hostPlayer = new HostPlayerModule(this);
     this.xiaomusicPlayer = new XiaomusicPlayerModule(this);
@@ -74,39 +74,9 @@ export class Store {
         if (this.playTimer) clearTimeout(this.playTimer);
         this.setData({ musicLyric: [], currentTime: 0, duration: 0 });
         if (name) {
-          this.fetchMusicTag(name, this.musicAlbum);
+          this.lyric.fetchMusicTag(name, this.musicAlbum);
         } else {
           this.setData({ musicCover: DEFAULT_COVER });
-        }
-      },
-    );
-
-    reaction(
-      () => this.musicLyric,
-      (val) => {
-        this.setData({
-          musicLyricCurrent: {
-            index: 0,
-            lrc: val[0]?.lrc,
-          },
-        });
-      },
-    );
-    reaction(
-      () => this.currentTime,
-      (val) => {
-        const { index: currentIndex } = this.musicLyricCurrent;
-        const currentTime = val * 1000;
-        const nextIndex = currentIndex + 1;
-        const nextLyric = this.musicLyric[nextIndex];
-        const { time: nextTime, lrc } = nextLyric || {};
-        if (nextTime && nextTime < currentTime) {
-          this.setData({
-            musicLyricCurrent: {
-              lrc,
-              index: nextIndex,
-            },
-          });
         }
       },
     );
@@ -219,71 +189,6 @@ export class Store {
         cmd,
         did: did || this.did,
       },
-    });
-  };
-
-  private fetchMusicTag = async (name: string, album: string = '') => {
-    this.musicLyricLoading = true;
-
-    let musicName = name.replace(/^\d+\.\s?/g, '').trim();
-    let musicAlbum = album.replace(/（.*）/g, '').trim();
-    let musicArtist;
-
-    if (this.version) {
-      const [a, b, c] = this.version.split('.').map(Number);
-      if (a > 0 || b > 3 || (b > 2 && c > 37)) {
-        const res = await request<{
-          tags: {
-            album?: string;
-            artist?: string;
-            genre?: string;
-            lyrics?: string;
-            picture?: string;
-            title?: string;
-            year?: string;
-          };
-        }>({
-          url: `/musicinfo?name=${name}&musictag=true`,
-        });
-        const { tags } = res.data;
-        if (tags.title) musicName = tags.title;
-        if (tags.album) musicAlbum = tags.album;
-        if (tags.artist) musicArtist = tags.artist;
-        if (tags.picture && tags.lyrics) {
-          this.setData({
-            musicLyric: parseLrc(tags.lyrics),
-            musicCover: tags.picture,
-          });
-          this.musicLyricLoading = false;
-          return;
-        }
-      }
-    }
-
-    const cloud = await getCloudInstance();
-    cloud.callFunction({
-      name: 'musictag',
-      data: {
-        title: musicName,
-        album: musicAlbum,
-        artist: musicArtist,
-      },
-      success: (res) => {
-        const result = res.result as {
-          lyric: string;
-          album_img?: string;
-        };
-        if (!result) return;
-        const musicLyric = this.musicM3U8Url ? [] : parseLrc(result.lyric);
-        const musicCover = result.album_img || DEFAULT_COVER;
-        this.setData({
-          musicLyric,
-          musicCover,
-        });
-      },
-      complete: action(() => {
-        this.musicLyricLoading = false;
-      }),
     });
   };
 

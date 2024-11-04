@@ -45,6 +45,7 @@ export class HostPlayerModule implements MusicPlayer {
       musicAlbum,
       status: 'playing',
       currentTime: 0,
+      musicM3U8Url: undefined,
     });
 
     if (!name && innerAudioContext?.src) {
