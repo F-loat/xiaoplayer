@@ -46,6 +46,9 @@ Component({
         value: this.data.value,
       });
       this.setData({ value: '' });
+      this.triggerEvent('change', {
+        value: '',
+      });
     },
   },
 });
