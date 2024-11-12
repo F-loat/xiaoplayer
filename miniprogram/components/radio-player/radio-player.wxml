@@ -1,0 +1,1 @@
+<video wx:if="{{musicM3U8Url && status === 'playing'}}" src="{{musicM3U8Url}}" autoplay class="h-0 absolute"></video>

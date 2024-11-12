@@ -24,7 +24,7 @@ ComponentWithStore({
   },
   storeBindings: {
     store,
-    fields: ['serverConfig', 'isPC'] as const,
+    fields: ['serverConfig', 'isPC', 'status', 'musicM3U8Url'] as const,
     actions: [] as const,
   },
   lifetimes: {

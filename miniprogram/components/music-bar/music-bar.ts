@@ -17,7 +17,6 @@ ComponentWithStore({
         'musicName',
         'musicCover',
         'musicLyricCurrent',
-        'musicM3U8Url',
       ] as const,
       actions: [] as const,
     },

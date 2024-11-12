@@ -21,5 +21,3 @@
 		</view>
 	</view>
 </vertical-drag-gesture-handler>
-
-<video wx:if="{{musicM3U8Url && status === 'playing'}}" src="{{musicM3U8Url}}" background-poster="{{musicCover}}" autoplay class="h-0 absolute"></video>
