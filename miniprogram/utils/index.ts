@@ -46,8 +46,9 @@ export const formatTime = (date: Date) => {
   );
 };
 
-export const removeProtocol = (domain: string) =>
-  domain.replace(/^https?\:\/\//, '');
+export const removeProtocol = (domain: string) => {
+  return domain.replace(/^https?\:\/\//, '');
+};
 
 export const isPrivateDomain = (domain: string) => {
   const ip = removeProtocol(domain).split(':')[0];

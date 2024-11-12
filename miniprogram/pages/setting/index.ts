@@ -108,7 +108,7 @@ ComponentWithStore({
         privateDomain: privateDomain?.trim().replace(/\/$/, ''),
         domain: isPrivateDomain(serverConfig.domain)
           ? privateDomain || publicDomain!
-          : publicDomain!,
+          : publicDomain || privateDomain!,
       };
       store.setServerConfig(config);
       await store.initSettings();
