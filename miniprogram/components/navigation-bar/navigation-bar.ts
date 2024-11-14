@@ -116,14 +116,17 @@ ComponentWithStore({
         menuHeight: rect.height,
       });
     },
+    handleTitleTap() {
+      this.triggerEvent('titletap');
+    },
     back() {
-      const data = this.data;
-      if (data.delta) {
+      const { delta } = this.data;
+      if (delta) {
         wx.navigateBack({
-          delta: data.delta,
+          delta,
         });
       }
-      this.triggerEvent('back', { delta: data.delta }, {});
+      this.triggerEvent('back', { delta }, {});
     },
   },
 });

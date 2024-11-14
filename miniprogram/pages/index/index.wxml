@@ -8,7 +8,7 @@
 </template>
 
 <navigation-bar back="{{false}}" title="{{serverConfig.domain === serverConfig.privateDomain ? '音乐列表' : '音乐列表*'}}"
-  bind:tap="handleSwitchDomain">
+  bind:titletap="handleSwitchDomain">
   <template is="setting" />
 </navigation-bar>
 

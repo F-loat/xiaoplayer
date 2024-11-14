@@ -8,7 +8,7 @@
         aria-label="返回">
         <image class="w-6 h-6 opacity-80 scale-80 invert-icon" mode="aspectFill" src="/assets/icon/fanhui.svg" />
       </view>
-      <block wx:if="{{title}}">
+      <block wx:if="{{title}}" bind:tap="handleTitleTap">
         <text class="truncate font-bold text-[17px]">{{title}}</text>
       </block>
       <block wx:else>
