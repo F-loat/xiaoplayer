@@ -14,8 +14,8 @@
 
   <view class="flex flex-col text-lg mt-4">
     <view class="flex justify-between">
-      <text>{{musicName || 'xiaoplayer'}}</text>
-      <view class="flex items-center">
+      <text overflow="ellipsis">{{musicName || 'xiaoplayer'}}</text>
+      <view class="flex shrink-0 items-center">
         <image wx:if="{{did === 'host'}}" class="w-[36rpx] h-[36rpx] p-1" src="/assets/icon/beisu{{speed}}.svg"
           bind:tap="handleSpeed" />
         <image wx:else class="w-5 h-5 p-1" src="/assets/icon/{{isFavorite ? 'yishoucang' : 'shoucang'}}.svg"

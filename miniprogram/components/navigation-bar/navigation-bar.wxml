@@ -4,13 +4,11 @@
 
     <!-- 左侧按钮 -->
     <view class='flex-1 pr-10 relative pl-4 flex items-center h-full box-border' style="{{titleWidth}};">
-      <view wx:if="{{back}}" bindtap="back" class="mr-1" hover-class="opacity-50" hover-stay-time="100" aria-role="button"
+      <view wx:if="{{back}}" bind:tap="back" class="mr-1" hover-class="opacity-50" hover-stay-time="100" aria-role="button"
         aria-label="返回">
         <image class="w-6 h-6 opacity-80 scale-80 invert-icon" mode="aspectFill" src="/assets/icon/fanhui.svg" />
       </view>
-      <block wx:if="{{title}}" bind:tap="handleTitleTap">
-        <text class="truncate font-bold text-[17px]">{{title}}</text>
-      </block>
+      <text wx:if="{{title}}" class="truncate font-bold text-[17px]" bind:tap="handleTitleTap">{{title}}</text>
       <block wx:else>
         <slot name="left"></slot>
       </block>
