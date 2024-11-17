@@ -35,7 +35,7 @@
     <large-lyric class="{{mode === 'lyric' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle"></large-lyric>
   </view>
 
-  <view class="mt-4">
+  <view class="mt-2">
     <time-bar></time-bar>
   </view>
   <view class="flex justify-between items-center px-3 mt-2">

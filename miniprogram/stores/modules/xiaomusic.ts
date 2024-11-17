@@ -82,6 +82,8 @@ export class XiaomusicPlayerModule implements MusicPlayer {
     this.syncMusic();
   };
 
+  seekMusic = async () => {};
+
   private syncMusic = async () => {
     if (this.store.did === 'host') return;
     if (this.deboTimer) clearTimeout(this.deboTimer);

@@ -45,6 +45,15 @@ export class LyricModule {
     );
   }
 
+  findCurrentIndex = (time: number) => {
+    let index = 0;
+    const list = this.store.musicLyric;
+    while (list[index] && list[index].time < time * 1000) {
+      index += 1;
+    }
+    return index;
+  };
+
   fetchMusicTag = async (name: string, album: string = '') => {
     this.store.setData({ musicLyricLoading: true });
 

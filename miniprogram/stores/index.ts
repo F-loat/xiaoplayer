@@ -20,6 +20,7 @@ export interface MusicPlayer {
   getMusic: () => { url?: string };
   playMusic: (name?: string, album?: string) => Promise<void>;
   pauseMusic(): Promise<void>;
+  seekMusic: (time: number) => Promise<void>;
   playPrevMusic(): Promise<void>;
   playNextMusic(): Promise<void>;
   handleMusicEnd(): Promise<void>;

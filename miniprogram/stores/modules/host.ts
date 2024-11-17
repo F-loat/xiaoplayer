@@ -182,6 +182,20 @@ export class HostPlayerModule implements MusicPlayer {
     this.store.setData({ status: 'paused' });
   };
 
+  seekMusic = async (time: number) => {
+    innerAudioContext.seek(time);
+    this.store.setData({
+      currentTime: time,
+    });
+    const index = this.store.lyric.findCurrentIndex(time);
+    this.store.setData({
+      musicLyricCurrent: {
+        index,
+        lrc: this.store.musicLyric[index]?.lrc,
+      },
+    });
+  };
+
   setVolume = (volume: number) => {
     this.volume = volume;
     if (innerAudioContext) {
