@@ -9,7 +9,7 @@
   </view>
 
   <view>
-    <view class="mt-4" bind:tap="handleModeToggle">
+    <view class="mt-4" bind:tap="handleModeToggle" bind:longpress="handleCopyLink">
       <image mode="aspectFill" class="w-[680rpx] h-[680rpx] mx-auto rounded-full bg-[#8a859f]" src="{{musicCover}}" />
     </view>
 
@@ -28,11 +28,11 @@
       <text class="text-sm">{{currentDevice.name}}</text>
     </view>
 
-    <view class="mt-2 {{mode === 'cover' ? 'visible' : 'invisible'}}">
+    <view class="mt-2 {{mode === 'cover' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle">
       <lyric></lyric>
     </view>
 
-    <large-lyric wx:if="{{mode === 'lyric'}}" bind:tap="handleModeToggle"></large-lyric>
+    <large-lyric class="{{mode === 'lyric' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle"></large-lyric>
   </view>
 
   <view class="mt-4">

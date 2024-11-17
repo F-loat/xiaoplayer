@@ -9,7 +9,7 @@ ComponentWithStore({
   properties: {},
 
   data: {
-    mode: wx.getStorageSync('player-mode') || ('cover' as 'cover' | 'lyric'),
+    mode: 'cover' as 'cover' | 'lyric',
     statusBarHeight: 0,
     screenHeight: 0,
     orderIconMap: {
@@ -44,11 +44,13 @@ ComponentWithStore({
 
   lifetimes: {
     attached() {
+      const mode = wx.getStorageSync('player-mode');
       const { statusBarHeight, screenHeight } = wx.getWindowInfo();
 
       this.setData({
         statusBarHeight,
         screenHeight,
+        mode: mode || 'cover',
       });
 
       store.setData({ showAppBar: false });
@@ -208,6 +210,33 @@ ComponentWithStore({
       wx.navigateTo({
         url: '/pages/list/playing',
         routeType: 'wx://bottom-sheet',
+      });
+    },
+
+    handleCopyLink() {
+      if (store.did !== 'host') {
+        wx.showToast({
+          title: '本机播放时可长按复制歌曲链接',
+          icon: 'none',
+        });
+        return;
+      }
+      const { url } = store.hostPlayer.getMusic();
+      if (!url) {
+        wx.showToast({
+          title: '暂无播放中的歌曲',
+          icon: 'none',
+        });
+        return;
+      }
+      wx.setClipboardData({
+        data: url,
+        success: () => {
+          wx.showToast({
+            title: '歌曲链接已复制～',
+            icon: 'none',
+          });
+        },
       });
     },
   },

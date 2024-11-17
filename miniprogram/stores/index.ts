@@ -17,6 +17,7 @@ export interface MusicPlayer {
   setSpeed: (speed: number) => void;
   setStopAt: (minute: number) => void;
   setVolume: (volume: number) => Promise<any> | void;
+  getMusic: () => { url?: string };
   playMusic: (name?: string, album?: string) => Promise<void>;
   pauseMusic(): Promise<void>;
   playPrevMusic(): Promise<void>;

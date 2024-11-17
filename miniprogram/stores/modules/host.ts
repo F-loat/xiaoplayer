@@ -31,6 +31,12 @@ export class HostPlayerModule implements MusicPlayer {
     wx.setStorageSync('musicList', list);
   }
 
+  getMusic() {
+    return {
+      url: innerAudioContext?.src,
+    };
+  }
+
   playMusic = async (name?: string, album?: string) => {
     const musicName = name || this.store.musicName;
     const musicAlbum = album || this.store.musicAlbum;
