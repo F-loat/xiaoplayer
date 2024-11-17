@@ -59,7 +59,12 @@ ComponentWithStore({
     syncDeviceStatus() {
       this.data.devices.forEach(async (device) => {
         if (device.did === 'host') {
-          store.player.pauseMusic();
+          this.setData({
+            status: {
+              ...this.data.status,
+              [device.did]: store.status === 'playing',
+            },
+          });
           return;
         }
         const res = await request<{
@@ -127,6 +132,10 @@ ComponentWithStore({
     async handleStopMusic() {
       const queue = Object.entries(this.data.status).map(([did, playing]) => {
         if (!playing) return Promise.resolve();
+        if (did === 'host') {
+          store.player.pauseMusic();
+          return true;
+        }
         return store.sendCommand('关机', did);
       });
       const res = await Promise.all(queue);

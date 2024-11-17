@@ -1,11 +1,6 @@
 import { makeAutoObservable, reaction } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
-import {
-  getGlobalData,
-  isPrivateDomain,
-  removeProtocol,
-  request,
-} from '@/miniprogram/utils';
+import { getGlobalData, removeProtocol, request } from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
 
 let innerAudioContext: WechatMiniprogram.InnerAudioContext;
@@ -138,6 +133,10 @@ export class HostPlayerModule implements MusicPlayer {
       });
       return;
     }
+    if (this.list.length === 1) {
+      const musiclist = getGlobalData('musiclist');
+      this.setList(musiclist[this.store.musicAlbum || '所有歌曲'] || []);
+    }
     const index = this.list.indexOf(this.store.musicName);
     if (index === -1) {
       this.playMusic(this.list[0]);
@@ -154,6 +153,10 @@ export class HostPlayerModule implements MusicPlayer {
         icon: 'none',
       });
       return;
+    }
+    if (this.list.length === 1) {
+      const musiclist = getGlobalData('musiclist');
+      this.setList(musiclist[this.store.musicAlbum || '所有歌曲'] || []);
     }
     const index = this.list.indexOf(this.store.musicName);
     if (index === -1) {

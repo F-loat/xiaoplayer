@@ -45,7 +45,10 @@ export class Store {
   showAppBar = true;
   version: null | string = null;
   devices: Record<string, Device> = {};
-  isPC = platform === 'windows' || platform === 'mac';
+  isPC =
+    platform === 'windows' ||
+    platform === 'mac' ||
+    !wx.getSkylineInfoSync?.().isSupported;
   serverConfig: ServerConfig = wx.getStorageSync('serverConfig') || {};
 
   lyric: LyricModule;

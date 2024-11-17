@@ -98,7 +98,7 @@ export class XiaomusicPlayerModule implements MusicPlayer {
         musicName: cur_music,
         musicAlbum: cur_playlist,
         status: is_playing ? 'playing' : 'paused',
-        currentTime: offset > 0 ? offset : 0,
+        currentTime: offset > 0 && offset < duration ? offset : 0,
         duration: duration > 0 ? duration : 0,
       });
       this.store.updateCurrentTime();
