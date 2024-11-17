@@ -9,6 +9,7 @@ ComponentWithStore({
   properties: {},
 
   data: {
+    mode: wx.getStorageSync('player-mode') || ('cover' as 'cover' | 'lyric'),
     statusBarHeight: 0,
     screenHeight: 0,
     orderIconMap: {
@@ -74,6 +75,12 @@ ComponentWithStore({
         progress.value = 0;
         wx.worklet.runOnJS(this.handleClose)('Skyline');
       }
+    },
+
+    handleModeToggle() {
+      const mode = this.data.mode === 'cover' ? 'lyric' : 'cover';
+      this.setData({ mode });
+      wx.setStorageSync('player-mode', mode);
     },
 
     async handlePlayToggle() {

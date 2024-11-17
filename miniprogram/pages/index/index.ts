@@ -65,7 +65,9 @@ ComponentWithStore({
             count: items.length,
           }))
           .filter(({ name, count }) => {
-            return count && !['全部', '临时搜索列表'].includes(name);
+            return (
+              count && !['全部', '临时搜索列表', '所有电台'].includes(name)
+            );
           })
           .sort((a, b) => {
             if (a.name === '所有歌曲') return -1;

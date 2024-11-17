@@ -8,27 +8,31 @@
     </view>
   </view>
 
-  <view class="mt-4">
-    <image mode="aspectFill" class="w-[680rpx] h-[680rpx] mx-auto rounded-full bg-[#8a859f]" src="{{musicCover}}" />
-  </view>
-
-  <view class="flex flex-col text-lg mt-4">
-    <view class="flex justify-between">
-      <text overflow="ellipsis">{{musicName || 'xiaoplayer'}}</text>
-      <view class="flex shrink-0 items-center">
-        <image wx:if="{{did === 'host'}}" class="w-[36rpx] h-[36rpx] p-1" src="/assets/icon/beisu{{speed}}.svg"
-          bind:tap="handleSpeed" />
-        <image wx:else class="w-5 h-5 p-1" src="/assets/icon/{{isFavorite ? 'yishoucang' : 'shoucang'}}.svg"
-          bind:tap="handleToggleFavorite" />
-        <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
-        <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchSound" />
-      </view>
+  <view>
+    <view class="mt-4" bind:tap="handleModeToggle">
+      <image mode="aspectFill" class="w-[680rpx] h-[680rpx] mx-auto rounded-full bg-[#8a859f]" src="{{musicCover}}" />
     </view>
-    <text class="text-sm">{{currentDevice.name}}</text>
-  </view>
 
-  <view class="mt-2">
-    <lyric></lyric>
+    <view class="flex flex-col text-lg mt-4">
+      <view class="flex justify-between">
+        <text overflow="ellipsis">{{musicName || 'xiaoplayer'}}</text>
+        <view class="flex shrink-0 items-center">
+          <image wx:if="{{did === 'host'}}" class="w-[36rpx] h-[36rpx] p-1" src="/assets/icon/beisu{{speed}}.svg"
+            bind:tap="handleSpeed" />
+          <image wx:else class="w-5 h-5 p-1" src="/assets/icon/{{isFavorite ? 'yishoucang' : 'shoucang'}}.svg"
+            bind:tap="handleToggleFavorite" />
+          <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
+          <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchSound" />
+        </view>
+      </view>
+      <text class="text-sm">{{currentDevice.name}}</text>
+    </view>
+
+    <view class="mt-2 {{mode === 'cover' ? 'visible' : 'invisible'}}">
+      <lyric></lyric>
+    </view>
+
+    <large-lyric wx:if="{{mode === 'lyric'}}" bind:tap="handleModeToggle"></large-lyric>
   </view>
 
   <view class="mt-4">
@@ -47,6 +51,11 @@
   <view class="mt-2 pb-2">
     <slider value="{{volume}}" activeColor="#fff" backgroundColor="#fff6" block-size="{{16}}"
       bindchanging="handleVolumeChanging" bindchange="handleVolumeChange"></slider>
+  </view>
+
+  <view wx:if="{{mode === 'lyric'}}" class="flex justify-between items-center text-lg mt-2">
+    <text overflow="ellipsis">{{musicName || 'xiaoplayer'}}</text>
+    <text class="text-sm shrink-0">{{currentDevice.name}}</text>
   </view>
 </view>
 </vertical-drag-gesture-handler>

@@ -1,17 +1,16 @@
 <view class="h-8 -mb-8 z-10 pointer-events-none" style="background: linear-gradient(to bottom, #7e7a91, transparent);">
 </view>
 
-<view class="h-[154px] overflow-hidden">
-  <view class="flex flex-col items-center py-[66px] text-[16px] leading-[22px] transition-transform duration-300"
-    style="transform: translate(0, {{-musicLyricCurrent.index * 23}}px);">
-    <block wx:if="{{musicLyric.length}}">
-      <view wx:for="{{musicLyric}}" wx:key="time"
-        class="transition-opacity {{index === musicLyricCurrent.index ? 'opacity-100': 'opacity-60'}}">
-        {{item.lrc}}</view>
-    </block>
-    <view wx:else>{{musicLyricLoading ? '歌词加载中...' : '暂无歌词'}}</view>
-  </view>
-</view>
+<scroll-view class="h-[154px] text-[16px] text-center leading-[22px]" scroll-into-view="item-{{musicLyricCurrent.index}}" scroll-into-view-offset="{{-66}}" scroll-with-animation show-scrollbar="{{false}}">
+  <view class="h-[66px]"></view>
+  <block wx:if="{{musicLyric.length}}">
+    <view wx:for="{{musicLyric}}" wx:key="time" id="item-{{index}}"
+      class="transition-opacity {{index === musicLyricCurrent.index ? 'opacity-100': 'opacity-60'}}">
+      {{item.lrc}}</view>
+  </block>
+  <view wx:else>{{musicLyricLoading ? '歌词加载中...' : '暂无歌词'}}</view>
+  <view class="h-32"></view>
+</scroll-view>
 
 <view class="h-8 -mt-8 z-10 pointer-events-none" style="background: linear-gradient(to top, #7e7a91, transparent);">
 </view>

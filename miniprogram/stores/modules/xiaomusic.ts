@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
-import { request } from '@/miniprogram/utils';
+import { request, sleep } from '@/miniprogram/utils';
 
 export class XiaomusicPlayerModule implements MusicPlayer {
   store: Store;
@@ -54,12 +54,22 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   };
 
   playPrevMusic = async () => {
+    this.store.setData({
+      status: 'loading',
+      currentTime: 0,
+    });
     await this.store.sendCommand('上一首');
-    this.syncMusic();
+    await sleep(1000);
+    await this.syncMusic();
   };
 
   playNextMusic = async () => {
+    this.store.setData({
+      status: 'loading',
+      currentTime: 0,
+    });
     await this.store.sendCommand('下一首');
+    await sleep(1000);
     await this.syncMusic();
   };
 

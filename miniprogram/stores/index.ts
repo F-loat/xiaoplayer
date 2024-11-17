@@ -26,7 +26,7 @@ export interface MusicPlayer {
 
 export class Store {
   did: null | string = wx.getStorageSync('did');
-  status: 'paused' | 'playing' = 'paused';
+  status: 'paused' | 'loading' | 'playing' = 'paused';
 
   musicName: string;
   musicCover: string;

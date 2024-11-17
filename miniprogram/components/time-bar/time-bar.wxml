@@ -11,7 +11,7 @@
 </wxs>
 
 <view class="bg-white bg-opacity-40 h-0.5 rounded">
-	<view class="bg-white h-full transition-all rounded origin-left" style="transform: scale({{currentTime ? currentTime / duration : 0}}, 1)"></view>
+	<view wx:if="{{duration}}" class="bg-white h-full transition-all rounded origin-left" style="transform: scale({{currentTime ? currentTime / duration : 0}}, 1)"></view>
 </view>
 <view class="flex justify-between text-xs mt-1 opacity-80">
 	<view>{{render.renderTime(currentTime)}}</view>
