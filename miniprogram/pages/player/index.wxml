@@ -1,9 +1,9 @@
 <vertical-drag-gesture-handler worklet:ongesture="handleGesture">
 <view
   class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}">
-  <view class="flex flex-col overflow-hidden box-border">
+  <view class="flex flex-col  shrink-0 overflow-hidden box-border">
     <view style="height: {{statusBarHeight}}px;" />
-    <view class="flex flex-col justify-center flex-1">
+    <view class="flex flex-col justify-center flex-1 pt-3">
       <image class="w-6 h-6" mode="aspectFill" src="/assets/icon/shouqi.svg" bind:tap="handleClose" />
     </view>
   </view>
@@ -22,7 +22,7 @@
           <image wx:else class="w-5 h-5 p-1" src="/assets/icon/{{isFavorite ? 'yishoucang' : 'shoucang'}}.svg"
             bind:tap="handleToggleFavorite" />
           <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
-          <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchSound" />
+          <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchDevice" />
         </view>
       </view>
       <text class="text-sm">{{currentDevice.name}}</text>
@@ -53,9 +53,9 @@
       bindchanging="handleVolumeChanging" bindchange="handleVolumeChange"></slider>
   </view>
 
-  <view wx:if="{{mode === 'lyric'}}" class="flex justify-between items-center text-lg mt-2">
+  <view wx:if="{{mode === 'lyric'}}" class="flex justify-between items-center text-lg pb-2">
     <text overflow="ellipsis">{{musicName || 'xiaoplayer'}}</text>
-    <text class="text-sm shrink-0">{{currentDevice.name}}</text>
+    <text class="text-sm shrink-0" bind:tap="handleSwitchDevice">{{currentDevice.name}}</text>
   </view>
 </view>
 </vertical-drag-gesture-handler>

@@ -1,7 +1,7 @@
-<view class="absolute top-0 right-0 left-0 h-8 z-10 pointer-events-none"  style="background: linear-gradient(to bottom, #7e7a91, transparent);">
+<view class="absolute top-0 right-0 left-0 h-8 z-10 pointer-events-none" style="background: linear-gradient(to bottom, #7e7a91, transparent);">
 </view>
 
-<scroll-view class="absolute top-4 right-0 left-0 bottom-0 px-4 box-border bg-[#7e7a91] z-10" scroll-into-view="item-{{musicLyricCurrent.index}}" scroll-with-animation show-scrollbar="{{false}}" scroll-into-view-offset="{{-56}}">
+<scroll-view class="absolute -top-2 pt-6 right-0 left-0 bottom-0 px-4 box-border bg-[#7e7a91] z-10" scroll-into-view="item-{{musicLyricCurrent.index}}" scroll-with-animation show-scrollbar="{{false}}" scroll-into-view-offset="{{-56}}">
   <block wx:if="{{musicLyric.length}}">
     <view wx:for="{{musicLyric}}" wx:key="time" id="item-{{index}}"
       class="transition-all {{index === musicLyricCurrent.index ? 'text-xl font-semibold opacity-100': 'text-base opacity-60'}} mb-4">

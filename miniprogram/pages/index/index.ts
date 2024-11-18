@@ -122,7 +122,10 @@ ComponentWithStore({
         .node()
         .exec(async (res) => {
           const scrollView = res[0].node;
-          await store.sendCommand('刷新列表');
+          await store.sendCommand(
+            '刷新列表',
+            Object.values(store.devices)[0]?.did,
+          );
           await this.fetchMusicList();
           scrollView.closeRefresh();
           wx.showToast({

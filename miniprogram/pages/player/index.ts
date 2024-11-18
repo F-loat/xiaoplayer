@@ -54,9 +54,16 @@ ComponentWithStore({
       });
 
       store.setData({ showAppBar: false });
+
+      wx.setKeepScreenOn({
+        keepScreenOn: true,
+      });
     },
     detached() {
       store.setData({ showAppBar: true });
+      wx.setKeepScreenOn({
+        keepScreenOn: false,
+      });
     },
   },
 
@@ -155,7 +162,7 @@ ComponentWithStore({
       });
     },
 
-    async handleSwitchSound() {
+    async handleSwitchDevice() {
       const items = (
         Object.values(store.devices || {}) as {
           name: string | number;
