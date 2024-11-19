@@ -7,7 +7,7 @@
       class="transition-all {{index === musicLyricCurrent.index ? 'text-xl font-semibold opacity-100': 'text-base opacity-60'}} mb-4">
       {{item.lrc}}</view>
   </block>
-  <view wx:else class="pt-4">{{musicLyricLoading ? '歌词加载中...' : '暂无歌词'}}</view>
+  <view wx:else class="pt-4 text-xl font-semibold">{{musicLyricLoading ? '歌词加载中...' : '暂无歌词'}}</view>
   <view class="h-80"></view>
 </scroll-view>
 

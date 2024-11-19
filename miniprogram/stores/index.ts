@@ -79,7 +79,10 @@ export class Store {
         if (this.playTimer) clearTimeout(this.playTimer);
         this.setData({ musicLyric: [], currentTime: 0, duration: 0 });
         if (name) {
-          this.lyric.fetchMusicTag(name, this.musicAlbum);
+          this.lyric.fetchMusicTag(
+            name.replace(/^\d+\.\s?/g, ''),
+            this.musicAlbum?.replace(/（.*）/g, ''),
+          );
         } else {
           this.setData({ musicCover: DEFAULT_COVER });
         }

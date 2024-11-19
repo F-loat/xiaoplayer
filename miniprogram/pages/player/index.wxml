@@ -15,7 +15,7 @@
 
     <view class="flex flex-col text-lg mt-4">
       <view class="flex justify-between">
-        <text overflow="ellipsis">{{musicName || 'xiaoplayer'}}</text>
+        <text overflow="ellipsis" bind:tap="handleFetchLyric">{{musicName || 'xiaoplayer'}}</text>
         <view class="flex shrink-0 items-center">
           <image wx:if="{{did === 'host'}}" class="w-[36rpx] h-[36rpx] p-1" src="/assets/icon/beisu{{speed}}.svg"
             bind:tap="handleSpeed" />
@@ -54,7 +54,7 @@
   </view>
 
   <view wx:if="{{mode === 'lyric'}}" class="flex justify-between items-center text-lg pb-2">
-    <text overflow="ellipsis">{{musicName || 'xiaoplayer'}}</text>
+    <text overflow="ellipsis" bind:tap="handleFetchLyric">{{musicName || 'xiaoplayer'}}</text>
     <text class="text-sm shrink-0" bind:tap="handleSwitchDevice">{{currentDevice.name}}</text>
   </view>
 </view>

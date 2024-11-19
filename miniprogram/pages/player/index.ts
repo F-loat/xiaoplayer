@@ -213,6 +213,20 @@ ComponentWithStore({
       store.favorite.toggleFavorite(store.musicName);
     },
 
+    handleFetchLyric() {
+      wx.showModal({
+        title: '请输入歌手名称 - 歌曲名称',
+        content: store.musicName,
+        editable: true,
+        confirmText: '搜索歌词',
+        success: (res) => {
+          if (!res.confirm || !res.content) return;
+          const [name, artist] = res.content.split('-');
+          store.lyric.fetchMusicTag(name, '', artist, true);
+        },
+      });
+    },
+
     handlePlayingList() {
       wx.navigateTo({
         url: '/pages/list/playing',

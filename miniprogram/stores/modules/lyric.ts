@@ -51,17 +51,34 @@ export class LyricModule {
     while (list[index] && list[index].time < time * 1000) {
       index += 1;
     }
-    return index;
+    return Math.min(index, list.length - 1);
   };
 
-  fetchMusicTag = async (name: string, album: string = '') => {
+  fetchMusicTag = async (
+    name: string,
+    album: string = '',
+    artist = '',
+    force?: boolean,
+  ) => {
     this.store.setData({ musicLyricLoading: true });
 
-    let musicName = name.replace(/^\d+\.\s?/g, '').trim();
-    let musicAlbum = album.replace(/（.*）/g, '').trim();
-    let musicArtist;
+    let musicName = name.trim();
+    let musicAlbum = album.trim();
+    let musicArtist = artist.trim();
 
-    if (this.store.version) {
+    const cackeKey = `musicInfo:${this.store.musicName}`;
+    const cachedInfo = wx.getStorageSync(cackeKey);
+
+    if (!force && cachedInfo && cachedInfo.lyric) {
+      this.store.setData({
+        musicLyric: cachedInfo.lyric,
+        musicCover: cachedInfo.cover,
+        musicLyricLoading: false,
+      });
+      return;
+    }
+
+    if (!force && this.store.version) {
       const [a, b, c] = this.store.version.split('.').map(Number);
       if (a > 0 || b > 3 || (b > 2 && c > 37)) {
         const res = await request<{
@@ -93,6 +110,7 @@ export class LyricModule {
     }
 
     const cloud = await getCloudInstance();
+    if (force) wx.showLoading({ title: '请求中' });
     cloud.callFunction({
       name: 'musictag',
       data: {
@@ -114,11 +132,21 @@ export class LyricModule {
           musicLyric,
           musicCover,
         });
+        wx.setStorage({
+          key: cackeKey,
+          data: {
+            name: musicName,
+            lyric: musicLyric,
+            cover: musicCover,
+            album: musicAlbum,
+          },
+        });
       },
       complete: () => {
         this.store.setData({
           musicLyricLoading: false,
         });
+        wx.hideLoading();
       },
     });
   };
@@ -131,20 +159,16 @@ const parseLrc = (lrcContent: string): Lyric[] => {
       .map((line) => {
         const trimmedLine = line.trim();
         const timeMatch = trimmedLine.match(/\[\d{2}:\d{2}(\.\d{2})?\](.*)/);
-        if (timeMatch) {
-          const timeStr = timeMatch[0].match(/\[(\d{2}):(\d{2})(\.\d{2})?\]/);
-          if (timeStr) {
-            let timeMs =
-              parseInt(timeStr[1], 10) * 60000 +
-              parseInt(timeStr[2], 10) * 1000;
-            if (timeStr[3]) {
-              timeMs += parseFloat(timeStr[3]) * 1000;
-            }
-            const lrcText = timeMatch[2].trim();
-            return { time: timeMs, lrc: lrcText } as Lyric;
-          }
+        if (!timeMatch) return null;
+        const timeStr = timeMatch[0].match(/\[(\d{2}):(\d{2})(\.\d{2})?\]/);
+        if (!timeStr) return null;
+        let timeMs =
+          parseInt(timeStr[1], 10) * 60000 + parseInt(timeStr[2], 10) * 1000;
+        if (timeStr[3]) {
+          timeMs += parseFloat(timeStr[3]) * 1000;
         }
-        return null;
+        const lrcText = timeMatch[2].trim();
+        return { time: timeMs, lrc: lrcText } as Lyric;
       })
       .filter((item): item is Lyric => !!item?.lrc);
   } catch {
