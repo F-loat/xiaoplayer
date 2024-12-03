@@ -10,6 +10,8 @@ interface Lyric {
 export class LyricModule {
   store: Store;
 
+  ready = false;
+
   constructor(store: Store) {
     this.store = store;
     makeAutoObservable(this);
@@ -17,17 +19,23 @@ export class LyricModule {
     reaction(
       () => this.store.musicLyric,
       (val) => {
-        this.store.setData({
-          musicLyricCurrent: {
-            index: 0,
-            lrc: val[0]?.lrc,
-          },
-        });
+        setTimeout(() => {
+          const index = this.findCurrentIndex(this.store.currentTime);
+          const preIndex = Math.max(0, index - 1);
+          this.store.setData({
+            musicLyricCurrent: {
+              index: preIndex,
+              lrc: val[preIndex]?.lrc,
+            },
+          });
+          this.ready = true;
+        }, 1000);
       },
     );
     reaction(
       () => this.store.currentTime,
       (val) => {
+        if (!this.ready) return;
         const { index: currentIndex } = this.store.musicLyricCurrent;
         const currentTime = val * 1000;
         const nextIndex = currentIndex + 1;

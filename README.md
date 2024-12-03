@@ -17,6 +17,7 @@
 <p>
   <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/1.jpg" width="24%" />
   <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/2.jpg" width="24%" />
+  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/4.jpg" width="24%" />
   <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/3.jpg" width="24%" />
 </p>
 

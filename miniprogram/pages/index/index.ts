@@ -85,10 +85,12 @@ ComponentWithStore({
         setGlobalData('musiclist', res.data);
       } catch (err) {
         const message = (err as { errMsg: string }).errMsg || '';
-        this.setData({
-          connected: false,
-          error: message,
-        });
+        if (!this.data.list.length) {
+          this.setData({
+            connected: false,
+            error: message,
+          });
+        }
         if (message === 'request:fail url not in domain list') {
           wx.showModal({
             title: '网络异常',
