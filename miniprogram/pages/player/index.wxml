@@ -25,7 +25,7 @@
           <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchDevice" />
         </view>
       </view>
-      <text class="text-sm">{{currentDevice.name}}</text>
+      <text class="text-sm" bind:tap="handleSwitchDevice">{{currentDevice.name}}</text>
     </view>
 
     <view class="mt-2 {{mode === 'cover' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle">
