@@ -241,6 +241,7 @@ ComponentWithStore({
       };
     }) {
       store.player.playMusic(e.detail.value, '');
+      this.handleFilter({ detail: { value: '' } });
     },
   },
 });

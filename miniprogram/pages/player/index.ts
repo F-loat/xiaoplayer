@@ -125,6 +125,22 @@ ComponentWithStore({
       });
     },
 
+    handleVolumeUp() {
+      this.handleVolumeChange({
+        detail: {
+          value: Math.min(store.volume + 1, 100),
+        },
+      });
+    },
+
+    handleVolumeDown() {
+      this.handleVolumeChange({
+        detail: {
+          value: Math.max(0, store.volume - 1),
+        },
+      });
+    },
+
     async handleSwitchOrder() {
       let cmd = '',
         playOrder = store.playOrder;
