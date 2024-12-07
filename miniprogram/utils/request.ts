@@ -1,4 +1,3 @@
-import { isPrivateDomain } from '.';
 import { store } from '../stores';
 
 const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
@@ -86,7 +85,7 @@ export const request = <T>({
   const serverConfig = store
     ? store.serverConfig
     : wx.getStorageSync('serverConfig');
-  const { domain, username, password } = serverConfig || {};
+  const { domain, privateDomain, username, password } = serverConfig || {};
   if (!domain) return Promise.reject('domain error');
   if (username && password) {
     header.Authorization = `Basic ${weBtoa(username + ':' + password)}`;
@@ -100,7 +99,7 @@ export const request = <T>({
         data,
         timeout,
       };
-      if (isPrivateDomain(domain)) {
+      if (domain === privateDomain) {
         wx.request({
           ...options,
           header,

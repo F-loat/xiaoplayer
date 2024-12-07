@@ -168,7 +168,7 @@ ComponentWithStore({
           const isPrivate = isPrivateDomain(config.domain);
           if (isPrivate && this.data.isPC) {
             wx.showToast({
-              title: 'PC 端可能不支持内网访问，可尝试配置公网服务地址',
+              title: 'PC 端可能不支持内网访问，请尝试配置公网服务地址',
               icon: 'none',
             });
           }
@@ -180,7 +180,7 @@ ComponentWithStore({
       if (!serverConfig.privateDomain || !serverConfig.publicDomain) {
         return;
       }
-      const isPrivate = isPrivateDomain(serverConfig.domain);
+      const isPrivate = serverConfig.domain === serverConfig.privateDomain;
       const config = {
         ...serverConfig,
         domain: isPrivate
