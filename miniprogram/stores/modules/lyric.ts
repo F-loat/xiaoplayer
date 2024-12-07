@@ -162,9 +162,6 @@ export class LyricModule {
           url: musicCover.replace('http:', 'https:'),
           responseType: 'arraybuffer',
           success: (res) => {
-            const picture =
-              'data:image/png;base64,' +
-              wx.arrayBufferToBase64(res.data as ArrayBuffer);
             request({
               url: '/setmusictag',
               method: 'POST',
@@ -175,7 +172,7 @@ export class LyricModule {
                 album: result.album || musicAlbum,
                 year: result.year,
                 lyrics: result.lyric,
-                picture: picture,
+                picture: wx.arrayBufferToBase64(res.data as ArrayBuffer),
               },
             });
           },
