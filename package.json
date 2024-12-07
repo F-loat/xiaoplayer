@@ -28,6 +28,7 @@
     "weapp-vite": "^1.6.9"
   },
   "dependencies": {
+    "compare-versions": "^6.1.1",
     "mobx-miniprogram": "^6.12.3",
     "mobx-miniprogram-bindings": "^4.0.1"
   }

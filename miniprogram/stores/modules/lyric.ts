@@ -1,4 +1,5 @@
 import { makeAutoObservable, reaction } from 'mobx-miniprogram';
+import { compareVersions } from 'compare-versions';
 import { DEFAULT_COVER, Store } from '..';
 import { getCloudInstance, request } from '@/miniprogram/utils';
 
@@ -87,8 +88,7 @@ export class LyricModule {
     }
 
     if (!force && this.store.version) {
-      const [a, b, c] = this.store.version.split('.').map(Number);
-      if (a > 0 || b > 3 || (b > 2 && c > 37)) {
+      if (compareVersions(this.store.version, '0.3.37')) {
         const res = await request<{
           tags: {
             album?: string;
@@ -129,7 +129,11 @@ export class LyricModule {
       success: (res) => {
         const result = res.result as {
           lyric: string;
+          name?: string;
+          artist?: string;
+          album?: string;
           album_img?: string;
+          year?: string;
         };
         if (!result) return;
         const musicLyric = this.store.musicM3U8Url
@@ -147,6 +151,33 @@ export class LyricModule {
             lyric: musicLyric,
             cover: musicCover,
             album: musicAlbum,
+          },
+        });
+
+        if (!compareVersions(this.store.version!, '0.3.50')) {
+          return;
+        }
+
+        wx.request({
+          url: musicCover.replace('http:', 'https:'),
+          responseType: 'arraybuffer',
+          success: (res) => {
+            const picture =
+              'data:image/png;base64,' +
+              wx.arrayBufferToBase64(res.data as ArrayBuffer);
+            request({
+              url: '/setmusictag',
+              method: 'POST',
+              data: {
+                musicname: name,
+                title: result.name || musicName,
+                artist: result.artist || musicArtist,
+                album: result.album || musicAlbum,
+                year: result.year,
+                lyrics: result.lyric,
+                picture: picture,
+              },
+            });
           },
         });
       },
