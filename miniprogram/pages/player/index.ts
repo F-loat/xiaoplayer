@@ -243,6 +243,27 @@ ComponentWithStore({
       });
     },
 
+    hanldeLyricOffset() {
+      wx.showModal({
+        title: '请输入歌词偏移时长',
+        content: String(store.lyric.offset || ''),
+        placeholderText: '请输入数字',
+        editable: true,
+        success: (e) => {
+          if (!e.confirm) return;
+          const offset = parseInt(e.content);
+          if (isNaN(offset)) {
+            wx.showToast({
+              title: '请输入数字',
+              icon: 'none',
+            });
+            return;
+          }
+          store.lyric.setOffset(offset);
+        },
+      });
+    },
+
     handlePlayingList() {
       wx.navigateTo({
         url: '/pages/list/playing',

@@ -28,11 +28,11 @@
       <text class="text-sm" bind:tap="handleSwitchDevice">{{currentDevice.name}}</text>
     </view>
 
-    <view class="mt-2 {{mode === 'cover' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle">
+    <view class="mt-2 {{mode === 'cover' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle" bind:longpress="hanldeLyricOffset">
       <lyric></lyric>
     </view>
 
-    <large-lyric class="{{mode === 'lyric' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle"></large-lyric>
+    <large-lyric class="{{mode === 'lyric' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle" bind:longpress="hanldeLyricOffset"></large-lyric>
   </view>
 
   <view class="mt-2">

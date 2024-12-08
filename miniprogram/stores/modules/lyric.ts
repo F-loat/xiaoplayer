@@ -12,6 +12,7 @@ export class LyricModule {
   store: Store;
 
   ready = false;
+  offset = 0;
 
   constructor(store: Store) {
     this.store = store;
@@ -20,6 +21,7 @@ export class LyricModule {
     reaction(
       () => this.store.musicLyric,
       (val) => {
+        this.setOffset(0);
         setTimeout(() => {
           const index = this.findCurrentIndex(this.store.currentTime);
           const preIndex = Math.max(0, index - 1);
@@ -38,7 +40,7 @@ export class LyricModule {
       (val) => {
         if (!this.ready) return;
         const { index: currentIndex } = this.store.musicLyricCurrent;
-        const currentTime = val * 1000;
+        const currentTime = val * 1000 + this.offset;
         const nextIndex = currentIndex + 1;
         const nextLyric = this.store.musicLyric[nextIndex];
         const { time: nextTime, lrc } = nextLyric || {};
@@ -52,6 +54,10 @@ export class LyricModule {
         }
       },
     );
+  }
+
+  setOffset(val: number) {
+    this.offset = val;
   }
 
   findCurrentIndex = (time: number) => {
