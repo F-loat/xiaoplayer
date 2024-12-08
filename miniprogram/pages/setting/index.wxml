@@ -12,7 +12,7 @@
 	</xiao-cell>
 	<xiao-cell extClass="justify-between">
 		<view>控制台密码验证</view>
-		<switch class="scale-75 absolute right-0 top-3" checked="{{serverConfig.auth}}" data-name="auth" bind:change="handleFormChange" />
+		<switch class="scale-75" type="checkbox" checked="{{serverConfig.auth}}" data-name="auth" bind:change="handleFormChange" />
 	</xiao-cell>
 	<block wx:if="{{serverConfig.auth}}">
 		<xiao-cell>
@@ -24,10 +24,13 @@
 			<input class="flex-1 ml-2" password value="{{serverConfig.password}}" placeholder="请输入" data-name="password" bind:input="handleFormChange"></input>
 		</xiao-cell>
 	</block>
-	<div class="flex justify-center my-4">
+	<view class="flex justify-center my-4">
 		<button open-type="share">分享</button>
-		<button style="margin-left: 12px;" bind:tap="handleSaveConfig">保存</button>
-	</div>
+		<button style="margin-left: 12px" bind:tap="handleSaveConfig">保存</button>
+		<button style="margin-left: 12px; width: 60px;" class="p-0" bind:tap="navigateToMore">
+			<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduoshezhi.svg" />
+		</button>
+	</view>
 	<view wx:if="{{!!devices.length}}" class="mt-2">
 		<view class="flex items-center justify-between">
 			<view>设备列表</view>

@@ -167,7 +167,7 @@ export class Store {
       const devices = res.data.devices || {};
 
       if (!did) {
-        did = Object.keys(devices)[0];
+        did = Object.keys(devices)[0] || 'host';
       }
 
       this.setData({
@@ -175,6 +175,27 @@ export class Store {
         devices,
         playOrder: devices[did]?.play_type ?? PlayOrderType.All,
       });
+
+      if (
+        !Object.keys(devices).length &&
+        !wx.getStorageSync('disableDeviceTip')
+      ) {
+        wx.showModal({
+          title: '无可用设备',
+          content: '未发现可用设备，仅可使用本机播放',
+          cancelText: '不再提醒',
+          confirmText: '前往配置',
+          success(res) {
+            if (res.confirm) {
+              wx.navigateTo({
+                url: '/pages/setting/more',
+              });
+            } else if (res.cancel) {
+              wx.setStorageSync('disableDeviceTip', true);
+            }
+          },
+        });
+      }
 
       const { data } = await request<{
         version: string;

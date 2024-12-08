@@ -4,7 +4,8 @@
     "pages/list/index",
     "pages/list/playing",
     "pages/player/index",
-    "pages/setting/index"
+    "pages/setting/index",
+    "pages/setting/more"
   ],
   "window": {
     "navigationBarTextStyle": "black",

@@ -9,8 +9,8 @@
   </view>
 
   <view>
-    <view class="mt-4" bind:tap="handleModeToggle" bind:longpress="handleCopyLink">
-      <image mode="aspectFill" class="w-[680rpx] h-[680rpx] mx-auto rounded-full bg-[#8a859f]" src="{{musicCover}}" />
+    <view class="mt-4 text-center" bind:tap="handleModeToggle" bind:longpress="handleCopyLink">
+      <image mode="aspectFill" class="w-[680rpx] h-[680rpx] max-w-[40vh] max-h-[40vh] mx-auto rounded-full bg-[#8a859f]" src="{{musicCover}}" />
     </view>
 
     <view class="flex flex-col text-lg mt-4">

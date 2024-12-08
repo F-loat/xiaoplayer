@@ -111,9 +111,10 @@ ComponentWithStore({
         ...serverConfig,
         publicDomain: publicDomain?.trim().replace(/\/$/, ''),
         privateDomain: privateDomain?.trim().replace(/\/$/, ''),
-        domain: isPrivateDomain(serverConfig.domain)
-          ? privateDomain || publicDomain!
-          : publicDomain || privateDomain!,
+        domain:
+          serverConfig.domain && isPrivateDomain(serverConfig.domain)
+            ? privateDomain || publicDomain!
+            : publicDomain || privateDomain!,
       };
       store.setServerConfig(config);
       await store.initSettings();
@@ -151,6 +152,11 @@ ComponentWithStore({
         });
       }
       this.syncDeviceStatus();
+    },
+    navigateToMore() {
+      wx.navigateTo({
+        url: '/pages/setting/more',
+      });
     },
   },
 });

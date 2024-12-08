@@ -123,6 +123,7 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   };
 
   setVolume = (volume: number) => {
+    this.volume = volume;
     return request({
       url: '/setvolume',
       method: 'POST',

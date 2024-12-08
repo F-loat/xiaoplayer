@@ -1,0 +1,45 @@
+<!--index.wxml-->
+<navigation-bar back title="服务配置"></navigation-bar>
+
+<scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
+	<xiao-cell borderless>
+		<view>小米账号</view>
+		<input class="flex-1 ml-2" value="{{formData.account}}"  placeholder="请输入" data-name="account" bind:input="handleFormChange"></input>
+	</xiao-cell>
+	<xiao-cell>
+		<view>小米密码</view>
+		<input class="flex-1 ml-2" value="{{formData.password}}"  placeholder="请输入" data-name="password" bind:input="handleFormChange"></input>
+	</xiao-cell>
+  <xiao-cell extClass="justify-between">
+		<view>勾选所有设备</view>
+		<switch class="scale-75" type="checkbox" checked="{{formData.device_all}}" data-name="device_all" bind:change="handleFormChange" />
+	</xiao-cell>
+	<xiao-cell extClass="justify-between">
+		<view>语音控制</view>
+		<switch class="scale-75" type="checkbox" checked="{{formData.pull_ask}}" data-name="pull_ask" bind:change="handleFormChange" />
+	</xiao-cell>
+	<xiao-cell extClass="justify-between">
+		<view>兼容模式</view>
+		<switch class="scale-75" type="checkbox" checked="{{formData.use_music_api}}" data-name="use_music_api" bind:change="handleFormChange" />
+	</xiao-cell>
+	<xiao-cell extClass="justify-between">
+		<view>继续播放(可能导致兼容性问题)</view>
+		<switch class="scale-75" type="checkbox" checked="{{formData.continue_play}}" data-name="continue_play" bind:change="handleFormChange" />
+	</xiao-cell>
+	<xiao-cell>
+		<view>延迟播放</view>
+		<input class="flex-1 ml-2" value="{{formData.delay_sec}}"  placeholder="请输入" data-name="delay_sec" bind:input="handleFormChange"></input>
+		<view class="pr-2">秒</view>
+	</xiao-cell>
+	<xiao-cell>
+		<view>播放口令</view>
+		<input class="flex-1 ml-2" value="{{formData.keywords_play}}"  placeholder="请输入" data-name="keywords_play" bind:input="handleFormChange"></input>
+	</xiao-cell>
+	<xiao-cell>
+		<view>停止口令</view>
+		<input class="flex-1 ml-2" value="{{formData.keywords_stop}}"  placeholder="请输入" data-name="keywords_stop" bind:input="handleFormChange"></input>
+	</xiao-cell>
+	<div class="flex justify-center my-4">
+		<button bind:tap="handleSaveConfig">保存</button>
+	</div>
+</scroll-view>
