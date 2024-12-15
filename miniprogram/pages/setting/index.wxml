@@ -4,11 +4,11 @@
 <scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
   <xiao-cell borderless>
 		<view>内网服务地址</view>
-		<input class="flex-1 ml-2" value="{{serverConfig.privateDomain}}" placeholder="请输入" data-name="privateDomain" bind:input="handleFormChange"></input>
+		<input class="flex-1 ml-2 -mb-1" value="{{serverConfig.privateDomain}}" placeholder="请输入" data-name="privateDomain" bind:input="handleFormChange"></input>
 	</xiao-cell>
 	<xiao-cell>
 		<view>公网服务地址</view>
-		<input class="flex-1 ml-2" value="{{serverConfig.publicDomain}}"  placeholder="请输入" data-name="publicDomain" bind:input="handleFormChange"></input>
+		<input class="flex-1 ml-2 -mb-1" value="{{serverConfig.publicDomain}}"  placeholder="请输入" data-name="publicDomain" bind:input="handleFormChange"></input>
 	</xiao-cell>
 	<xiao-cell extClass="justify-between">
 		<view>控制台密码验证</view>
@@ -17,17 +17,17 @@
 	<block wx:if="{{serverConfig.auth}}">
 		<xiao-cell>
 			<view>控制台账户</view>
-			<input class="flex-1 ml-2" value="{{serverConfig.username}}" placeholder="请输入" data-name="username" bind:input="handleFormChange"></input>
+			<input class="flex-1 ml-2 -mb-1" value="{{serverConfig.username}}" placeholder="请输入" data-name="username" bind:input="handleFormChange"></input>
 		</xiao-cell>
 		<xiao-cell>
 			<view>控制台密码</view>
-			<input class="flex-1 ml-2" password value="{{serverConfig.password}}" placeholder="请输入" data-name="password" bind:input="handleFormChange"></input>
+			<input class="flex-1 ml-2 -mb-1" password value="{{serverConfig.password}}" placeholder="请输入" data-name="password" bind:input="handleFormChange"></input>
 		</xiao-cell>
 	</block>
 	<view class="flex justify-center my-4">
 		<button open-type="share">分享</button>
 		<button style="margin-left: 12px" bind:tap="handleSaveConfig">保存</button>
-		<button style="margin-left: 12px; width: 60px;" class="p-0" bind:tap="navigateToMore">
+		<button style="margin-left: 12px; width: 144rpx;" class="p-0" bind:tap="navigateToMore">
 			<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduoshezhi.svg" />
 		</button>
 	</view>

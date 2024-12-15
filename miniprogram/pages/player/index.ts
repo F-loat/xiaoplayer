@@ -1,5 +1,5 @@
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
-import { store } from '../../stores';
+import { DEFAULT_COVER, store } from '../../stores';
 import { GestureState, PlayOrderType } from '../../types';
 import { sleep } from '@/miniprogram/utils';
 
@@ -17,6 +17,7 @@ ComponentWithStore({
       [PlayOrderType.Rnd]: 'suijibofang',
       [PlayOrderType.All]: 'liebiaoxunhuan',
     },
+    DEFAULT_COVER,
   },
 
   storeBindings: [

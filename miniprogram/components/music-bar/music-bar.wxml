@@ -2,7 +2,7 @@
 	<view
 		class="px-4 overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}">
 		<view class="flex items-center py-2">
-			<image mode="aspectFill" class="shrink-0 rounded-full w-14 h-14 bg-[#8a859f]" src="{{musicCover}}"
+			<image mode="aspectFill" class="shrink-0 rounded-full w-14 h-14 bg-[#8a859f] bg-cover bg-center" src="{{musicCover}}" style="background-image: url({{DEFAULT_COVER}});"
 				bind:tap="handleExpand" />
 			<view class="flex flex-1 min-w-36 justify-between items-center ml-2">
 				<view class="flex flex-col shrink-0 ml-1 min-w-20 flex-1 truncate" bind:tap="handleExpand">

@@ -9,7 +9,7 @@ import { LyricModule } from './modules/lyric';
 const { platform } = wx.getDeviceInfo();
 
 export const DEFAULT_COVER =
-  'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201812%2F12%2F20181212223741_etgxt.jpg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1705583419&t=8b8402f169f865f34c2f16649b0ba6d8';
+  'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/default_cover.webp';
 
 export interface MusicPlayer {
   speed: number;

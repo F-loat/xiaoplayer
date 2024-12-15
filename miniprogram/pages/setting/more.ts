@@ -14,8 +14,12 @@ ComponentWithStore({
       delay_sec: string;
       keywords_play: string;
       keywords_stop: string;
+      auth: boolean;
+      httpauth_password: string;
+      httpauth_username: string;
     },
     _settings: {} as {
+      port: number;
       mi_did: string;
       device_list: {
         miotDID: string;
@@ -29,9 +33,13 @@ ComponentWithStore({
   },
   lifetimes: {
     async attached() {
-      wx.showLoading({
-        title: '加载中',
-      });
+      setTimeout(() => {
+        if (!this.data._settings.port) {
+          wx.showLoading({
+            title: '加载中',
+          });
+        }
+      }, 600);
       const { data } = await request<any>({
         url: '/getsetting?need_device_list=true',
       });
@@ -48,8 +56,14 @@ ComponentWithStore({
           delay_sec: data.delay_sec,
           keywords_play: data.keywords_play,
           keywords_stop: data.keywords_stop,
+          auth: !data.disable_httpauth,
+          httpauth_password: data.httpauth_password,
+          httpauth_username: data.httpauth_username,
         },
       });
+      wx.hideLoading();
+    },
+    detached() {
       wx.hideLoading();
     },
   },
@@ -88,12 +102,22 @@ ComponentWithStore({
           mi_did: formData.device_all
             ? _settings.device_list.map((item) => item.miotDID).join(',')
             : _settings.mi_did,
+          disable_httpauth: !formData.auth,
           device_list: undefined,
           devices: undefined,
           key_match_order: undefined,
           key_word_dict: undefined,
           user_key_word_dict: undefined,
         },
+      });
+      store.setServerConfig({
+        ...store.serverConfig,
+        auth: formData.auth,
+        username: formData.httpauth_username,
+        password:
+          formData.httpauth_username === '******'
+            ? store.serverConfig.password
+            : formData.httpauth_password,
       });
       wx.hideLoading();
       wx.showToast({

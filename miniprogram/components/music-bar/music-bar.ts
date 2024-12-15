@@ -1,5 +1,5 @@
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
-import { store } from '../../stores';
+import { DEFAULT_COVER, store } from '../../stores';
 import { GestureState } from '../../types';
 
 const progress = wx.worklet.shared(0);
@@ -26,6 +26,10 @@ ComponentWithStore({
       actions: ['playPrevMusic', 'playNextMusic'] as const,
     },
   ],
+
+  data: {
+    DEFAULT_COVER,
+  },
 
   methods: {
     handleExpand() {

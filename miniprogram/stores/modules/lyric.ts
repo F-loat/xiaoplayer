@@ -8,6 +8,30 @@ interface Lyric {
   lrc: string;
 }
 
+const parseLrc = (lrcContent: string): Lyric[] => {
+  try {
+    return lrcContent
+      .split('\n')
+      .map((line) => {
+        const trimmedLine = line.trim();
+        const timeMatch = trimmedLine.match(/\[\d{2}:\d{2}(\.\d{2})?\](.*)/);
+        if (!timeMatch) return null;
+        const timeStr = timeMatch[0].match(/\[(\d{2}):(\d{2})(\.\d{2})?\]/);
+        if (!timeStr) return null;
+        let timeMs =
+          parseInt(timeStr[1], 10) * 60000 + parseInt(timeStr[2], 10) * 1000;
+        if (timeStr[3]) {
+          timeMs += parseFloat(timeStr[3]) * 1000;
+        }
+        const lrcText = timeMatch[2].trim();
+        return { time: timeMs, lrc: lrcText } as Lyric;
+      })
+      .filter((item): item is Lyric => !!item?.lrc);
+  } catch {
+    return [];
+  }
+};
+
 export class LyricModule {
   store: Store;
 
@@ -81,7 +105,8 @@ export class LyricModule {
     let musicAlbum = album.trim();
     let musicArtist = artist.trim();
 
-    const cackeKey = `musicInfo:${this.store.musicName}`;
+    const originMusicName = this.store.musicName;
+    const cackeKey = `musicInfo:${originMusicName}`;
     const cachedInfo = wx.getStorageSync(cackeKey);
 
     if (!force && cachedInfo && cachedInfo.lyric) {
@@ -93,38 +118,41 @@ export class LyricModule {
       return;
     }
 
-    if (!force && this.store.version) {
-      if (compareVersions(this.store.version, '0.3.37')) {
-        const res = await request<{
-          tags: {
-            album?: string;
-            artist?: string;
-            genre?: string;
-            lyrics?: string;
-            picture?: string;
-            title?: string;
-            year?: string;
-          };
-        }>({
-          url: `/musicinfo?name=${name}&musictag=true`,
+    if (!force && compareVersions(this.store.version!, '0.3.37') >= 0) {
+      const res = await request<{
+        tags: {
+          album?: string;
+          artist?: string;
+          genre?: string;
+          lyrics?: string;
+          picture?: string;
+          title?: string;
+          year?: string;
+        };
+      }>({
+        url: `/musicinfo?name=${name}&musictag=true`,
+      });
+      if (originMusicName !== this.store.musicName) {
+        return;
+      }
+      const { tags } = res.data;
+      if (tags.title) musicName = tags.title;
+      if (tags.album) musicAlbum = tags.album;
+      if (tags.artist) musicArtist = tags.artist;
+      if (tags.picture && tags.lyrics) {
+        this.store.setData({
+          musicLyric: parseLrc(tags.lyrics),
+          musicCover: tags.picture,
+          musicLyricLoading: false,
         });
-        const { tags } = res.data;
-        if (tags.title) musicName = tags.title;
-        if (tags.album) musicAlbum = tags.album;
-        if (tags.artist) musicArtist = tags.artist;
-        if (tags.picture && tags.lyrics) {
-          this.store.setData({
-            musicLyric: parseLrc(tags.lyrics),
-            musicCover: tags.picture,
-            musicLyricLoading: false,
-          });
-          return;
-        }
+        return;
       }
     }
 
     const cloud = await getCloudInstance();
+
     if (force) wx.showLoading({ title: '请求中' });
+
     cloud.callFunction({
       name: 'musictag',
       data: {
@@ -133,6 +161,9 @@ export class LyricModule {
         artist: musicArtist,
       },
       success: (res) => {
+        if (originMusicName !== this.store.musicName) {
+          return;
+        }
         const result = res.result as {
           lyric: string;
           name?: string;
@@ -160,7 +191,7 @@ export class LyricModule {
           },
         });
 
-        if (!compareVersions(this.store.version!, '0.3.50')) {
+        if (compareVersions(this.store.version!, '0.3.56') < 0) {
           return;
         }
 
@@ -172,7 +203,7 @@ export class LyricModule {
               url: '/setmusictag',
               method: 'POST',
               data: {
-                musicname: name,
+                musicname: originMusicName,
                 title: result.name || musicName,
                 artist: result.artist || musicArtist,
                 album: result.album || musicAlbum,
@@ -193,27 +224,3 @@ export class LyricModule {
     });
   };
 }
-
-const parseLrc = (lrcContent: string): Lyric[] => {
-  try {
-    return lrcContent
-      .split('\n')
-      .map((line) => {
-        const trimmedLine = line.trim();
-        const timeMatch = trimmedLine.match(/\[\d{2}:\d{2}(\.\d{2})?\](.*)/);
-        if (!timeMatch) return null;
-        const timeStr = timeMatch[0].match(/\[(\d{2}):(\d{2})(\.\d{2})?\]/);
-        if (!timeStr) return null;
-        let timeMs =
-          parseInt(timeStr[1], 10) * 60000 + parseInt(timeStr[2], 10) * 1000;
-        if (timeStr[3]) {
-          timeMs += parseFloat(timeStr[3]) * 1000;
-        }
-        const lrcText = timeMatch[2].trim();
-        return { time: timeMs, lrc: lrcText } as Lyric;
-      })
-      .filter((item): item is Lyric => !!item?.lrc);
-  } catch {
-    return [];
-  }
-};
