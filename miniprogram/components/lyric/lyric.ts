@@ -4,7 +4,12 @@ import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 ComponentWithStore({
   storeBindings: {
     store,
-    fields: ['musicLyric', 'musicLyricCurrent', 'musicLyricLoading'] as const,
+    fields: [
+      'isPC',
+      'musicLyric',
+      'musicLyricCurrent',
+      'musicLyricLoading',
+    ] as const,
     actions: [] as const,
   },
 });
