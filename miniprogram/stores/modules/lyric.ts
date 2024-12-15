@@ -1,5 +1,4 @@
 import { makeAutoObservable, reaction } from 'mobx-miniprogram';
-import { compareVersions } from 'compare-versions';
 import { DEFAULT_COVER, Store } from '..';
 import { getCloudInstance, request } from '@/miniprogram/utils';
 
@@ -8,9 +7,9 @@ interface Lyric {
   lrc: string;
 }
 
-const parseLrc = (lrcContent: string): Lyric[] => {
+const parseLrc = (lrc: string = ''): Lyric[] => {
   try {
-    return lrcContent
+    return lrc
       .split('\n')
       .map((line) => {
         const trimmedLine = line.trim();
@@ -118,33 +117,41 @@ export class LyricModule {
       return;
     }
 
-    if (!force && compareVersions(this.store.version!, '0.3.37') >= 0) {
+    let tags: {
+      album?: string;
+      artist?: string;
+      genre?: string;
+      lyrics?: string;
+      picture?: string;
+      title?: string;
+      year?: string;
+    } = {};
+
+    if (!force && this.store.feature.musicTags) {
       const res = await request<{
-        tags: {
-          album?: string;
-          artist?: string;
-          genre?: string;
-          lyrics?: string;
-          picture?: string;
-          title?: string;
-          year?: string;
-        };
+        tags: typeof tags;
       }>({
         url: `/musicinfo?name=${name}&musictag=true`,
       });
       if (originMusicName !== this.store.musicName) {
         return;
       }
-      const { tags } = res.data;
+      tags = res.data.tags;
       if (tags.title) musicName = tags.title;
       if (tags.album) musicAlbum = tags.album;
       if (tags.artist) musicArtist = tags.artist;
-      if (tags.picture && tags.lyrics) {
+      if (tags.picture) {
+        this.store.setData({
+          musicCover: tags.picture,
+        });
+      }
+      if (tags.lyrics) {
         this.store.setData({
           musicLyric: parseLrc(tags.lyrics),
-          musicCover: tags.picture,
           musicLyricLoading: false,
         });
+      }
+      if (tags.picture && tags.lyrics) {
         return;
       }
     }
@@ -176,7 +183,7 @@ export class LyricModule {
         const musicLyric = this.store.musicM3U8Url
           ? []
           : parseLrc(result.lyric);
-        const musicCover = result.album_img || DEFAULT_COVER;
+        const musicCover = tags.picture || result.album_img || DEFAULT_COVER;
         this.store.setData({
           musicLyric,
           musicCover,
@@ -191,7 +198,7 @@ export class LyricModule {
           },
         });
 
-        if (compareVersions(this.store.version!, '0.3.56') < 0) {
+        if (tags.picture || !this.store.feature.musicScrape) {
           return;
         }
 

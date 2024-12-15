@@ -55,9 +55,9 @@
     <image class="p-1 w-3 h-3" src="/assets/icon/jia.svg" bind:tap="handleVolumeUp" />
   </view>
 
-  <view wx:if="{{mode === 'lyric'}}" class="flex justify-between items-center text-lg pb-2">
-    <text overflow="ellipsis" bind:tap="handleFetchLyric">{{musicName || 'xiaoplayer'}}</text>
-    <text class="text-sm shrink-0" bind:tap="handleSwitchDevice">{{currentDevice.name}}</text>
+  <view wx:if="{{mode === 'lyric'}}" class="flex justify-between items-end pb-2">
+    <text class="text-lg" overflow="ellipsis" bind:tap="handleFetchLyric">{{musicName || 'xiaoplayer'}}</text>
+    <text class="text-sm my-px shrink-0" bind:tap="handleSwitchDevice">{{currentDevice.name}}</text>
   </view>
 </view>
 </vertical-drag-gesture-handler>

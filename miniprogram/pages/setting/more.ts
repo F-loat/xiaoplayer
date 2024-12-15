@@ -7,6 +7,7 @@ ComponentWithStore({
     formData: {} as {
       account: string;
       password: string;
+      enable_save_tag: boolean;
       pull_ask: boolean;
       device_all: boolean;
       use_music_api: string;
@@ -26,11 +27,18 @@ ComponentWithStore({
       }[];
     },
   },
-  storeBindings: {
-    store,
-    fields: [] as const,
-    actions: [] as const,
-  },
+  storeBindings: [
+    {
+      store,
+      fields: [] as const,
+      actions: [] as const,
+    },
+    {
+      store: store.feature,
+      fields: ['musicScrape'] as const,
+      actions: [] as const,
+    },
+  ],
   lifetimes: {
     async attached() {
       setTimeout(() => {
@@ -48,8 +56,10 @@ ComponentWithStore({
         formData: {
           account: data.account,
           password: data.password,
+          enable_save_tag: data.enable_save_tag,
           pull_ask: !!data.pull_ask_sec,
           device_all:
+            !data.device_list.length ||
             data.device_list.length === Object.keys(data.devices).length,
           use_music_api: data.use_music_api,
           continue_play: data.continue_play,
@@ -100,7 +110,7 @@ ComponentWithStore({
           ...formData,
           pull_ask_sec: formData.pull_ask ? 1 : 0,
           mi_did: formData.device_all
-            ? _settings.device_list.map((item) => item.miotDID).join(',')
+            ? _settings.device_list?.map((item) => item.miotDID).join(',')
             : _settings.mi_did,
           disable_httpauth: !formData.auth,
           device_list: undefined,
@@ -115,7 +125,7 @@ ComponentWithStore({
         auth: formData.auth,
         username: formData.httpauth_username,
         password:
-          formData.httpauth_username === '******'
+          formData.httpauth_password === '******'
             ? store.serverConfig.password
             : formData.httpauth_password,
       });

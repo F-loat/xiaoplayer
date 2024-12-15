@@ -1,4 +1,4 @@
-import { store } from '@/miniprogram/stores';
+import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
 import {
   isPrivateDomain,
   parseAuthUrl,
@@ -35,16 +35,14 @@ ComponentWithStore({
   methods: {
     onShareAppMessage() {
       return {
-        title: 'xiaomusic 客户端，轻松投放本地/NAS音乐至小米音箱',
-        imageUrl:
-          'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png',
+        title: SLOGAN,
+        imageUrl: SHARE_COVER,
       };
     },
     onShareTimeline() {
       return {
-        title: 'xiaomusic 客户端，轻松投放本地音乐/NAS至小米音箱',
-        imageUrl:
-          'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png',
+        title: SLOGAN,
+        imageUrl: SHARE_COVER,
       };
     },
     async fetchMusicList() {

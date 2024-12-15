@@ -14,6 +14,10 @@
 		<view>勾选所有设备</view>
 		<switch class="scale-75" type="checkbox" checked="{{formData.device_all}}" data-name="device_all" bind:change="handleFormChange" />
 	</xiao-cell>
+  <xiao-cell wx:if="{{musicScrape}}" extClass="justify-between">
+		<view>歌曲刮削</view>
+		<switch class="scale-75" type="checkbox" checked="{{formData.enable_save_tag}}" data-name="enable_save_tag" bind:change="handleFormChange" />
+	</xiao-cell>
 	<xiao-cell extClass="justify-between">
 		<view>语音控制</view>
 		<switch class="scale-75" type="checkbox" checked="{{formData.pull_ask}}" data-name="pull_ask" bind:change="handleFormChange" />
@@ -53,7 +57,7 @@
 			<input class="flex-1 ml-2 -mb-1" password value="{{formData.httpauth_password}}" placeholder="请输入" data-name="httpauth_password" bind:input="handleFormChange"></input>
 		</xiao-cell>
 	</block>
-	<div class="flex justify-center my-4">
+	<div class="flex justify-center my-4 pb-12">
 		<button bind:tap="handleSaveConfig">保存</button>
 	</div>
 </scroll-view>

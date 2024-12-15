@@ -46,8 +46,8 @@ export const formatTime = (date: Date) => {
   );
 };
 
-export const removeProtocol = (domain: string) => {
-  return domain.replace(/^https?\:\/\//, '');
+export const removeProtocol = (domain?: string) => {
+  return domain ? domain.replace(/^https?\:\/\//, '') : '';
 };
 
 export const isPrivateDomain = (domain: string) => {
@@ -63,7 +63,7 @@ export const sleep = (time?: number) => {
   });
 };
 
-export const parseAuthUrl = (url: string) => {
+export const parseAuthUrl = (url: string = '') => {
   const values = url.trim().replace(/\/$/, '').split('@');
   if (values.length <= 1) {
     const domain = values[0];

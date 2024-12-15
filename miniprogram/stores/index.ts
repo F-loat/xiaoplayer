@@ -5,9 +5,13 @@ import { HostPlayerModule } from './modules/host';
 import { XiaomusicPlayerModule } from './modules/xiaomusic';
 import { FavoriteModule } from './modules/favorite';
 import { LyricModule } from './modules/lyric';
+import { FeatureModule } from './modules/feature';
 
 const { platform } = wx.getDeviceInfo();
 
+export const SLOGAN = '无限听歌，解放小爱音箱';
+export const SHARE_COVER =
+  'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png';
 export const DEFAULT_COVER =
   'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/default_cover.webp';
 
@@ -54,6 +58,7 @@ export class Store {
   serverConfig: ServerConfig = wx.getStorageSync('serverConfig') || {};
 
   lyric: LyricModule;
+  feature: FeatureModule;
   favorite: FavoriteModule;
   hostPlayer: MusicPlayer;
   xiaomusicPlayer: MusicPlayer;
@@ -62,6 +67,7 @@ export class Store {
     makeAutoObservable(this);
 
     this.lyric = new LyricModule(this);
+    this.feature = new FeatureModule(this);
     this.favorite = new FavoriteModule(this);
     this.hostPlayer = new HostPlayerModule(this);
     this.xiaomusicPlayer = new XiaomusicPlayerModule(this);

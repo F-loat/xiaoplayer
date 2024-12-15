@@ -267,7 +267,7 @@ ComponentWithStore({
 
     handlePlayingList() {
       wx.navigateTo({
-        url: '/pages/list/playing',
+        url: `/pages/list/playing?title=${store.musicAlbum}`,
         routeType: 'wx://bottom-sheet',
       });
     },

@@ -1,4 +1,4 @@
-import { store } from '@/miniprogram/stores';
+import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
 import { Device, ServerConfig } from '@/miniprogram/types';
 import { isPrivateDomain, request } from '@/miniprogram/utils';
 import { reaction } from 'mobx-miniprogram';
@@ -51,9 +51,8 @@ ComponentWithStore({
     onShareAppMessage() {
       return {
         path: `/pages/index/index?serverConfig=${JSON.stringify(this.data.serverConfig)}`,
-        title: '我的 xiaomusic，轻松投放本地/NAS音乐至小米音箱',
-        imageUrl:
-          'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png',
+        title: SLOGAN,
+        imageUrl: SHARE_COVER,
       };
     },
     syncDeviceStatus() {
