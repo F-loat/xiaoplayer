@@ -43,17 +43,10 @@ export class LyricModule {
 
     reaction(
       () => this.store.musicLyric,
-      (val) => {
+      () => {
         this.setOffset(0);
         setTimeout(() => {
-          const index = this.findCurrentIndex(this.store.currentTime);
-          const preIndex = Math.max(0, index - 1);
-          this.store.setData({
-            musicLyricCurrent: {
-              index: preIndex,
-              lrc: val[preIndex]?.lrc,
-            },
-          });
+          this.syncLyric();
           this.ready = true;
         }, 1000);
       },
@@ -62,8 +55,12 @@ export class LyricModule {
       () => this.store.currentTime,
       (val) => {
         if (!this.ready) return;
+        if (val < 1) {
+          this.syncLyric();
+          return;
+        }
+        const currentTime = (val + this.offset) * 1000;
         const { index: currentIndex } = this.store.musicLyricCurrent;
-        const currentTime = val * 1000 + this.offset;
         const nextIndex = currentIndex + 1;
         const nextLyric = this.store.musicLyric[nextIndex];
         const { time: nextTime, lrc } = nextLyric || {};
@@ -79,8 +76,21 @@ export class LyricModule {
     );
   }
 
+  syncLyric(currentTime = this.store.currentTime) {
+    const time = currentTime + this.offset;
+    const index = this.findCurrentIndex(time);
+    const preIndex = Math.max(0, index - 1);
+    this.store.setData({
+      musicLyricCurrent: {
+        index: preIndex,
+        lrc: this.store.musicLyric[preIndex]?.lrc,
+      },
+    });
+  }
+
   setOffset(val: number) {
     this.offset = val;
+    this.syncLyric();
   }
 
   findCurrentIndex = (time: number) => {

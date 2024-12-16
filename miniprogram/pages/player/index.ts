@@ -198,8 +198,10 @@ ComponentWithStore({
           }
           const status = store.status;
           const album = store.musicAlbum;
-          await store.player.pauseMusic();
-          await sleep(300);
+          if (status === 'playing') {
+            await store.player.pauseMusic();
+            await sleep(300);
+          }
           store.setData({
             did: device.did,
           });

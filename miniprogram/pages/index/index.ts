@@ -10,15 +10,23 @@ import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 interface Item {
   name: string;
   count: number;
+  icon?: string;
 }
 
 let list: Item[] = [];
 const pageSize = 40;
 
+const playlistIconMap: Record<string, string> = {
+  所有歌曲: 'suoyougequ',
+  最近新增: 'zuijinxinzeng',
+  收藏: 'shoucanggedan',
+};
+
 ComponentWithStore({
   data: {
     connected: true,
     list: [] as Item[],
+    playlists: [] as Item[],
     error: null as null | string,
     filterValue: '',
   },
@@ -57,19 +65,23 @@ ComponentWithStore({
         if (res.statusCode !== 200) {
           return;
         }
+        const playlists: Item[] = [];
         list = Object.entries(res.data)
           .map(([name, items]) => ({
             name,
             count: items.length,
           }))
           .filter(({ name, count }) => {
+            if (['所有歌曲', '收藏', '最近新增'].includes(name)) {
+              if (count) {
+                const icon = playlistIconMap[name] || 'zhuanji';
+                playlists.push({ name, count, icon });
+              }
+              return false;
+            }
             return (
               count && !['全部', '临时搜索列表', '所有电台'].includes(name)
             );
-          })
-          .sort((a, b) => {
-            if (a.name === '所有歌曲') return -1;
-            return a.name === '收藏' && b.name !== '所有歌曲' ? -1 : 1;
           });
         const { filterValue } = this.data;
         const filteredList = filterValue
@@ -77,6 +89,7 @@ ComponentWithStore({
           : list;
         this.setData({
           connected: true,
+          playlists,
           list: filteredList.slice(0, pageSize),
         });
         store.favorite.setMusics(res.data['收藏']);
@@ -240,6 +253,12 @@ ComponentWithStore({
     }) {
       store.player.playMusic(e.detail.value, '');
       this.handleFilter({ detail: { value: '' } });
+    },
+    handleCreateList() {
+      wx.showToast({
+        title: '即将支持',
+        icon: 'none',
+      });
     },
   },
 });

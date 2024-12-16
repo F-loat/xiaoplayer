@@ -83,9 +83,11 @@ export class HostPlayerModule implements MusicPlayer {
     const {
       domain,
       publicDomain = '',
-      privateDomain = '',
+      privateDomain: _privateDomain,
     } = this.store.serverConfig;
-    const protocol = publicDomain.match(/(.*)\:\/\//)?.[1] || 'http';
+    const protocol = publicDomain.match(/(.*):\/\//)?.[1] || 'http';
+    const privateDomain =
+      _privateDomain || url.match(/^https?:\/\/(.*?)\//)?.[1] || '';
     innerAudioContext.src =
       domain === publicDomain && url.includes(removeProtocol(privateDomain))
         ? `${protocol}://${removeProtocol(url).replace(
@@ -187,13 +189,7 @@ export class HostPlayerModule implements MusicPlayer {
     this.store.setData({
       currentTime: time,
     });
-    const index = this.store.lyric.findCurrentIndex(time);
-    this.store.setData({
-      musicLyricCurrent: {
-        index,
-        lrc: this.store.musicLyric[index]?.lrc,
-      },
-    });
+    this.store.lyric.syncLyric(time);
   };
 
   setVolume = (volume: number) => {

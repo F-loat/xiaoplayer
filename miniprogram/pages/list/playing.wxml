@@ -1,9 +1,9 @@
 <!--index.wxml-->
 <navigation-bar back half title="{{title || '正在播放'}}"></navigation-bar>
 
-<scroll-view wx:if="{{!!list.length}}" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list"
+<scroll-view wx:if="{{!!list.length}}" class="flex-1 overflow-y-hidden px-3 box-border" scroll-y type="list"
   show-scrollbar="{{false}}" bind:scrolltolower="handleLoadMore">
-  <view wx:for="{{list}}" wx:key="*this" list-item class="py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none {{item === musicName ? 'text-blue-600 dark:text-blue-400' : ''}}" data-name="{{item}}" bind:tap="handleViewTap">
+  <view wx:for="{{list}}" wx:key="*this" list-item class="px-2.5 py-3 rounded-md bg-white dark:bg-gray-800/20 mt-2 {{item === musicName ? 'text-blue-600 dark:text-blue-400' : ''}}" data-name="{{item}}" bind:tap="handleViewTap">
     {{item}}
   </view>
 </scroll-view>

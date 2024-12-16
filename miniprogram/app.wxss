@@ -8,9 +8,14 @@ page {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  background-image: linear-gradient(to bottom, #f3f4f6, white);
+  @apply text-gray-900 dark:text-white;
 }
 
 @media (prefers-color-scheme: dark) {
+  page {
+    background-image: linear-gradient(to bottom, #111827, black);
+  }
   .invert-icon {
     filter: invert(1);
   }

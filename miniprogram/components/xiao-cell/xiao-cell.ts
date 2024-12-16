@@ -7,9 +7,5 @@ Component({
       type: String,
       value: '',
     },
-    borderless: {
-      type: Boolean,
-      value: false,
-    },
   },
 });

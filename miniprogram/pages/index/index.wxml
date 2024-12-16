@@ -12,7 +12,7 @@
   <template is="setting" />
 </navigation-bar>
 
-<scroll-view id="scrollview" class="flex-1 overflow-y-hidden px-4 box-border" scroll-y refresher-enabled
+<scroll-view id="scrollview" class="flex-1 overflow-y-hidden px-3 box-border" scroll-y refresher-enabled
   bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}" bind:refresherrefresh="handleRefresh">
   <view class="mt-2">
     <search-bar placeholder="请输入关键词" btnText="播放" bind:change="handleFilter" bind:search="handleSearch">
@@ -38,27 +38,51 @@
           <view class="pl-4">hanxi/xiaomusic</view>
         </view>
       </view>
-      <button class="mt-4" bind:tap="handleSetting">服务配置</button>
+      <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleSetting">服务配置</button>
     </view>
     <view wx:else>
       <view class="text-center" bind:tap="handleError">
         网络异常，请确认服务地址配置正确
       </view>
-      <button class="mt-4" bind:tap="handleSetting">服务配置</button>
-      <button wx:if="{{serverConfig.privateDomain && serverConfig.publicDomain}}" class="mt-4"
+      <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleSetting">服务配置</button>
+      <button wx:if="{{serverConfig.privateDomain && serverConfig.publicDomain}}" class="mt-4 bg-white dark:bg-gray-800/40"
         bind:tap="handleSwitchDomain">
         {{serverConfig.domain === serverConfig.privateDomain ? '切换为公网连接' : '切换为内网连接'}}
       </button>
     </view>
   </view>
 
-  <view wx:for="{{list}}" wx:key="name" list-item
-    class="flex items-baseline py-4 border-b border-solid border-gray-100 dark:border-neutral-800 border-opacity-80 last:border-none"
-    data-name="{{item.name}}" bind:tap="handleViewTap">
-    <view class="truncate">
-      {{item.name}}
+  <block wx:if="{{playlists.length}}">
+    <view class="text-base font-bold my-3">歌单</view>
+
+    <view wx:for="{{playlists}}" wx:key="name" list-item class="flex items-center p-2.5 mb-2 rounded-md cursor-pointer transition-all bg-white dark:bg-gray-800/20" data-name="{{item.name}}" bind:tap="handleViewTap">
+      <view class="w-8 h-8 rounded-md flex items-center justify-center bg-gray-100 text-gray-500 dark:bg-gray-700/20 dark:text-gray-400">
+        <image class="w-4 h-4 invert-icon" src="/assets/icon/{{item.icon}}.svg" />
+      </view>
+      <view class="flex-1 min-w-0 ml-3">
+        <view class="font-medium truncate text-sm">{{item.name}}</view>
+        <view class="text-xs truncate text-gray-500 dark:text-gray-400">{{item.count}} 首歌曲</view>
+      </view>
     </view>
-    <view class="text-xs scale-90 opacity-80 flex-shrink-0">(共 {{item.count}} 首)</view>
+
+    <view class="flex items-center w-full p-2.5 rounded-md transition-all text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800/20" bind:tap="handleCreateList">
+      <image class="w-4 h-4 invert-icon" src="/assets/icon/tianjia.svg" />
+      <view class="ml-2">新建歌单</view>
+    </view>
+  </block>
+
+  <view wx:if="{{list.length}}" class="text-base font-bold my-3">专辑</view>
+
+  <view wx:for="{{list}}" wx:key="name" list-item class="flex items-center p-2.5 mb-2 rounded-md cursor-pointer transition-all bg-white dark:bg-gray-800/20" data-name="{{item.name}}" bind:tap="handleViewTap">
+    <view class="w-8 h-8 rounded-md flex items-center justify-center bg-gray-100 text-gray-500 dark:bg-gray-700/20 dark:text-gray-400">
+      <image class="w-4 h-4 invert-icon" src="/assets/icon/zhuanji.svg" />
+    </view>
+    <view class="flex-1 min-w-0 ml-3">
+      <view class="font-medium truncate text-sm">{{item.name}}</view>
+      <view class="text-xs truncate text-gray-500 dark:text-gray-400">
+      {{item.count}} 首歌曲
+      </view>
+    </view>
   </view>
 </scroll-view>
 

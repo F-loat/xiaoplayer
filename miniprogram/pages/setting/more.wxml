@@ -2,7 +2,7 @@
 <navigation-bar back title="服务配置"></navigation-bar>
 
 <scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
-	<xiao-cell borderless>
+	<xiao-cell>
 		<view>小米账号</view>
 		<input class="flex-1 ml-2 -mb-1" value="{{formData.account}}"  placeholder="请输入" data-name="account" bind:input="handleFormChange"></input>
 	</xiao-cell>
@@ -58,6 +58,6 @@
 		</xiao-cell>
 	</block>
 	<div class="flex justify-center my-4 pb-12">
-		<button bind:tap="handleSaveConfig">保存</button>
+		<button class="bg-white dark:bg-gray-800/40" bind:tap="handleSaveConfig">保存</button>
 	</div>
 </scroll-view>
