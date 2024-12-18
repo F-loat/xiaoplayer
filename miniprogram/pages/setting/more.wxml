@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<navigation-bar back title="服务配置"></navigation-bar>
+<navigation-bar back title="服务配置" />
 
 <scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
 	<xiao-cell>

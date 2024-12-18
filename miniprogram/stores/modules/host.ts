@@ -80,21 +80,7 @@ export class HostPlayerModule implements MusicPlayer {
     innerAudioContext = wx.createInnerAudioContext();
     innerAudioContext.volume = this.volume / 100;
     innerAudioContext.playbackRate = this.speed;
-    const {
-      domain,
-      publicDomain = '',
-      privateDomain: _privateDomain,
-    } = this.store.serverConfig;
-    const protocol = publicDomain.match(/(.*):\/\//)?.[1] || 'http';
-    const privateDomain =
-      _privateDomain || url.match(/^https?:\/\/(.*?)\//)?.[1] || '';
-    innerAudioContext.src =
-      domain === publicDomain && url.includes(removeProtocol(privateDomain))
-        ? `${protocol}://${removeProtocol(url).replace(
-            removeProtocol(privateDomain),
-            removeProtocol(publicDomain),
-          )}`
-        : url;
+    innerAudioContext.src = this.store.getResourceUrl(url);
     innerAudioContext.play();
     innerAudioContext.onCanplay(() => {
       wx.hideLoading();

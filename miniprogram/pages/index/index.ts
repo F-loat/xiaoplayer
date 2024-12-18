@@ -11,10 +11,11 @@ interface Item {
   name: string;
   count: number;
   icon?: string;
+  music?: string;
 }
 
 let list: Item[] = [];
-const pageSize = 40;
+const pageSize = 25;
 
 const playlistIconMap: Record<string, string> = {
   所有歌曲: 'suoyougequ',
@@ -27,6 +28,7 @@ ComponentWithStore({
     connected: true,
     list: [] as Item[],
     playlists: [] as Item[],
+    infos: {} as Record<string, string>,
     error: null as null | string,
     filterValue: '',
   },
@@ -70,6 +72,7 @@ ComponentWithStore({
           .map(([name, items]) => ({
             name,
             count: items.length,
+            music: items[0],
           }))
           .filter(({ name, count }) => {
             if (['所有歌曲', '收藏', '最近新增'].includes(name)) {
@@ -94,6 +97,7 @@ ComponentWithStore({
         });
         store.favorite.setMusics(res.data['收藏']);
         setGlobalData('musiclist', res.data);
+        this.handleFetchInfos();
       } catch (err) {
         const message = (err as { errMsg: string }).errMsg || '';
         if (!this.data.list.length) {
@@ -128,6 +132,40 @@ ComponentWithStore({
       if (loadedCount >= filteredList.length) return;
       const count = (loadedCount / pageSize + 1) * pageSize;
       this.setData({ list: filteredList.slice(0, count) });
+      this.handleFetchInfos(loadedCount);
+    },
+    async handleFetchInfos(offset: number = 0) {
+      if (!store.feature.musicInfos || this.data.filterValue) {
+        return;
+      }
+      const indexes = new Array(pageSize)
+        .fill(null)
+        .map((_, index) => index + offset);
+      const names = indexes.reduce((result, index) => {
+        if (!list[index]) return result;
+        return result + `name=${list[index].music}&`;
+      }, '');
+      if (!names) return;
+      const { data: infos } = await request<
+        {
+          tags: {
+            album: string;
+            picture: string;
+          };
+        }[]
+      >({
+        url: `/musicinfos?${names}musictag=true`,
+      });
+      const newInfos = infos.reduce((result, current, index) => {
+        const cover = store.getResourceUrl(current.tags.picture);
+        return {
+          ...result,
+          [list[indexes[index]].name]: cover,
+        };
+      }, this.data.infos);
+      this.setData({
+        infos: newInfos,
+      });
     },
     handleRefresh() {
       wx.createSelectorQuery()

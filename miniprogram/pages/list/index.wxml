@@ -1,14 +1,20 @@
-<!--index.wxml-->
-<navigation-bar back title="{{title || name}}"></navigation-bar>
+<navigation-bar back title="{{title || name}}" />
 
 <scroll-view class="flex-1 overflow-y-hidden px-3 box-border" scroll-y type="list"
   show-scrollbar="{{false}}" bind:scrolltolower="handleLoadMore">
-  <view class="mt-2">
-    <search-bar placeholder="请输入关键词" bind:change="handleFilter"></search-bar>
+  <view class="my-2">
+    <search-bar placeholder="请输入关键词" bind:change="handleFilter" />
   </view>
-  <view wx:for="{{list}}" wx:key="*this" list-item class="px-2.5 py-3 rounded-md bg-white dark:bg-gray-800/20 mt-2" data-name="{{item}}" bind:tap="handleViewTap">
-    {{item}}
-  </view>
+  <music-item
+    wx:for="{{list}}"
+    wx:key="*this"
+    list-item
+    title="{{item}}"
+    cover="{{infos[item] && infos[item].cover}}"
+    description="{{infos[item] && infos[item].album}}"
+    data-name="{{item}}"
+    bind:tap="handleViewTap"
+  />
 </scroll-view>
 
-<fallback-app-bar></fallback-app-bar>
+<fallback-app-bar />

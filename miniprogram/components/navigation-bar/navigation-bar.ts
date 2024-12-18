@@ -62,7 +62,7 @@ ComponentWithStore({
   },
   storeBindings: {
     store,
-    fields: ['isPC'] as const,
+    fields: ['isPC', 'serverConfig'] as const,
     actions: [] as const,
   },
   lifetimes: {

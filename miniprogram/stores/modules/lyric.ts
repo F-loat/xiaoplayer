@@ -13,9 +13,9 @@ const parseLrc = (lrc: string = ''): Lyric[] => {
       .split('\n')
       .map((line) => {
         const trimmedLine = line.trim();
-        const timeMatch = trimmedLine.match(/\[\d{2}:\d{2}(\.\d{2})?\](.*)/);
+        const timeMatch = trimmedLine.match(/\[\d{2}:\d{2}(\.\d+)?\](.*)/);
         if (!timeMatch) return null;
-        const timeStr = timeMatch[0].match(/\[(\d{2}):(\d{2})(\.\d{2})?\]/);
+        const timeStr = timeMatch[0].match(/\[(\d{2}):(\d{2})(\.\d+)?\]/);
         if (!timeStr) return null;
         let timeMs =
           parseInt(timeStr[1], 10) * 60000 + parseInt(timeStr[2], 10) * 1000;
@@ -118,7 +118,7 @@ export class LyricModule {
     const cackeKey = `musicInfo:${originMusicName}`;
     const cachedInfo = wx.getStorageSync(cackeKey);
 
-    if (!force && cachedInfo && cachedInfo.lyric) {
+    if (!force && cachedInfo && cachedInfo.lyric?.length) {
       this.store.setData({
         musicLyric: cachedInfo.lyric,
         musicCover: cachedInfo.cover,

@@ -7,8 +7,7 @@
   </navigator>
 </template>
 
-<navigation-bar back="{{false}}" title="{{serverConfig.domain === serverConfig.privateDomain ? '音乐列表' : '音乐列表*'}}"
-  bind:titletap="handleSwitchDomain">
+<navigation-bar back="{{false}}" title="音乐列表" bind:titletap="handleSwitchDomain">
   <template is="setting" />
 </navigation-bar>
 
@@ -55,15 +54,16 @@
   <block wx:if="{{playlists.length}}">
     <view class="text-base font-bold my-3">歌单</view>
 
-    <view wx:for="{{playlists}}" wx:key="name" list-item class="flex items-center p-2.5 mb-2 rounded-md cursor-pointer transition-all bg-white dark:bg-gray-800/20" data-name="{{item.name}}" bind:tap="handleViewTap">
-      <view class="w-8 h-8 rounded-md flex items-center justify-center bg-gray-100 text-gray-500 dark:bg-gray-700/20 dark:text-gray-400">
-        <image class="w-4 h-4 invert-icon" src="/assets/icon/{{item.icon}}.svg" />
-      </view>
-      <view class="flex-1 min-w-0 ml-3">
-        <view class="font-medium truncate text-sm">{{item.name}}</view>
-        <view class="text-xs truncate text-gray-500 dark:text-gray-400">{{item.count}} 首歌曲</view>
-      </view>
-    </view>
+    <music-item
+      wx:for="{{playlists}}"
+      wx:key="name"
+      list-item
+      title="{{item.name}}"
+      description="{{item.count}} 首歌曲"
+      icon="{{item.icon}}"
+      data-name="{{item.name}}"
+      bind:tap="handleViewTap"
+    />
 
     <view class="flex items-center w-full p-2.5 rounded-md transition-all text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800/20" bind:tap="handleCreateList">
       <image class="w-4 h-4 invert-icon" src="/assets/icon/tianjia.svg" />
@@ -73,19 +73,18 @@
 
   <view wx:if="{{list.length}}" class="text-base font-bold my-3">专辑</view>
 
-  <view wx:for="{{list}}" wx:key="name" list-item class="flex items-center p-2.5 mb-2 rounded-md cursor-pointer transition-all bg-white dark:bg-gray-800/20" data-name="{{item.name}}" bind:tap="handleViewTap">
-    <view class="w-8 h-8 rounded-md flex items-center justify-center bg-gray-100 text-gray-500 dark:bg-gray-700/20 dark:text-gray-400">
-      <image class="w-4 h-4 invert-icon" src="/assets/icon/zhuanji.svg" />
-    </view>
-    <view class="flex-1 min-w-0 ml-3">
-      <view class="font-medium truncate text-sm">{{item.name}}</view>
-      <view class="text-xs truncate text-gray-500 dark:text-gray-400">
-      {{item.count}} 首歌曲
-      </view>
-    </view>
-  </view>
+  <music-item
+    wx:for="{{list}}"
+    wx:key="name"
+    list-item
+    title="{{item.name}}"
+    description="{{item.count}} 首歌曲"
+    cover="{{infos[item.name]}}"
+    data-name="{{item.name}}"
+    bind:tap="handleViewTap"
+  />
 </scroll-view>
 
-<fallback-app-bar></fallback-app-bar>
+<fallback-app-bar />
 
-<radio-player></radio-player>
+<radio-player />

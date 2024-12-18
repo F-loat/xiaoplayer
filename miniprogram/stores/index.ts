@@ -1,5 +1,5 @@
 import { reaction, makeAutoObservable } from 'mobx-miniprogram';
-import { request } from '../utils';
+import { removeProtocol, request } from '../utils';
 import { Device, PlayOrderType, ServerConfig } from '../types';
 import { HostPlayerModule } from './modules/host';
 import { XiaomusicPlayerModule } from './modules/xiaomusic';
@@ -215,6 +215,24 @@ export class Store {
       console.error(err);
     }
   };
+
+  getResourceUrl(url: string = '') {
+    const {
+      domain,
+      publicDomain = '',
+      privateDomain: _privateDomain,
+    } = this.serverConfig;
+    const protocol = publicDomain.match(/(.*):\/\//)?.[1] || 'http';
+    const privateDomain =
+      _privateDomain || url.match(/^https?:\/\/(.*?)\//)?.[1] || '';
+    return domain === publicDomain &&
+      url.includes(removeProtocol(privateDomain))
+      ? `${protocol}://${removeProtocol(url).replace(
+          removeProtocol(privateDomain),
+          removeProtocol(publicDomain),
+        )}`
+      : url;
+  }
 
   sendCommand = (cmd: String, did?: string) => {
     return request({

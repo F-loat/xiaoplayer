@@ -1,7 +1,7 @@
 import { store } from '@/miniprogram/stores';
-import { getGlobalData } from '@/miniprogram/utils';
+import { getGlobalData, request } from '@/miniprogram/utils';
 
-const pageSize = 40;
+const pageSize = 25;
 
 Component({
   properties: {
@@ -10,6 +10,13 @@ Component({
   },
   data: {
     list: [] as string[],
+    infos: {} as Record<
+      string,
+      {
+        album?: string;
+        cover?: string;
+      }
+    >,
     filterValue: '',
   },
   lifetimes: {
@@ -17,6 +24,7 @@ Component({
       const musiclist = getGlobalData('musiclist');
       const curlist = musiclist[this.data.name] || [];
       this.setData({ list: curlist.slice(0, pageSize) });
+      this.handleFetchInfos();
     },
   },
   methods: {
@@ -42,6 +50,7 @@ Component({
       if (loadedCount >= filteredList.length) return;
       const count = (loadedCount / pageSize + 1) * pageSize;
       this.setData({ list: filteredList.slice(0, count) });
+      this.handleFetchInfos(loadedCount);
     },
     handleFilter(e: {
       detail: {
@@ -58,6 +67,42 @@ Component({
         filterValue: value,
         list: filteredList.slice(0, pageSize),
       });
+    },
+    async handleFetchInfos(offset: number = 0) {
+      if (!store.feature.musicInfos || this.data.filterValue) {
+        return;
+      }
+      const musiclist = getGlobalData('musiclist');
+      const curlist = musiclist[this.data.name] || [];
+      const indexes = new Array(pageSize)
+        .fill(null)
+        .map((_, index) => index + offset);
+      const names = indexes.reduce((result, index) => {
+        if (!curlist[index]) return result;
+        return result + `name=${curlist[index]}&`;
+      }, '');
+      if (!names) return;
+      const { data: infos } = await request<
+        {
+          name: string;
+          tags: {
+            album: string;
+            picture: string;
+          };
+        }[]
+      >({
+        url: `/musicinfos?${names}musictag=true`,
+      });
+      const newInfos = infos.reduce((result, current) => {
+        return {
+          ...result,
+          [current.name]: {
+            album: current.tags.album,
+            cover: store.getResourceUrl(current.tags.picture),
+          },
+        };
+      }, this.data.infos);
+      this.setData({ infos: newInfos });
     },
   },
 });

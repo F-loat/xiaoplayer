@@ -50,8 +50,13 @@ export const removeProtocol = (domain?: string) => {
   return domain ? domain.replace(/^https?\:\/\//, '') : '';
 };
 
-export const isPrivateDomain = (domain: string) => {
+export const isPrivateDomain = (domain: string = '') => {
   const ip = removeProtocol(domain).split(':')[0];
+
+  if (/^local\./.test(ip) || /\.local$/.test(ip)) {
+    return true;
+  }
+
   const privateIPRegex =
     /^(?:10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2[0-9]|3[0-1])(?:\.\d{1,3}){2}|192\.168(?:\.\d{1,3}){2})$/;
   return privateIPRegex.test(ip);
