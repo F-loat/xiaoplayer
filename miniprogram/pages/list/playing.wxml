@@ -5,10 +5,9 @@
   <music-item
     wx:for="{{list}}"
     wx:key="*this"
-    list-item
     title="{{item}}"
-    cover="{{infos[item] && infos[item].cover}}"
-    description="{{infos[item] && infos[item].album}}"
+    cover="{{infos[item] ? infos[item].cover : ''}}"
+    description="{{infos[item] ? infos[item].album : ''}}"
     data-name="{{item}}"
     class="{{item === musicName ? 'text-blue-600 dark:text-blue-400' : ''}}"
     bind:tap="handleViewTap"

@@ -233,14 +233,19 @@ ComponentWithStore({
     },
 
     handleFetchLyric() {
+      const cacheKey = `musicInfo:${store.musicName}`;
+      const musicInfo = wx.getStorageSync(cacheKey) || {};
       wx.showModal({
         title: '请输入歌手名称 - 歌曲名称',
-        content: store.musicName,
+        content:
+          musicInfo.name && musicInfo.artist
+            ? `${musicInfo.artist}-${musicInfo.name}`
+            : musicInfo.name || store.musicName,
         editable: true,
         confirmText: '搜索歌词',
         success: (res) => {
           if (!res.confirm || !res.content) return;
-          const [name, artist] = res.content.split('-');
+          const [name, artist] = res.content.split('-').reverse();
           store.lyric.fetchMusicTag(name, '', artist, true);
         },
       });

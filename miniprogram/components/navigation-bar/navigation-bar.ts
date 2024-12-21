@@ -108,9 +108,10 @@ ComponentWithStore({
       }
       this.setData({
         wrapperStyle: `
-          height: calc(${rect.height} + ${rect.top}px);
+          height: calc(${rect.height} + ${rect.top + 10}px);
           padding-top: ${rect.top}px;
-          padding-right: ${windowWidth - rect.left}px
+          padding-right: ${windowWidth - rect.left}px;
+          padding-bottom: 10px;
         `,
         titleWidth: `width: ${windowWidth - rect.left}px`,
         menuHeight: rect.height,

@@ -13,13 +13,11 @@
 
 <scroll-view id="scrollview" class="flex-1 overflow-y-hidden px-3 box-border" scroll-y refresher-enabled
   bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}" bind:refresherrefresh="handleRefresh">
-  <view class="mt-2">
-    <search-bar placeholder="请输入关键词" btnText="播放" bind:change="handleFilter" bind:search="handleSearch">
-      <view wx:if="{{isPC}}" class="h-7 w-7 ml-2">
-        <template is="setting" />
-      </view>
-    </search-bar>
-  </view>
+  <search-bar placeholder="请输入关键词" btnText="播放" bind:change="handleFilter" bind:search="handleSearch">
+    <view wx:if="{{isPC}}" class="h-7 w-7 ml-2">
+      <template is="setting" />
+    </view>
+  </search-bar>
 
   <view wx:if="{{!serverConfig.domain || !connected}}" class="h-3/4 flex justify-center items-center">
     <view wx:if="{{!serverConfig.domain}}" class="p-4">
@@ -57,7 +55,6 @@
     <music-item
       wx:for="{{playlists}}"
       wx:key="name"
-      list-item
       title="{{item.name}}"
       description="{{item.count}} 首歌曲"
       icon="{{item.icon}}"
@@ -76,10 +73,9 @@
   <music-item
     wx:for="{{list}}"
     wx:key="name"
-    list-item
     title="{{item.name}}"
     description="{{item.count}} 首歌曲"
-    cover="{{infos[item.name]}}"
+    cover="{{infos[item.name] || ''}}"
     data-name="{{item.name}}"
     bind:tap="handleViewTap"
   />

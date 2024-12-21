@@ -110,15 +110,15 @@ export class LyricModule {
   ) => {
     this.store.setData({ musicLyricLoading: true });
 
+    const originMusicName = this.store.musicName;
+    const cackeKey = `musicInfo:${originMusicName}`;
+    const cachedInfo = wx.getStorageSync(cackeKey) || {};
+
     let musicName = name.trim();
     let musicAlbum = album.trim();
     let musicArtist = artist.trim();
 
-    const originMusicName = this.store.musicName;
-    const cackeKey = `musicInfo:${originMusicName}`;
-    const cachedInfo = wx.getStorageSync(cackeKey);
-
-    if (!force && cachedInfo && cachedInfo.lyric?.length) {
+    if (!force && cachedInfo.lyric?.length) {
       this.store.setData({
         musicLyric: cachedInfo.lyric,
         musicCover: cachedInfo.cover,
@@ -201,10 +201,12 @@ export class LyricModule {
         wx.setStorage({
           key: cackeKey,
           data: {
+            ...cachedInfo,
             name: musicName,
             lyric: musicLyric,
             cover: musicCover,
             album: musicAlbum,
+            artist: musicArtist,
           },
         });
 

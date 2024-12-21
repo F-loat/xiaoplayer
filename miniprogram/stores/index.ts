@@ -49,7 +49,7 @@ export class Store {
   playTimer: number | null = null;
 
   showAppBar = true;
-  version: null | string = null;
+  version: null | string = wx.getStorageSync('serverVersion') || null;
   devices: Record<string, Device> = {};
   isPC =
     platform === 'windows' ||
@@ -211,6 +211,7 @@ export class Store {
       this.setData({
         version: data.version,
       });
+      wx.setStorageSync('serverVersion', data.version);
     } catch (err) {
       console.error(err);
     }
