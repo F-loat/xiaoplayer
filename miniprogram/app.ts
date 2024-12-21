@@ -6,6 +6,9 @@ App<IAppOption>({
   globalData: {
     musiclist: {},
   },
+  onShow() {
+    store.player.syncMusic();
+  },
   async onLaunch({ query }) {
     if (query.serverConfig) {
       const config = safeJSONParse<ServerConfig>(query.serverConfig);
@@ -28,5 +31,6 @@ App<IAppOption>({
       }
     }
     await store.initSettings();
+    store.player.syncMusic();
   },
 });

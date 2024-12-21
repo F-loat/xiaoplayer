@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
-import { getGlobalData, removeProtocol, request } from '@/miniprogram/utils';
+import { getGlobalData, request } from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
 
 let innerAudioContext: WechatMiniprogram.InnerAudioContext;
@@ -12,14 +12,33 @@ export class HostPlayerModule implements MusicPlayer {
   volume = wx.getStorageSync('hostVolume') || 80;
   list: string[] = wx.getStorageSync('musicList') || [];
 
+  mode: 'inner' | 'background' = wx.getStorageSync('hostMode') || 'inner';
+
   constructor(store: Store) {
     this.store = store;
     makeAutoObservable(this);
-
     reaction(
       () => this.volume,
       (val) => wx.setStorageSync('hostVolume', val),
     );
+  }
+
+  async syncMusic() {
+    if (this.mode !== 'background') return;
+    const bgAudioContext = wx.getBackgroundAudioManager();
+    wx.showToast({
+      title: `${bgAudioContext.paused}  ${bgAudioContext.title}`,
+    });
+    if (bgAudioContext.paused || !bgAudioContext.title) {
+      return;
+    }
+    this.store.setData({
+      musicName: bgAudioContext.title,
+      musicCover: bgAudioContext.coverImgUrl,
+      duration: bgAudioContext.duration,
+      currentTime: bgAudioContext.currentTime,
+    });
+    this.store.updateCurrentTime();
   }
 
   setList(value: string[] = []) {
@@ -29,6 +48,11 @@ export class HostPlayerModule implements MusicPlayer {
         : value;
     this.list = list;
     wx.setStorageSync('musicList', list);
+  }
+
+  setMode(mode: 'inner' | 'background') {
+    this.mode = mode;
+    wx.setStorageSync('hostMode', mode);
   }
 
   getMusic() {
@@ -70,46 +94,92 @@ export class HostPlayerModule implements MusicPlayer {
     const url = res.data.url || '';
     innerAudioContext?.destroy();
     const isM3U8 = url.split('?')[0].endsWith('m3u8');
+
     if (isM3U8) {
       this.store.setData({ musicM3U8Url: url });
       return;
     }
+
     wx.showLoading({
       title: '加载中',
     });
+
+    if (this.mode === 'background') {
+      this.store.setData({ status: 'loading' });
+      await this.store.lyric.fetchMusicTag();
+      const bgAudioContext = wx.getBackgroundAudioManager();
+      bgAudioContext.audioType = 'music';
+      bgAudioContext.title = this.store.musicName;
+      bgAudioContext.coverImgUrl = this.store.musicCover;
+      bgAudioContext.playbackRate = this.speed;
+      bgAudioContext.src = this.store.getResourceUrl(url);
+      bgAudioContext.play();
+      bgAudioContext.onPrev(() => {
+        this.playPrevMusic();
+      });
+      bgAudioContext.onNext(() => {
+        this.playNextMusic();
+      });
+      bgAudioContext.onStop(() => {
+        this.store.setData({ status: 'paused' });
+        if (this.store.playTimer) {
+          clearTimeout(this.store.playTimer);
+        }
+      });
+      this.addCommonListener(bgAudioContext);
+      return;
+    }
+
+    this.store.lyric.fetchMusicTag();
     innerAudioContext = wx.createInnerAudioContext();
     innerAudioContext.volume = this.volume / 100;
     innerAudioContext.playbackRate = this.speed;
     innerAudioContext.src = this.store.getResourceUrl(url);
     innerAudioContext.play();
-    innerAudioContext.onCanplay(() => {
-      wx.hideLoading();
-    });
-    innerAudioContext.onTimeUpdate(() => {
-      const duration = innerAudioContext.duration;
-      if (duration !== this.store.duration) {
-        this.store.setData({
-          duration,
-          currentTime: innerAudioContext.currentTime,
-        });
-        this.store.updateCurrentTime();
-      }
-    });
     innerAudioContext.onPause(() => {
       this.store.setData({ status: 'paused' });
       if (this.store.playTimer) {
         clearTimeout(this.store.playTimer);
       }
     });
-    innerAudioContext.onEnded(() => this.handleMusicEnd());
-    innerAudioContext.onError((err) => {
+    this.addCommonListener(innerAudioContext);
+  };
+
+  addCommonListener(
+    context:
+      | WechatMiniprogram.BackgroundAudioManager
+      | WechatMiniprogram.InnerAudioContext,
+  ) {
+    context.onCanplay(() => {
+      wx.hideLoading();
+    });
+    context.onPlay(() => {
+      this.store.setData({
+        status: 'playing',
+        duration: context.duration,
+        currentTime: context.currentTime,
+      });
+      this.store.updateCurrentTime();
+    });
+    context.onTimeUpdate(() => {
+      const duration = context.duration;
+      if (duration !== this.store.duration) {
+        this.store.setData({
+          duration,
+          currentTime: context.currentTime,
+        });
+        this.store.updateCurrentTime();
+      }
+    });
+    context.onEnded(() => this.handleMusicEnd());
+    context.onError((err) => {
       this.store.setData({ status: 'paused' });
       wx.showToast({
         title: err.errMsg || '加载失败',
         icon: 'none',
       });
     });
-  };
+  }
 
   handleMusicEnd = async () => {
     if (this.stopAt && this.stopAt < Date.now()) {

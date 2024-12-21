@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx-miniprogram';
-import { MusicPlayer, Store } from '..';
+import { DEFAULT_COVER, MusicPlayer, Store } from '..';
 import { request, sleep } from '@/miniprogram/utils';
 
 export class XiaomusicPlayerModule implements MusicPlayer {
@@ -14,6 +14,19 @@ export class XiaomusicPlayerModule implements MusicPlayer {
 
     this.store = store;
 
+    reaction(
+      () => store.musicName,
+      (name) => {
+        if (store.did === 'host') return;
+        if (store.playTimer) clearTimeout(store.playTimer);
+        store.setData({ musicLyric: [], currentTime: 0, duration: 0 });
+        if (name) {
+          store.lyric.fetchMusicTag();
+        } else {
+          store.setData({ musicCover: DEFAULT_COVER });
+        }
+      },
+    );
     reaction(
       () => ({
         did: this.store.did,
@@ -84,8 +97,7 @@ export class XiaomusicPlayerModule implements MusicPlayer {
 
   seekMusic = async () => {};
 
-  private syncMusic = async () => {
-    if (this.store.did === 'host') return;
+  syncMusic = async () => {
     if (this.deboTimer) clearTimeout(this.deboTimer);
     this.deboTimer = setTimeout(async () => {
       const res = await request<{

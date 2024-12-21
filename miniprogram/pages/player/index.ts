@@ -45,7 +45,7 @@ ComponentWithStore({
 
   lifetimes: {
     attached() {
-      const mode = wx.getStorageSync('player-mode');
+      const mode = wx.getStorageSync('playerMode');
       const { statusBarHeight, screenHeight } = wx.getWindowInfo();
 
       this.setData({
@@ -90,7 +90,7 @@ ComponentWithStore({
     handleModeToggle() {
       const mode = this.data.mode === 'cover' ? 'lyric' : 'cover';
       this.setData({ mode });
-      wx.setStorageSync('player-mode', mode);
+      wx.setStorageSync('playerMode', mode);
     },
 
     async handlePlayToggle() {

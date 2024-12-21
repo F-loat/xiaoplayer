@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<navigation-bar back title="设置 {{version ? 'v' + version : ''}}" />
+<navigation-bar back title="设置" />
 
 <scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
   <xiao-cell>
@@ -24,6 +24,10 @@
 			<input class="flex-1 ml-2 -mb-1" password value="{{serverConfig.password}}" placeholder="请输入" data-name="password" bind:input="handleFormChange"></input>
 		</xiao-cell>
 	</block>
+	<xiao-cell wx:if="{{did === 'host'}}" extClass="justify-between">
+		<view>后台播放</view>
+		<switch class="scale-75" type="checkbox" checked="{{mode === 'background'}}"  bind:change="handleHostModeChange" />
+	</xiao-cell>
 	<view class="flex justify-center my-4">
 		<button open-type="share" class="bg-white dark:bg-gray-800/40">分享</button>
 		<button style="margin-left: 12px" class="bg-white dark:bg-gray-800/40" bind:tap="handleSaveConfig">保存</button>

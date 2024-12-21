@@ -30,7 +30,7 @@ ComponentWithStore({
   storeBindings: [
     {
       store,
-      fields: [] as const,
+      fields: ['version'] as const,
       actions: [] as const,
     },
     {

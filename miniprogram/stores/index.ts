@@ -24,6 +24,7 @@ export interface MusicPlayer {
   getMusic: () => { url?: string };
   playMusic: (name?: string, album?: string) => Promise<void>;
   pauseMusic(): Promise<void>;
+  syncMusic: () => Promise<void>;
   seekMusic: (time: number) => Promise<void>;
   playPrevMusic(): Promise<void>;
   playNextMusic(): Promise<void>;
@@ -60,8 +61,8 @@ export class Store {
   lyric: LyricModule;
   feature: FeatureModule;
   favorite: FavoriteModule;
-  hostPlayer: MusicPlayer;
-  xiaomusicPlayer: MusicPlayer;
+  hostPlayer: HostPlayerModule;
+  xiaomusicPlayer: XiaomusicPlayerModule;
 
   constructor() {
     makeAutoObservable(this);
@@ -78,22 +79,6 @@ export class Store {
     this.musicAlbum = musicInfo.album || '';
     this.musicLyric = musicInfo.lyric || [];
     this.musicCover = musicInfo.cover || DEFAULT_COVER;
-
-    reaction(
-      () => this.musicName,
-      (name) => {
-        if (this.playTimer) clearTimeout(this.playTimer);
-        this.setData({ musicLyric: [], currentTime: 0, duration: 0 });
-        if (name) {
-          this.lyric.fetchMusicTag(
-            name.replace(/^\d+\.\s?/g, ''),
-            this.musicAlbum?.replace(/（.*）/g, ''),
-          );
-        } else {
-          this.setData({ musicCover: DEFAULT_COVER });
-        }
-      },
-    );
 
     reaction(
       () => this.did,

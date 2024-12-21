@@ -10,11 +10,18 @@ ComponentWithStore({
     devices: [] as Device[],
     serverConfig: {} as ServerConfig,
   },
-  storeBindings: {
-    store,
-    fields: ['did', 'version'] as const,
-    actions: [] as const,
-  },
+  storeBindings: [
+    {
+      store,
+      fields: ['did'] as const,
+      actions: [] as const,
+    },
+    {
+      store: store.hostPlayer,
+      fields: ['mode'] as const,
+      actions: [] as const,
+    },
+  ],
   lifetimes: {
     attached() {
       store.setData({ showAppBar: false });
@@ -98,6 +105,13 @@ ComponentWithStore({
           [name]: e.detail.value,
         },
       });
+    },
+    handleHostModeChange(e: {
+      detail: {
+        value: string;
+      };
+    }) {
+      store.hostPlayer.setMode(e.detail.value ? 'background' : 'inner');
     },
     async handleSaveConfig() {
       wx.showToast({

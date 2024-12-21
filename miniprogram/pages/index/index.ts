@@ -216,8 +216,12 @@ ComponentWithStore({
           this.fetchMusicList();
           const isPrivate = isPrivateDomain(config.domain);
           if (isPrivate && this.data.isPC) {
+            wx.setClipboardData({
+              data: 'https://github.com/F-loat/xiaoplayer/issues/3',
+            });
             wx.showToast({
-              title: 'PC 端可能不支持内网访问，请尝试配置公网服务地址',
+              title:
+                'PC 端可能不支持内网访问，请尝试配置公网服务地址或参考剪贴板中教程配置',
               icon: 'none',
             });
           }
