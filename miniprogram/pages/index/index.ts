@@ -27,16 +27,22 @@ ComponentWithStore({
   data: {
     connected: true,
     list: [] as Item[],
-    playlists: [] as Item[],
     infos: {} as Record<string, string>,
     error: null as null | string,
     filterValue: '',
   },
-  storeBindings: {
-    store,
-    fields: ['serverConfig', 'isPC', 'status', 'musicM3U8Url'] as const,
-    actions: [] as const,
-  },
+  storeBindings: [
+    {
+      store,
+      fields: ['serverConfig', 'isPC', 'status', 'musicM3U8Url'] as const,
+      actions: [] as const,
+    },
+    {
+      store: store.playlist,
+      fields: ['playlists'] as const,
+      actions: [] as const,
+    },
+  ],
   lifetimes: {
     attached() {
       this.fetchMusicList();
@@ -68,6 +74,7 @@ ComponentWithStore({
           return;
         }
         const playlists: Item[] = [];
+        const listNames = await store.playlist.fetchPlaylists();
         list = Object.entries(res.data)
           .map(([name, items]) => ({
             name,
@@ -75,11 +82,9 @@ ComponentWithStore({
             music: items[0],
           }))
           .filter(({ name, count }) => {
-            if (['所有歌曲', '收藏', '最近新增'].includes(name)) {
-              if (count) {
-                const icon = playlistIconMap[name] || 'zhuanji';
-                playlists.push({ name, count, icon });
-              }
+            if (listNames.includes(name)) {
+              const icon = playlistIconMap[name] || 'zhuanji';
+              playlists.push({ name, count, icon });
               return false;
             }
             return (
@@ -92,9 +97,9 @@ ComponentWithStore({
           : list;
         this.setData({
           connected: true,
-          playlists,
           list: filteredList.slice(0, pageSize),
         });
+        store.playlist.setPlaylists(playlists);
         store.favorite.setMusics(res.data['收藏']);
         setGlobalData('musiclist', res.data);
         this.handleFetchInfos();
@@ -189,12 +194,13 @@ ComponentWithStore({
       currentTarget: {
         dataset: {
           name: string;
+          type?: string;
         };
       };
     }) {
-      const { name } = e.currentTarget.dataset;
+      const { name, type } = e.currentTarget.dataset;
       wx.navigateTo({
-        url: `/pages/list/index?name=${name}`,
+        url: `/pages/list/index?name=${name}&type=${type}`,
       });
     },
     handleSetting() {
@@ -208,7 +214,7 @@ ComponentWithStore({
         success: (res) => {
           if (!res.confirm || !res.content) return;
           const config = {
-            ...this.data.serverConfig,
+            ...store.serverConfig,
             ...parseAuthUrl(res.content),
           };
           store.setServerConfig(config);
@@ -229,7 +235,7 @@ ComponentWithStore({
       });
     },
     async handleSwitchDomain() {
-      const { serverConfig } = this.data;
+      const { serverConfig } = store;
       if (!serverConfig.privateDomain || !serverConfig.publicDomain) {
         return;
       }
@@ -297,9 +303,43 @@ ComponentWithStore({
       this.handleFilter({ detail: { value: '' } });
     },
     handleCreateList() {
-      wx.showToast({
-        title: '即将支持',
-        icon: 'none',
+      if (!store.feature.playlist) {
+        wx.showToast({
+          title: 'xiaomusic 版本较低，尚未支持自定义歌单',
+          icon: 'none',
+        });
+        return;
+      }
+      store.playlist.createPlaylist();
+    },
+    handleListOperation(e: {
+      detail: {
+        value: string;
+        index: number;
+      };
+    }) {
+      const name = e.detail.value;
+      const index = e.detail.index;
+      const items = [
+        { label: '编辑名称', value: 'edit' },
+        { label: '删除歌单', value: 'delete' },
+      ];
+      wx.showActionSheet({
+        alertText: '歌单操作',
+        itemList: items.map((i) => i.label),
+        success: (res) => {
+          const { value } = items[res.tapIndex];
+          switch (value) {
+            case 'edit':
+              store.playlist.editPlaylist(name, index);
+              break;
+            case 'delete':
+              store.playlist.deletePlaylist(name, index);
+              break;
+            default:
+              break;
+          }
+        },
       });
     },
   },

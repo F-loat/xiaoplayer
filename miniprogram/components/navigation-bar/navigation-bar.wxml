@@ -21,3 +21,4 @@
     </view>
   </view>
 </view>
+<view wx:else class="pb-[10px]"></view>

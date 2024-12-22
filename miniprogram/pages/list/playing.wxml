@@ -1,7 +1,6 @@
 <navigation-bar back half title="{{title || '正在播放'}}" />
 
-<scroll-view wx:if="{{!!list.length}}" class="flex-1 overflow-y-hidden px-3 box-border" scroll-y type="list"
-  show-scrollbar="{{false}}" bind:scrolltolower="handleLoadMore">
+<scroll-view wx:if="{{!!list.length}}" class="flex-1 overflow-y-hidden px-3 box-border" scroll-y type="list" show-scrollbar="{{false}}" bind:scrolltolower="handleLoadMore">
   <music-item
     wx:for="{{list}}"
     wx:key="*this"

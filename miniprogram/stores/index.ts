@@ -6,6 +6,7 @@ import { XiaomusicPlayerModule } from './modules/xiaomusic';
 import { FavoriteModule } from './modules/favorite';
 import { LyricModule } from './modules/lyric';
 import { FeatureModule } from './modules/feature';
+import { PlaylistModule } from './modules/playlist';
 
 const { platform } = wx.getDeviceInfo();
 
@@ -61,6 +62,7 @@ export class Store {
   lyric: LyricModule;
   feature: FeatureModule;
   favorite: FavoriteModule;
+  playlist: PlaylistModule;
   hostPlayer: HostPlayerModule;
   xiaomusicPlayer: XiaomusicPlayerModule;
 
@@ -70,6 +72,7 @@ export class Store {
     this.lyric = new LyricModule(this);
     this.feature = new FeatureModule(this);
     this.favorite = new FavoriteModule(this);
+    this.playlist = new PlaylistModule(this);
     this.hostPlayer = new HostPlayerModule(this);
     this.xiaomusicPlayer = new XiaomusicPlayerModule(this);
 

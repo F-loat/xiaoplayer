@@ -19,7 +19,7 @@
     "autoprefixer": "^10.4.20",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
-    "miniprogram-api-typings": "^4.0.1",
+    "miniprogram-api-typings": "^4.0.2",
     "postcss": "^8.4.47",
     "prettier": "3.3.3",
     "tailwindcss": "^3.4.14",
@@ -30,6 +30,6 @@
   "dependencies": {
     "compare-versions": "^6.1.1",
     "mobx-miniprogram": "^6.12.3",
-    "mobx-miniprogram-bindings": "^4.0.1"
+    "mobx-miniprogram-bindings": "^5.0.0"
   }
 }

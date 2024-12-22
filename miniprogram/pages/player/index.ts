@@ -232,6 +232,37 @@ ComponentWithStore({
       store.favorite.toggleFavorite(store.musicName);
     },
 
+    handleMoreOperation() {
+      const items = [
+        { label: '歌词调整', value: 'lyric' },
+        { label: '歌曲刮削', value: 'scrape' },
+        {
+          label: this.data.mode === 'cover' ? '歌词模式' : '封面模式',
+          value: 'mode',
+        },
+      ];
+      wx.showActionSheet({
+        alertText: '更多操作',
+        itemList: items.map((i) => i.label),
+        success: (res) => {
+          const { value } = items[res.tapIndex];
+          switch (value) {
+            case 'lyric':
+              this.hanldeLyricOffset();
+              break;
+            case 'scrape':
+              this.handleFetchLyric();
+              break;
+            case 'mode':
+              this.handleModeToggle();
+              break;
+            default:
+              break;
+          }
+        },
+      });
+    },
+
     handleFetchLyric() {
       const cacheKey = `musicInfo:${store.musicName}`;
       const musicInfo = wx.getStorageSync(cacheKey) || {};

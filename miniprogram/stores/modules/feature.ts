@@ -7,8 +7,8 @@ export class FeatureModule {
 
   musicTags: boolean = true; // 歌曲标签获取
   musicInfos: boolean = true; // 歌曲封面批量获取
+  playlist: boolean = false; // 自定义歌单
   musicScrape: boolean = false; // 歌曲标签刮削
-  musicCover: boolean = false; // 歌曲封面获取
 
   constructor(store: Store) {
     this.store = store;
@@ -21,7 +21,7 @@ export class FeatureModule {
         this.musicTags = compareVersions(version, '0.3.37') >= 0;
         this.musicInfos = compareVersions(version, '0.3.38') >= 0;
         this.musicScrape = compareVersions(version, '0.3.56') >= 0;
-        this.musicCover = compareVersions(version, '0.3.56') >= 0;
+        this.playlist = compareVersions(version, '0.3.65') >= 0;
       },
       {
         fireImmediately: true,

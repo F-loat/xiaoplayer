@@ -14,8 +14,8 @@ importers:
         specifier: ^6.12.3
         version: 6.12.3
       mobx-miniprogram-bindings:
-        specifier: ^4.0.1
-        version: 4.0.1(mobx-miniprogram@6.12.3)
+        specifier: ^5.0.0
+        version: 5.0.0(miniprogram-api-typings@4.0.2)(mobx-miniprogram@6.12.3)
     devDependencies:
       autoprefixer:
         specifier: ^10.4.20
@@ -27,8 +27,8 @@ importers:
         specifier: ^15.2.10
         version: 15.2.10
       miniprogram-api-typings:
-        specifier: ^4.0.1
-        version: 4.0.1
+        specifier: ^4.0.2
+        version: 4.0.2
       postcss:
         specifier: ^8.4.47
         version: 8.4.47
@@ -1959,10 +1959,10 @@ packages:
       }
     engines: { node: '>=16 || 14 >=14.17' }
 
-  miniprogram-api-typings@4.0.1:
+  miniprogram-api-typings@4.0.2:
     resolution:
       {
-        integrity: sha512-Ok4SSNCYnNLgbAhHCpIeqx6XICZ3aUxZ2iQDExmwKEinWaQQFzzxobK5JP9skrEOWn9PoKodjw4iUdF8Um0i/A==,
+        integrity: sha512-hDrWCaJamsMB6Sg+0oMzGgSOse8EzumfN+VQFBKtJe2LbeKibGruB/ptNd4viXdcdgfahQ+Ji5Z9v9meoG9iuw==,
       }
 
   minizlib@2.1.2:
@@ -2001,12 +2001,13 @@ packages:
         integrity: sha512-tN3dvVHYVz4DhSXinXIk7u9syPYaJvio118uomkovAtWBT+RdbP6Lfh/5Lvo519YMmwBafwlh20IPTXIStscpA==,
       }
 
-  mobx-miniprogram-bindings@4.0.1:
+  mobx-miniprogram-bindings@5.0.0:
     resolution:
       {
-        integrity: sha512-K2abvA+tGdEj70SD0hPEGCwTUgMLCZhdgHxO17B18TN5GhGNlUnj09BwXauqdWONwq4OuODYCrZwjAIadPQXFw==,
+        integrity: sha512-/xj+osYXwiUXgDYmPCQ/oh3ntZqmH+bkHzzoRJPhJfauKgQxrjiUsGZaBhOx3w83kKo0bQyQdkE0dZQBhw/1ZA==,
       }
     peerDependencies:
+      miniprogram-api-typings: ^4.0.1
       mobx-miniprogram: ^6.0.0
 
   mobx-miniprogram@6.12.3:
@@ -3991,7 +3992,7 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  miniprogram-api-typings@4.0.1: {}
+  miniprogram-api-typings@4.0.2: {}
 
   minizlib@2.1.2:
     dependencies:
@@ -4014,8 +4015,9 @@ snapshots:
       pkg-types: 1.2.1
       ufo: 1.5.4
 
-  mobx-miniprogram-bindings@4.0.1(mobx-miniprogram@6.12.3):
+  mobx-miniprogram-bindings@5.0.0(miniprogram-api-typings@4.0.2)(mobx-miniprogram@6.12.3):
     dependencies:
+      miniprogram-api-typings: 4.0.2
       mobx-miniprogram: 6.12.3
 
   mobx-miniprogram@6.12.3: {}

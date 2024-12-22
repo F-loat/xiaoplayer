@@ -58,8 +58,12 @@
       title="{{item.name}}"
       description="{{item.count}} 首歌曲"
       icon="{{item.icon}}"
+      index="{{index}}"
       data-name="{{item.name}}"
+      data-type="{{index > 2 ? 'playlist' : 'album'}}"
+      operation="{{index > 2}}"
       bind:tap="handleViewTap"
+      bind:operation="handleListOperation"
     />
 
     <view class="flex items-center w-full p-2.5 rounded-md transition-all text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800/20" bind:tap="handleCreateList">

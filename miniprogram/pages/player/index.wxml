@@ -23,6 +23,7 @@
             bind:tap="handleToggleFavorite" />
           <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
           <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchDevice" />
+          <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/gengduo.svg" bind:tap="handleMoreOperation" />
         </view>
       </view>
       <text class="text-sm" bind:tap="handleSwitchDevice">{{currentDevice.name}}</text>
@@ -32,7 +33,10 @@
       <lyric></lyric>
     </view>
 
-    <large-lyric class="{{mode === 'lyric' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle" bind:longpress="hanldeLyricOffset"></large-lyric>
+    <block>
+      <large-lyric class="{{mode === 'lyric' ? 'visible' : 'invisible'}}" bind:tap="handleModeToggle" bind:longpress="hanldeLyricOffset" />
+      <image wx:if="{{mode === 'lyric'}}" class="w-5 h-5 p-1 absolute right-0 bottom-0" src="/assets/icon/gengduo.svg" bind:tap="handleMoreOperation" />
+    </block>
   </view>
 
   <view class="mt-2">

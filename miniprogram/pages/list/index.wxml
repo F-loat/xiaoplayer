@@ -12,7 +12,10 @@
     cover="{{infos[item] ? infos[item].cover : ''}}"
     description="{{infos[item] ? infos[item].album : ''}}"
     data-name="{{item}}"
+    index="{{index}}"
+    operation
     bind:tap="handleViewTap"
+    bind:operation="handleItemOperation"
   />
 </scroll-view>
 

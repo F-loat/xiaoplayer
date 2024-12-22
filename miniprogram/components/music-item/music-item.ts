@@ -16,5 +16,20 @@ Component({
       type: String,
       value: '',
     },
+    index: {
+      type: Number,
+    },
+    operation: {
+      type: Boolean,
+      value: false,
+    },
+  },
+  methods: {
+    handleOperation() {
+      this.triggerEvent('operation', {
+        value: this.data.title,
+        index: this.data.index,
+      });
+    },
   },
 });

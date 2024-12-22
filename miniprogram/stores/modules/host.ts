@@ -1,9 +1,7 @@
-import { makeAutoObservable, reaction } from 'mobx-miniprogram';
+import { makeAutoObservable, observable, reaction } from 'mobx-miniprogram';
 import { MusicPlayer, Store } from '..';
 import { getGlobalData, request } from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
-
-let innerAudioContext: WechatMiniprogram.InnerAudioContext;
 
 export class HostPlayerModule implements MusicPlayer {
   store: Store;
@@ -14,21 +12,28 @@ export class HostPlayerModule implements MusicPlayer {
 
   mode: 'inner' | 'background' = wx.getStorageSync('hostMode') || 'inner';
 
+  bgAudioContext?: WechatMiniprogram.BackgroundAudioManager;
+  innerAudioContext?: WechatMiniprogram.InnerAudioContext;
+
   constructor(store: Store) {
     this.store = store;
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      bgAudioContext: observable.ref,
+      innerAudioContext: observable.ref,
+    });
     reaction(
       () => this.volume,
       (val) => wx.setStorageSync('hostVolume', val),
     );
   }
 
+  get audioContext() {
+    return this.mode === 'inner' ? this.innerAudioContext : this.bgAudioContext;
+  }
+
   async syncMusic() {
     if (this.mode !== 'background') return;
     const bgAudioContext = wx.getBackgroundAudioManager();
-    wx.showToast({
-      title: `${bgAudioContext.paused}  ${bgAudioContext.title}`,
-    });
     if (bgAudioContext.paused || !bgAudioContext.title) {
       return;
     }
@@ -57,7 +62,7 @@ export class HostPlayerModule implements MusicPlayer {
 
   getMusic() {
     return {
-      url: innerAudioContext?.src,
+      url: this.audioContext?.src,
     };
   }
 
@@ -73,11 +78,11 @@ export class HostPlayerModule implements MusicPlayer {
       musicM3U8Url: undefined,
     });
 
-    if (!name && innerAudioContext?.src) {
+    if (!name && this.audioContext?.src) {
       this.store.setData({
-        currentTime: innerAudioContext.currentTime,
+        currentTime: this.audioContext.currentTime,
       });
-      innerAudioContext.play();
+      this.audioContext.play();
       this.store.updateCurrentTime();
       return;
     }
@@ -92,7 +97,7 @@ export class HostPlayerModule implements MusicPlayer {
     });
 
     const url = res.data.url || '';
-    innerAudioContext?.destroy();
+    this.innerAudioContext?.destroy();
     const isM3U8 = url.split('?')[0].endsWith('m3u8');
 
     if (isM3U8) {
@@ -127,11 +132,12 @@ export class HostPlayerModule implements MusicPlayer {
         }
       });
       this.addCommonListener(bgAudioContext);
+      this.bgAudioContext = bgAudioContext;
       return;
     }
 
     this.store.lyric.fetchMusicTag();
-    innerAudioContext = wx.createInnerAudioContext();
+    const innerAudioContext = wx.createInnerAudioContext();
     innerAudioContext.volume = this.volume / 100;
     innerAudioContext.playbackRate = this.speed;
     innerAudioContext.src = this.store.getResourceUrl(url);
@@ -143,6 +149,7 @@ export class HostPlayerModule implements MusicPlayer {
       }
     });
     this.addCommonListener(innerAudioContext);
+    this.innerAudioContext = innerAudioContext;
   };
 
   addCommonListener(
@@ -236,12 +243,12 @@ export class HostPlayerModule implements MusicPlayer {
   };
 
   pauseMusic = async () => {
-    innerAudioContext?.pause();
+    this.audioContext?.pause();
     this.store.setData({ status: 'paused' });
   };
 
   seekMusic = async (time: number) => {
-    innerAudioContext.seek(time);
+    this.audioContext?.seek(time);
     this.store.setData({
       currentTime: time,
     });
@@ -250,15 +257,15 @@ export class HostPlayerModule implements MusicPlayer {
 
   setVolume = (volume: number) => {
     this.volume = volume;
-    if (innerAudioContext) {
-      innerAudioContext.volume = volume / 100;
+    if (this.innerAudioContext) {
+      this.innerAudioContext.volume = volume / 100;
     }
   };
 
   setSpeed = (speed: number) => {
     this.speed = speed;
-    if (innerAudioContext) {
-      innerAudioContext.playbackRate = speed;
+    if (this.audioContext) {
+      this.audioContext.playbackRate = speed;
     }
   };
 
