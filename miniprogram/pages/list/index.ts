@@ -116,6 +116,14 @@ Component({
         return;
       }
 
+      if (customLists.length > 6) {
+        wx.showToast({
+          title: '暂只支持至多 6 个自定义列表',
+          icon: 'none',
+        });
+        return;
+      }
+
       wx.showActionSheet({
         itemList: customLists.map((item) => item.name),
         success: async (res) => {

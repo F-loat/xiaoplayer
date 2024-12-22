@@ -305,7 +305,7 @@ ComponentWithStore({
     handleCreateList() {
       if (!store.feature.playlist) {
         wx.showToast({
-          title: 'xiaomusic 版本较低，尚未支持自定义歌单',
+          title: 'xiaomusic 版本较低，请更新后使用',
           icon: 'none',
         });
         return;

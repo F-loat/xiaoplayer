@@ -4,6 +4,10 @@ Component({
       type: String,
       value: '',
     },
+    subTitle: {
+      type: String,
+      value: '',
+    },
     description: {
       type: String,
       value: '',

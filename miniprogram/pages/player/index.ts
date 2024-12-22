@@ -251,7 +251,9 @@ ComponentWithStore({
               this.hanldeLyricOffset();
               break;
             case 'scrape':
-              this.handleFetchLyric();
+              wx.navigateTo({
+                url: '/pages/player/tag',
+              });
               break;
             case 'mode':
               this.handleModeToggle();

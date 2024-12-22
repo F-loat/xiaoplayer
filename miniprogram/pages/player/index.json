@@ -1,6 +1,4 @@
 {
-  "component": true,
-  "styleIsolation": "apply-shared",
   "usingComponents": {
     "lyric": "/components/lyric/lyric",
     "large-lyric": "/components/lyric/large",

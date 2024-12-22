@@ -2,12 +2,21 @@ import { makeAutoObservable, reaction } from 'mobx-miniprogram';
 import { DEFAULT_COVER, Store } from '..';
 import { getCloudInstance, request } from '@/miniprogram/utils';
 
-interface Lyric {
+export interface Lyric {
   time: number;
   lrc: string;
 }
 
-const parseLrc = (lrc: string = ''): Lyric[] => {
+export interface Tag {
+  name?: string;
+  artist?: string;
+  album?: string;
+  album_img?: string;
+  year?: string;
+  lyric: string;
+}
+
+export const parseLrc = (lrc: string = ''): Lyric[] => {
   try {
     return lrc
       .split('\n')
@@ -166,9 +175,9 @@ export class LyricModule {
       }
     }
 
-    const cloud = await getCloudInstance();
-
     if (force) wx.showLoading({ title: '请求中' });
+
+    const cloud = await getCloudInstance();
 
     cloud.callFunction({
       name: 'musictag',
@@ -178,61 +187,23 @@ export class LyricModule {
         artist: musicArtist,
       },
       success: (res) => {
-        if (originMusicName !== this.store.musicName) {
-          return;
-        }
-        const result = res.result as {
-          lyric: string;
-          name?: string;
-          artist?: string;
-          album?: string;
-          album_img?: string;
-          year?: string;
-        };
-        if (!result) return;
-        const musicLyric = this.store.musicM3U8Url
-          ? []
-          : parseLrc(result.lyric);
-        const musicCover = tags.picture || result.album_img || DEFAULT_COVER;
-        this.store.setData({
-          musicLyric,
-          musicCover,
-        });
-        wx.setStorage({
-          key: cackeKey,
-          data: {
-            ...cachedInfo,
-            name: musicName,
-            lyric: musicLyric,
-            cover: musicCover,
-            album: musicAlbum,
-            artist: musicArtist,
-          },
-        });
+        const result = res.result as Tag;
 
-        if (tags.picture || !this.store.feature.musicScrape) {
+        if (!result || originMusicName !== this.store.musicName) {
           return;
         }
 
-        wx.request({
-          url: musicCover.replace('http:', 'https:'),
-          responseType: 'arraybuffer',
-          success: (res) => {
-            request({
-              url: '/setmusictag',
-              method: 'POST',
-              data: {
-                musicname: originMusicName,
-                title: result.name || musicName,
-                artist: result.artist || musicArtist,
-                album: result.album || musicAlbum,
-                year: result.year,
-                lyrics: result.lyric,
-                picture: wx.arrayBufferToBase64(res.data as ArrayBuffer),
-              },
-            });
+        this.applyScrapedMusicTag(
+          {
+            ...result,
+            name: result.name || musicName,
+            artist: result.artist || musicArtist,
+            album: result.album || musicAlbum,
+            album_img: tags.picture || result.album_img || DEFAULT_COVER,
+            lyric: result.lyric,
           },
-        });
+          !tags.picture,
+        );
       },
       complete: () => {
         this.store.setData({
@@ -242,4 +213,50 @@ export class LyricModule {
       },
     });
   };
+
+  applyScrapedMusicTag(tag: Tag, remote: boolean = true) {
+    const cackeKey = `musicInfo:${this.store.musicName}`;
+    const cachedInfo = wx.getStorageSync(cackeKey) || {};
+    const musicLyric = this.store.musicM3U8Url ? [] : parseLrc(tag.lyric);
+
+    this.store.setData({
+      musicLyric,
+      musicCover: tag.album_img,
+    });
+    wx.setStorage({
+      key: cackeKey,
+      data: {
+        ...cachedInfo,
+        name: tag.name,
+        lyric: musicLyric,
+        cover: tag.album_img,
+        album: tag.album,
+        artist: tag.artist,
+      },
+    });
+
+    if (!remote || !tag.album_img || !this.store.feature.musicScrape) {
+      return;
+    }
+
+    wx.request({
+      url: tag.album_img.replace('http:', 'https:'),
+      responseType: 'arraybuffer',
+      success: (res) => {
+        request({
+          url: '/setmusictag',
+          method: 'POST',
+          data: {
+            musicname: this.store.musicName,
+            title: tag.name,
+            artist: tag.artist,
+            album: tag.album,
+            year: tag.year,
+            lyrics: tag.lyric,
+            picture: wx.arrayBufferToBase64(res.data as ArrayBuffer),
+          },
+        });
+      },
+    });
+  }
 }
