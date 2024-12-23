@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx-miniprogram';
 import { Store } from '..';
+import { getGlobalData } from '@/miniprogram/utils';
 
 export class FavoriteModule {
   store: Store;
@@ -21,10 +22,25 @@ export class FavoriteModule {
   toggleFavorite(name: string) {
     if (this.isFavorite(name)) {
       this.musics.set(name, false);
-      this.store.sendCommand('取消收藏');
+      if (this.store.feature.playlist) {
+        this.store.playlist.removeMusic('收藏', name);
+      } else {
+        this.store.sendCommand('取消收藏');
+      }
+      const musiclist = getGlobalData('musiclist');
+      const index = musiclist['收藏']?.indexOf(name);
+      musiclist['收藏']?.splice(index, 1);
+      this.store.playlist.updatePlaylistCount('收藏', -1);
     } else {
       this.musics.set(name, true);
-      this.store.sendCommand('加入收藏');
+      if (this.store.feature.playlist) {
+        this.store.playlist.addMusic('收藏', name);
+      } else {
+        this.store.sendCommand('加入收藏');
+      }
+      const musiclist = getGlobalData('musiclist');
+      musiclist['收藏']?.push(name);
+      this.store.playlist.updatePlaylistCount('收藏', 1);
     }
   }
 }

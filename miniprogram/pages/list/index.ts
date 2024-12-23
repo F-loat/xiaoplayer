@@ -128,15 +128,8 @@ Component({
         itemList: customLists.map((item) => item.name),
         success: async (res) => {
           const { name: playlist } = customLists[res.tapIndex];
-          await request({
-            url: '/playlistaddmusic',
-            method: 'POST',
-            data: {
-              name: playlist,
-              music_list: [name],
-            },
-          });
 
+          await store.playlist.addMusic(playlist, name);
           store.playlist.updatePlaylistCount(playlist, 1);
 
           const musiclist = getGlobalData('musiclist');
@@ -171,15 +164,7 @@ Component({
     async handleRemoveMusic(name: string, index: number) {
       const playlist = this.data.name;
 
-      await request({
-        url: '/playlistdelmusic',
-        method: 'POST',
-        data: {
-          name: playlist,
-          music_list: [name],
-        },
-      });
-
+      await store.playlist.removeMusic(playlist, name);
       store.playlist.updatePlaylistCount(playlist, -1);
 
       const newList = [...this.data.list];

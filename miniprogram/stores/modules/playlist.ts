@@ -144,4 +144,26 @@ export class PlaylistModule {
     newList[index].count += modifer;
     this.playlists = newList;
   }
+
+  addMusic(playlist: string, music: string) {
+    return request({
+      url: '/playlistaddmusic',
+      method: 'POST',
+      data: {
+        name: playlist,
+        music_list: [music],
+      },
+    });
+  }
+
+  removeMusic(playlist: string, music: string) {
+    return request({
+      url: '/playlistdelmusic',
+      method: 'POST',
+      data: {
+        name: playlist,
+        music_list: [music],
+      },
+    });
+  }
 }

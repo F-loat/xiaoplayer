@@ -41,6 +41,11 @@ ComponentWithStore({
       fields: [] as const,
       actions: ['playPrevMusic', 'playNextMusic'] as const,
     },
+    {
+      store: store.feature,
+      fields: ['playlist'] as const,
+      actions: [] as const,
+    },
   ],
 
   lifetimes: {
