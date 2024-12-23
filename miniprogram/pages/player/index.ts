@@ -186,8 +186,9 @@ ComponentWithStore({
           did: string;
         }[]
       )
-        .slice(0, 5)
-        .concat([{ name: '本机', did: 'host' }]);
+        .concat([{ name: '本机', did: 'host' }])
+        .filter((item) => item.did !== store.did)
+        .slice(0, 6);
       wx.showActionSheet({
         alertText: '设备投放',
         itemList: items.map((i) => String(i.name || i.did)),
@@ -234,10 +235,11 @@ ComponentWithStore({
 
     handleMoreOperation() {
       const items = [
+        { label: '定时关闭', value: 'schedule' },
         { label: '歌词调整', value: 'lyric' },
         { label: '歌曲刮削', value: 'scrape' },
         {
-          label: this.data.mode === 'cover' ? '歌词模式' : '封面模式',
+          label: '模式切换',
           value: 'mode',
         },
       ];
@@ -247,6 +249,9 @@ ComponentWithStore({
         success: (res) => {
           const { value } = items[res.tapIndex];
           switch (value) {
+            case 'schedule':
+              this.handleSchedule();
+              break;
             case 'lyric':
               this.hanldeLyricOffset();
               break;

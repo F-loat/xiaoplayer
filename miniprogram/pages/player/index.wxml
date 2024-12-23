@@ -21,7 +21,6 @@
             bind:tap="handleSpeed" />
           <image wx:else class="w-5 h-5 p-1" src="/assets/icon/{{isFavorite ? 'yishoucang' : 'shoucang'}}.svg"
             bind:tap="handleToggleFavorite" />
-          <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/lishibofang.svg" bind:tap="handleSchedule" />
           <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/diantai.svg" bind:tap="handleSwitchDevice" />
           <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/gengduo.svg" bind:tap="handleMoreOperation" />
         </view>

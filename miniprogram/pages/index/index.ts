@@ -320,10 +320,10 @@ ComponentWithStore({
     }) {
       const name = e.detail.value;
       const index = e.detail.index;
-      const items = [
-        { label: '编辑名称', value: 'edit' },
-        { label: '删除歌单', value: 'delete' },
-      ];
+      const items = [{ label: '删除歌单', value: 'delete' }];
+      if (store.feature.renamePlaylist) {
+        items.unshift({ label: '编辑名称', value: 'edit' });
+      }
       wx.showActionSheet({
         alertText: '歌单操作',
         itemList: items.map((i) => i.label),

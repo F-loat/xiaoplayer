@@ -56,6 +56,7 @@ export class HostPlayerModule implements MusicPlayer {
   }
 
   setMode(mode: 'inner' | 'background') {
+    this.audioContext?.pause();
     this.mode = mode;
     wx.setStorageSync('hostMode', mode);
   }
@@ -125,12 +126,6 @@ export class HostPlayerModule implements MusicPlayer {
       bgAudioContext.onNext(() => {
         this.playNextMusic();
       });
-      bgAudioContext.onStop(() => {
-        this.store.setData({ status: 'paused' });
-        if (this.store.playTimer) {
-          clearTimeout(this.store.playTimer);
-        }
-      });
       this.addCommonListener(bgAudioContext);
       this.bgAudioContext = bgAudioContext;
       return;
@@ -142,12 +137,6 @@ export class HostPlayerModule implements MusicPlayer {
     innerAudioContext.playbackRate = this.speed;
     innerAudioContext.src = this.store.getResourceUrl(url);
     innerAudioContext.play();
-    innerAudioContext.onPause(() => {
-      this.store.setData({ status: 'paused' });
-      if (this.store.playTimer) {
-        clearTimeout(this.store.playTimer);
-      }
-    });
     this.addCommonListener(innerAudioContext);
     this.innerAudioContext = innerAudioContext;
   };
@@ -168,6 +157,12 @@ export class HostPlayerModule implements MusicPlayer {
       });
       this.store.updateCurrentTime();
     });
+    context.onPause(() => {
+      this.store.setData({ status: 'paused' });
+      if (this.store.playTimer) {
+        clearTimeout(this.store.playTimer);
+      }
+    });
     context.onTimeUpdate(() => {
       const duration = context.duration;
       if (duration !== this.store.duration) {
@@ -177,6 +172,12 @@ export class HostPlayerModule implements MusicPlayer {
         });
         this.store.updateCurrentTime();
       }
+    });
+    context.onSeeked(() => {
+      this.store.setData({
+        duration: context.duration,
+        currentTime: context.currentTime,
+      });
     });
     context.onEnded(() => this.handleMusicEnd());
     context.onError((err) => {
