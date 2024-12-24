@@ -5,8 +5,8 @@
   </view>
   <view class="flex-1 min-w-0 ml-3">
     <view class="flex">
-      <view class="font-medium truncate text-sm">{{title}}</view>
-      <view wx:if="{{subTitle}}" class="ml-1 text-xs leading-relaxed truncate text-gray-500 dark:text-gray-400">{{subTitle}}</view>
+      <text overflow="ellipsis" class="font-medium text-sm">{{title}}</text>
+      <text wx:if="{{subTitle}}" overflow="ellipsis" class="ml-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{subTitle}}</text>
     </view>
     <view wx:if="{{description}}" class="text-xs truncate text-gray-500 dark:text-gray-400">
       {{description}}

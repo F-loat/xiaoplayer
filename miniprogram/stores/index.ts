@@ -196,6 +196,11 @@ export class Store {
       }>({
         url: '/getversion',
       });
+
+      if (!data.version) {
+        return;
+      }
+
       this.setData({
         version: data.version,
       });

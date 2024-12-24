@@ -34,38 +34,7 @@ const weBtoa = function (string: string) {
   return rest ? result.slice(0, rest - 3) + '==='.substring(rest) : result;
 };
 
-let cachedCloudInstance: Promise<WxCloud>;
-
-const getSharedCloudInstance = async () => {
-  const cloud = new wx.cloud.Cloud({
-    resourceAppid: import.meta.env.VITE_CLOUD_RESOURCE_APPID,
-    resourceEnv: import.meta.env.VITE_CLOUD_RESOURCE_ENV,
-  });
-  await cloud.init();
-  return cloud;
-};
-
-export const getCloudInstance = () => {
-  if (cachedCloudInstance) {
-    return cachedCloudInstance;
-  }
-  if (import.meta.env.VITE_CLOUD_ENV) {
-    wx.cloud.init({
-      env: import.meta.env.VITE_CLOUD_ENV,
-    });
-    cachedCloudInstance = Promise.resolve(wx.cloud);
-    return cachedCloudInstance;
-  }
-  cachedCloudInstance = getSharedCloudInstance();
-  return cachedCloudInstance;
-};
-
-export const request = <T>({
-  url,
-  method,
-  data,
-  timeout,
-}: {
+interface RequestParams {
   url: string;
   method?:
     | 'OPTIONS'
@@ -78,7 +47,76 @@ export const request = <T>({
     | 'CONNECT';
   data?: any;
   timeout?: number;
-}) => {
+}
+
+let cachedCloudInstance: Promise<WxCloud>;
+
+const getSharedCloudInstance = async () => {
+  const cloud = new wx.cloud.Cloud({
+    resourceAppid: import.meta.env.VITE_CLOUD_RESOURCE_APPID,
+    resourceEnv: import.meta.env.VITE_CLOUD_RESOURCE_ENV,
+  });
+  await cloud.init();
+  return cloud;
+};
+
+const getHostedCloudInstance = () => {
+  const callFunction = ({
+    name,
+    data,
+    success,
+    fail,
+    complete,
+  }: {
+    name: string;
+    data: RequestParams & {
+      headers: {
+        Authorization?: string;
+      };
+    };
+    success: () => void;
+    fail: () => void;
+    complete: () => void;
+  }) => {
+    wx.request({
+      ...data,
+      url: `${import.meta.env.VITE_CLOUD_HOSTED_SERVER}/${name}`,
+      header: data.headers,
+      method: data.method || 'POST',
+      data,
+      success: (res) => {
+        success({ result: res.data, statusCode: res.statusCode });
+      },
+      fail,
+      complete,
+    });
+  };
+  return {
+    callFunction,
+  };
+};
+
+export const getCloudInstance = () => {
+  if (cachedCloudInstance) {
+    return cachedCloudInstance;
+  }
+  if (import.meta.env.VITE_CLOUD_ENV) {
+    wx.cloud.init({
+      env: import.meta.env.VITE_CLOUD_ENV,
+    });
+    cachedCloudInstance = Promise.resolve(wx.cloud);
+    return cachedCloudInstance;
+  } else if (import.meta.env.VITE_CLOUD_RESOURCE_ENV) {
+    cachedCloudInstance = getSharedCloudInstance();
+  } else if (import.meta.env.VITE_CLOUD_HOSTED_SERVER) {
+    cachedCloudInstance = getHostedCloudInstance();
+  } else {
+    throw new Error('服务配置缺失');
+  }
+  return cachedCloudInstance;
+};
+
+export const request = <T>({ url, method, data, timeout }: RequestParams) => {
   const header: {
     Authorization?: string;
   } = {};
