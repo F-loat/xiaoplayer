@@ -56,7 +56,7 @@ export class HostPlayerModule implements MusicPlayer {
   }
 
   setMode(mode: 'inner' | 'background') {
-    this.audioContext?.pause();
+    this.audioContext?.stop();
     this.mode = mode;
     wx.setStorageSync('hostMode', mode);
   }
@@ -158,6 +158,12 @@ export class HostPlayerModule implements MusicPlayer {
       this.store.updateCurrentTime();
     });
     context.onPause(() => {
+      this.store.setData({ status: 'paused' });
+      if (this.store.playTimer) {
+        clearTimeout(this.store.playTimer);
+      }
+    });
+    context.onStop(() => {
       this.store.setData({ status: 'paused' });
       if (this.store.playTimer) {
         clearTimeout(this.store.playTimer);

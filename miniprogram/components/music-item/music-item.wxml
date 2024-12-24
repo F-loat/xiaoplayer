@@ -12,7 +12,7 @@
       {{description}}
     </view>
   </view>
-  <view wx:if="{{operation}}" class="w-8 h-8 flex items-center justify-end" catch:tap="handleOperation">
+  <view wx:if="{{operation}}" class="w-8 h-full -mr-2.5 flex items-center justify-center" catch:tap="handleOperation">
     <image class="w-4 h-4 invert-icon opacity-40 dark:opacity-60" src="/assets/icon/gengduocaozuo.svg" />
   </view>
 </view>
