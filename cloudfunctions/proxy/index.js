@@ -7,16 +7,20 @@ exports.main = async (
   context,
   callback,
 ) => {
-  const response = await axios({
-    url,
-    method,
-    headers: {
-      'content-type': 'application/json',
-      ...headers,
-    },
-    data: JSON.stringify(body),
-    ...params,
-  });
+  try {
+    const response = await axios({
+      url,
+      method,
+      headers: {
+        'content-type': 'application/json',
+        ...headers,
+      },
+      data: JSON.stringify(body),
+      ...params,
+    });
 
-  callback(null, response.data);
+    callback(null, response.data);
+  } catch (error) {
+    callback(error);
+  }
 };

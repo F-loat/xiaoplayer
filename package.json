@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "weapp-vite dev",
     "build": "weapp-vite build",
+    "dev:server": "cd cloudfunctions && npm run dev",
     "postinstall": "weapp-tw patch",
     "prettier": "prettier . --write --ignore-unknown",
     "prepare": "husky"
