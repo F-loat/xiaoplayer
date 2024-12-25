@@ -57,7 +57,7 @@
 			<input class="flex-1 ml-2 -mb-1" password value="{{formData.httpauth_password}}" placeholder="请输入" data-name="httpauth_password" bind:input="handleFormChange"></input>
 		</xiao-cell>
 	</block>
-	<div class="flex justify-center my-4 pb-12">
+	<div class="flex justify-center my-2 pb-12">
 		<button class="bg-[#f3f4f6] dark:bg-[#111827]" bind:tap="handleSaveConfig">保存</button>
 	</div>
 </scroll-view>

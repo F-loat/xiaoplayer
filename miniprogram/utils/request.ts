@@ -74,8 +74,8 @@ const getHostedCloudInstance = () => {
         Authorization?: string;
       };
     };
-    success: () => void;
-    fail: () => void;
+    success: (res: any) => void;
+    fail: (err: any) => void;
     complete: () => void;
   }) => {
     wx.request({
@@ -91,9 +91,9 @@ const getHostedCloudInstance = () => {
       complete,
     });
   };
-  return {
+  return Promise.resolve({
     callFunction,
-  };
+  }) as Promise<WxCloud>;
 };
 
 export const getCloudInstance = () => {

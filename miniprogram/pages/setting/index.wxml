@@ -28,13 +28,14 @@
 		<view>后台播放</view>
 		<switch class="scale-75" type="checkbox" checked="{{mode === 'background'}}"  bind:change="handleHostModeChange" />
 	</xiao-cell>
-	<view class="flex justify-center my-4">
+	<view class="flex justify-center my-2">
 		<button open-type="share" class="bg-white dark:bg-gray-800/40">分享</button>
 		<button style="margin-left: 12px" class="bg-white dark:bg-gray-800/40" bind:tap="handleSaveConfig">保存</button>
 		<button style="margin-left: 12px; width: 144rpx;" class="flex items-center p-0 bg-white dark:bg-gray-800/40" bind:tap="navigateToMore">
 			<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduoshezhi.svg" />
 		</button>
 	</view>
+	<ad-custom wx:if="{{ADUnitId && musicName}}" unit-id="{{ADUnitId}}" />
 	<view wx:if="{{!!devices.length}}" class="mt-2">
 		<view class="flex items-center justify-between">
 			<view>设备列表</view>

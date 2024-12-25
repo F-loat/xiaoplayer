@@ -12,5 +12,7 @@ interface ImportMeta {
     VITE_CLOUD_ENV?: string;
     VITE_CLOUD_RESOURCE_APPID?: string;
     VITE_CLOUD_RESOURCE_ENV?: string;
+    VITE_CLOUD_HOSTED_SERVER?: string;
+    VITE_AD_SETTING_UNITID?: string;
   };
 }

@@ -9,11 +9,12 @@ ComponentWithStore({
     status: {} as Record<string, boolean>,
     devices: [] as Device[],
     serverConfig: {} as ServerConfig,
+    ADUnitId: import.meta.env.VITE_AD_SETTING_UNITID,
   },
   storeBindings: [
     {
       store,
-      fields: ['did'] as const,
+      fields: ['did', 'musicName'] as const,
       actions: [] as const,
     },
     {
