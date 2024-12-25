@@ -172,6 +172,14 @@ ComponentWithStore({
         infos: newInfos,
       });
     },
+    handleClearCache() {
+      const { keys } = wx.getStorageInfoSync();
+      keys.forEach((key) => {
+        if (key.startsWith('musicInfo:')) {
+          wx.removeStorage({ key });
+        }
+      });
+    },
     handleRefresh() {
       wx.createSelectorQuery()
         .select('#scrollview')
@@ -184,6 +192,7 @@ ComponentWithStore({
           );
           await this.fetchMusicList();
           scrollView.closeRefresh();
+          this.handleClearCache();
           wx.showToast({
             title: '列表刷新成功',
             icon: 'none',
