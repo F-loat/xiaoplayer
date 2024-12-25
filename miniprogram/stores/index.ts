@@ -242,7 +242,7 @@ export class Store {
   updateCurrentTime = () => {
     if (this.playTimer) clearTimeout(this.playTimer);
     if (this.status !== 'playing') return;
-    if (this.currentTime && this.currentTime >= this.duration) {
+    if (this.duration && this.currentTime >= this.duration) {
       this.player.handleMusicEnd();
       return;
     }

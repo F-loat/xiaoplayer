@@ -179,39 +179,42 @@ export class LyricModule {
 
     const cloud = await getCloudInstance();
 
-    cloud.callFunction({
-      name: 'musictag',
-      data: {
-        title: musicName,
-        album: musicAlbum,
-        artist: musicArtist,
-      },
-      success: (res) => {
-        const result = res.result as Tag;
+    await new Promise((resolve) =>
+      cloud.callFunction({
+        name: 'musictag',
+        data: {
+          title: musicName,
+          album: musicAlbum,
+          artist: musicArtist,
+        },
+        success: (res) => {
+          const result = res.result as Tag;
 
-        if (!result || originMusicName !== this.store.musicName) {
-          return;
-        }
+          if (!result || originMusicName !== this.store.musicName) {
+            return;
+          }
 
-        this.applyScrapedMusicTag(
-          {
-            ...result,
-            name: result.name || musicName,
-            artist: result.artist || musicArtist,
-            album: result.album || musicAlbum,
-            album_img: tags.picture || result.album_img || DEFAULT_COVER,
-            lyric: result.lyric,
-          },
-          !tags.picture,
-        );
-      },
-      complete: () => {
-        this.store.setData({
-          musicLyricLoading: false,
-        });
-        wx.hideLoading();
-      },
-    });
+          this.applyScrapedMusicTag(
+            {
+              ...result,
+              name: result.name || musicName,
+              artist: result.artist || musicArtist,
+              album: result.album || musicAlbum,
+              album_img: tags.picture || result.album_img || DEFAULT_COVER,
+              lyric: result.lyric,
+            },
+            !tags.picture,
+          );
+        },
+        complete: () => {
+          this.store.setData({
+            musicLyricLoading: false,
+          });
+          wx.hideLoading();
+          resolve(null);
+        },
+      }),
+    );
   };
 
   applyScrapedMusicTag(tag: Tag, remote: boolean = true) {
