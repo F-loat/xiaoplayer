@@ -9,14 +9,11 @@ ComponentWithStore({
     title: String,
   },
   data: {
-    list: [] as string[],
-    infos: {} as Record<
-      string,
-      {
-        album?: string;
-        cover?: string;
-      }
-    >,
+    list: [] as {
+      name: string;
+      cover?: string;
+      album?: string;
+    }[],
   },
   storeBindings: {
     store,
@@ -29,8 +26,9 @@ ComponentWithStore({
         await this.fetchPlaylist();
       }
       const musiclist = getGlobalData('musiclist');
-      const curlist = musiclist[store.musicAlbum] || [];
-      this.setData({ list: curlist.slice(0, pageSize) });
+      const curlist: string[] = musiclist[store.musicAlbum] || [];
+      const list = curlist.slice(0, pageSize).map((name) => ({ name }));
+      this.setData({ list });
       this.handleFetchInfos();
     },
   },
@@ -57,48 +55,51 @@ ComponentWithStore({
     },
     handleLoadMore() {
       const musiclist = getGlobalData('musiclist');
-      const curlist = musiclist[store.musicAlbum] || [];
+      const curlist: string[] = musiclist[store.musicAlbum] || [];
+
       const loadedCount = this.data.list.length;
       if (loadedCount >= curlist.length) return;
-      const count = (loadedCount / pageSize + 1) * pageSize;
-      this.setData({ list: curlist.slice(0, count) });
+
+      const indexes = new Array(pageSize)
+        .fill(null)
+        .map((_, index) => index + loadedCount);
+      const data = indexes.reduce((result, index) => {
+        if (!curlist[index]) return result;
+        return {
+          ...result,
+          [`list[${index}]`]: { name: curlist[index] },
+        };
+      }, {});
+
+      this.setData(data);
       this.handleFetchInfos(loadedCount);
     },
     async handleFetchInfos(offset: number = 0) {
-      if (!store.feature.musicInfos) {
-        return;
-      }
-      const musiclist = getGlobalData('musiclist');
-      const curlist = musiclist[store.musicAlbum] || [];
+      const curlist = this.data.list;
       const indexes = new Array(pageSize)
         .fill(null)
         .map((_, index) => index + offset);
+
       const names = indexes.reduce((result, index) => {
         if (!curlist[index]) return result;
-        return result + `name=${curlist[index]}&`;
-      }, '');
-      if (!names) return;
-      const { data: infos } = await request<
-        {
-          name: string;
-          tags: {
-            album: string;
-            picture: string;
-          };
-        }[]
-      >({
-        url: `/musicinfos?${names}musictag=true`,
-      });
-      const newInfos = infos.reduce((result, current) => {
+        return result.concat(curlist[index].name);
+      }, [] as string[]);
+
+      await store.info.fetchInfos(names);
+
+      const data = indexes.reduce((result, index) => {
+        const music = curlist[index]?.name;
+        const cover = store.info.getCover(music);
+        const album = store.info.getAlbum(music);
+        if (!music || (!cover && !album)) return result;
         return {
           ...result,
-          [current.name]: {
-            album: current.tags.album,
-            cover: store.getResourceUrl(current.tags.picture),
-          },
+          [`list[${index}].cover`]: cover,
+          [`list[${index}].album`]: album,
         };
-      }, this.data.infos);
-      this.setData({ infos: newInfos });
+      }, {});
+
+      this.setData(data);
     },
   },
 });

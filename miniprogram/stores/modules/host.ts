@@ -8,7 +8,7 @@ export class HostPlayerModule implements MusicPlayer {
   stopAt: number = 0;
   speed = 1;
   volume = wx.getStorageSync('hostVolume') || 80;
-  list: string[] = wx.getStorageSync('musicList') || [];
+  list: string[] = [];
 
   mode: 'inner' | 'background' = wx.getStorageSync('hostMode') || 'inner';
 
@@ -46,13 +46,14 @@ export class HostPlayerModule implements MusicPlayer {
     this.store.updateCurrentTime();
   }
 
-  setList(value: string[] = []) {
-    const list =
+  setList(name: string) {
+    const musiclist = getGlobalData('musiclist');
+    const list = musiclist[name] || [];
+    this.list =
       this.store.playOrder === PlayOrderType.Rnd
-        ? value.sort(() => Math.random() - 0.5)
-        : value;
-    this.list = list;
-    wx.setStorageSync('musicList', list);
+        ? list.sort(() => Math.random() - 0.5)
+        : list;
+    wx.setStorageSync('musicList', name);
   }
 
   setMode(mode: 'inner' | 'background') {
@@ -88,8 +89,7 @@ export class HostPlayerModule implements MusicPlayer {
       return;
     }
 
-    const musiclist = getGlobalData('musiclist');
-    this.setList(musiclist[musicAlbum] || []);
+    this.setList(musicAlbum);
 
     const res = await request<{
       url: string;
@@ -216,8 +216,7 @@ export class HostPlayerModule implements MusicPlayer {
       return;
     }
     if (this.list.length === 1) {
-      const musiclist = getGlobalData('musiclist');
-      this.setList(musiclist[this.store.musicAlbum || '所有歌曲'] || []);
+      this.setList(this.store.musicAlbum || '所有歌曲');
     }
     const index = this.list.indexOf(this.store.musicName);
     if (index === -1) {
@@ -237,8 +236,7 @@ export class HostPlayerModule implements MusicPlayer {
       return;
     }
     if (this.list.length === 1) {
-      const musiclist = getGlobalData('musiclist');
-      this.setList(musiclist[this.store.musicAlbum || '所有歌曲'] || []);
+      this.setList(this.store.musicAlbum || '所有歌曲');
     }
     const index = this.list.indexOf(this.store.musicName);
     if (index === -1) {

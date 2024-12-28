@@ -12,6 +12,7 @@ interface Item {
   count: number;
   icon?: string;
   music?: string;
+  cover?: string;
 }
 
 let list: Item[] = [];
@@ -99,9 +100,10 @@ ComponentWithStore({
           connected: true,
           list: filteredList.slice(0, pageSize),
         });
+        setGlobalData('musiclist', res.data);
         store.playlist.setPlaylists(playlists);
         store.favorite.setMusics(res.data['收藏']);
-        setGlobalData('musiclist', res.data);
+        store.hostPlayer.setList(store.musicAlbum);
         this.handleFetchInfos();
       } catch (err) {
         const message = (err as { errMsg: string }).errMsg || '';
@@ -130,47 +132,53 @@ ComponentWithStore({
     },
     handleLoadMore() {
       const { filterValue } = this.data;
-      const loadedCount = this.data.list.length;
       const filteredList = filterValue
         ? list.filter((item) => item.name.includes(filterValue))
         : list;
+
+      const loadedCount = this.data.list.length;
       if (loadedCount >= filteredList.length) return;
-      const count = (loadedCount / pageSize + 1) * pageSize;
-      this.setData({ list: filteredList.slice(0, count) });
+
+      const indexes = new Array(pageSize)
+        .fill(null)
+        .map((_, index) => index + loadedCount);
+
+      const data = indexes.reduce((result, index) => {
+        if (!filteredList[index]) return result;
+        return {
+          ...result,
+          [`list[${index}]`]: filteredList[index],
+        };
+      }, {});
+
+      this.setData(data);
       this.handleFetchInfos(loadedCount);
     },
     async handleFetchInfos(offset: number = 0) {
-      if (!store.feature.musicInfos || this.data.filterValue) {
-        return;
-      }
+      const curlist = this.data.list;
       const indexes = new Array(pageSize)
         .fill(null)
-        .map((_, index) => index + offset);
+        .map((_, index) => index + offset)
+        .filter((index) => !curlist[index]?.cover);
+
       const names = indexes.reduce((result, index) => {
-        if (!list[index]) return result;
-        return result + `name=${list[index].music}&`;
-      }, '');
-      if (!names) return;
-      const { data: infos } = await request<
-        {
-          tags: {
-            album: string;
-            picture: string;
-          };
-        }[]
-      >({
-        url: `/musicinfos?${names}musictag=true`,
-      });
-      const newInfos = infos.reduce((result, current, index) => {
-        const cover = store.getResourceUrl(current.tags.picture);
+        if (!curlist[index]?.music) return result;
+        return result.concat(curlist[index].music);
+      }, [] as string[]);
+
+      await store.info.fetchInfos(names);
+
+      const data = indexes.reduce((result, index) => {
+        const music = curlist[index]?.music;
+        const cover = store.info.getCover(music);
+        if (!music || !cover) return result;
         return {
           ...result,
-          [list[indexes[index]].name]: cover,
+          [`list[${index}].cover`]: cover,
         };
-      }, this.data.infos);
-      this.setData({
-        infos: newInfos,
-      });
+      }, {});
+
+      this.setData(data);
     },
     handleClearCache() {
       const { keys } = wx.getStorageInfoSync();
@@ -302,6 +310,7 @@ ComponentWithStore({
         filterValue: value,
         list: filteredList.slice(0, pageSize),
       });
+      this.handleFetchInfos();
     },
     handleSearch(e: {
       detail: {

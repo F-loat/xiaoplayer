@@ -79,7 +79,7 @@
     wx:key="name"
     title="{{item.name}}"
     description="{{item.count}} 首歌曲"
-    cover="{{infos[item.name] || ''}}"
+    cover="{{item.cover || ''}}"
     data-name="{{item.name}}"
     bind:tap="handleViewTap"
   />

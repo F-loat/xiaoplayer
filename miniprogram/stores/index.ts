@@ -7,6 +7,7 @@ import { FavoriteModule } from './modules/favorite';
 import { LyricModule } from './modules/lyric';
 import { FeatureModule } from './modules/feature';
 import { PlaylistModule } from './modules/playlist';
+import { InfoModule } from './modules/info';
 
 const { platform } = wx.getDeviceInfo();
 
@@ -59,6 +60,7 @@ export class Store {
     !wx.getSkylineInfoSync?.().isSupported;
   serverConfig: ServerConfig = wx.getStorageSync('serverConfig') || {};
 
+  info: InfoModule;
   lyric: LyricModule;
   feature: FeatureModule;
   favorite: FavoriteModule;
@@ -69,6 +71,7 @@ export class Store {
   constructor() {
     makeAutoObservable(this);
 
+    this.info = new InfoModule(this);
     this.lyric = new LyricModule(this);
     this.feature = new FeatureModule(this);
     this.favorite = new FavoriteModule(this);

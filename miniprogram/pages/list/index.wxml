@@ -7,11 +7,11 @@
   </view>
   <music-item
     wx:for="{{list}}"
-    wx:key="*this"
-    title="{{item}}"
-    cover="{{infos[item] ? infos[item].cover : ''}}"
-    description="{{infos[item] ? infos[item].album : ''}}"
-    data-name="{{item}}"
+    wx:key="name"
+    title="{{item.name}}"
+    cover="{{item.cover || ''}}"
+    description="{{item.album || ''}}"
+    data-name="{{item.name}}"
     index="{{index}}"
     operation
     bind:tap="handleViewTap"

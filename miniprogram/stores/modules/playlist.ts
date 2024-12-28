@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx-miniprogram';
 import { Store } from '..';
-import { getGlobalData, request } from '@/miniprogram/utils';
+import { request } from '@/miniprogram/utils';
 
 interface Item {
   name: string;

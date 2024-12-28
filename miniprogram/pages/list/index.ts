@@ -10,21 +10,19 @@ Component({
     type: String,
   },
   data: {
-    list: [] as string[],
-    infos: {} as Record<
-      string,
-      {
-        album?: string;
-        cover?: string;
-      }
-    >,
+    list: [] as {
+      name: string;
+      cover?: string;
+      album?: string;
+    }[],
     filterValue: '',
   },
   lifetimes: {
     attached() {
       const musiclist = getGlobalData('musiclist');
-      const curlist = musiclist[this.data.name] || [];
-      this.setData({ list: curlist.slice(0, pageSize) });
+      const curlist: string[] = musiclist[this.data.name] || [];
+      const list = curlist.slice(0, pageSize).map((name) => ({ name }));
+      this.setData({ list });
       this.handleFetchInfos();
     },
   },
@@ -41,16 +39,30 @@ Component({
       await store.player.playMusic(name, album);
     },
     handleLoadMore() {
-      const { filterValue } = this.data;
       const musiclist = getGlobalData('musiclist');
       const curlist = musiclist[this.data.name] || [];
-      const filteredList = filterValue
+
+      const { filterValue } = this.data;
+      const filteredList: string[] = filterValue
         ? curlist.filter((item: string) => item.includes(filterValue))
         : curlist;
+
       const loadedCount = this.data.list.length;
       if (loadedCount >= filteredList.length) return;
-      const count = (loadedCount / pageSize + 1) * pageSize;
-      this.setData({ list: filteredList.slice(0, count) });
+
+      const indexes = new Array(pageSize)
+        .fill(null)
+        .map((_, index) => index + loadedCount);
+
+      const data = indexes.reduce((result, index) => {
+        if (!filteredList[index]) return result;
+        return {
+          ...result,
+          [`list[${index}]`]: { name: filteredList[index] },
+        };
+      }, {});
+
+      this.setData(data);
       this.handleFetchInfos(loadedCount);
     },
     handleFilter(e: {
@@ -61,56 +73,50 @@ Component({
       const { value } = e.detail;
       const musiclist = getGlobalData('musiclist');
       const curlist = musiclist[this.data.name] || [];
-      const filteredList = value
+      const filteredList: string[] = value
         ? curlist.filter((item: string) => item.includes(value))
         : curlist;
+      const list = filteredList.slice(0, pageSize).map((name) => ({ name }));
       this.setData({
+        list,
         filterValue: value,
-        list: filteredList.slice(0, pageSize),
       });
+      this.handleFetchInfos();
     },
     async handleFetchInfos(offset: number = 0) {
-      if (!store.feature.musicInfos || this.data.filterValue) {
-        return;
-      }
-      const musiclist = getGlobalData('musiclist');
-      const curlist = musiclist[this.data.name] || [];
+      const curlist = this.data.list;
       const indexes = new Array(pageSize)
         .fill(null)
-        .map((_, index) => index + offset);
+        .map((_, index) => index + offset)
+        .filter((index) => !curlist[index]?.cover);
+
       const names = indexes.reduce((result, index) => {
         if (!curlist[index]) return result;
-        return result + `name=${curlist[index]}&`;
-      }, '');
-      if (!names) return;
-      const { data: infos } = await request<
-        {
-          name: string;
-          tags: {
-            album: string;
-            picture: string;
-          };
-        }[]
-      >({
-        url: `/musicinfos?${names}musictag=true`,
-      });
-      const newInfos = infos.reduce((result, current) => {
+        return result.concat(curlist[index].name);
+      }, [] as string[]);
+
+      await store.info.fetchInfos(names);
+
+      const data = indexes.reduce((result, index) => {
+        const music = curlist[index]?.name;
+        const cover = store.info.getCover(music);
+        const album = store.info.getAlbum(music);
+        if (!music || (!cover && !album)) return result;
         return {
           ...result,
-          [current.name]: {
-            album: current.tags.album,
-            cover: store.getResourceUrl(current.tags.picture),
-          },
+          [`list[${index}].cover`]: cover,
+          [`list[${index}].album`]: album,
         };
-      }, this.data.infos);
-      this.setData({ infos: newInfos });
+      }, {});
+
+      this.setData(data);
     },
     handleAddToList(name: string) {
       const customLists = store.playlist.customPlaylists;
 
       if (!customLists.length) {
         wx.showToast({
-          title: '暂无自定义列表',
+          title: '暂无自定义歌单',
           icon: 'none',
         });
         return;
@@ -118,7 +124,7 @@ Component({
 
       if (customLists.length > 6) {
         wx.showToast({
-          title: '暂只支持至多 6 个自定义列表',
+          title: '暂只支持至多 6 个自定义歌单',
           icon: 'none',
         });
         return;
