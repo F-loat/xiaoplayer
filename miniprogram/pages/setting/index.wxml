@@ -35,7 +35,7 @@
 			<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduoshezhi.svg" />
 		</button>
 	</view>
-	<ad-custom wx:if="{{ADUnitId && musicName}}" unit-id="{{ADUnitId}}" />
+	<ad-custom wx:if="{{ADUnitId && version}}" unit-id="{{ADUnitId}}" />
 	<view wx:if="{{!!devices.length}}" class="mt-2">
 		<view class="flex items-center justify-between">
 			<view>设备列表</view>

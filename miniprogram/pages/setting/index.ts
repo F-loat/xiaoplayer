@@ -14,7 +14,7 @@ ComponentWithStore({
   storeBindings: [
     {
       store,
-      fields: ['did', 'musicName'] as const,
+      fields: ['did', 'version'] as const,
       actions: [] as const,
     },
     {

@@ -155,7 +155,10 @@ export class LyricModule {
       if (originMusicName !== this.store.musicName) {
         return;
       }
-      tags = res.data.tags;
+      tags = {
+        ...res.data.tags,
+        picture: this.store.getResourceUrl(res.data.tags.picture),
+      };
       if (tags.title) musicName = tags.title;
       if (tags.album) musicAlbum = tags.album;
       if (tags.artist) musicArtist = tags.artist;
@@ -225,6 +228,10 @@ export class LyricModule {
     this.store.setData({
       musicLyric,
       musicCover: tag.album_img,
+    });
+    this.store.info.setInfo(this.store.musicName, {
+      cover: tag.album_img,
+      album: tag.album,
     });
     wx.setStorage({
       key: cackeKey,
