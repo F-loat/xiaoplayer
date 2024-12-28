@@ -1,6 +1,6 @@
 <vertical-drag-gesture-handler worklet:ongesture="handleGesture">
 <view
-  class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-hidden text-[#e6e6e6] bg-[#7e7a91] pointer-events-auto pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}">
+  class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-hidden text-[#e6e6e6] transition-colors pointer-events-auto pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}" style="background-color:{{primaryColor}}">
   <view class="flex flex-col  shrink-0 overflow-hidden box-border">
     <view style="height: {{statusBarHeight}}px;" />
     <view class="flex flex-col justify-center flex-1 pt-3">
@@ -10,7 +10,7 @@
 
   <view>
     <view class="mt-4 text-center" bind:tap="handleModeToggle" bind:longpress="handleCopyLink">
-      <image mode="aspectFill" class="w-[680rpx] h-[680rpx] max-w-[40vh] max-h-[40vh] mx-auto rounded-full bg-[#8a859f] bg-cover bg-center" style="background-image: url({{DEFAULT_COVER}});" src="{{musicCover}}" />
+      <image mode="aspectFill" class="w-[680rpx] h-[680rpx] max-w-[40vh] max-h-[40vh] mx-auto rounded-full bg-cover bg-center" style="background-image: url({{DEFAULT_COVER}});" src="{{musicCover}}" />
     </view>
 
     <view class="flex flex-col text-lg mt-4">

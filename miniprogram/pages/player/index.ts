@@ -29,6 +29,7 @@ ComponentWithStore({
         'currentDevice',
         'musicName',
         'musicCover',
+        'primaryColor',
         'playOrder',
         'speed',
         'volume',

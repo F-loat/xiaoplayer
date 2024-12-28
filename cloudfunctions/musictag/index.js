@@ -28,6 +28,16 @@ const updateToken = async () => {
   return data.token;
 };
 
+const getSong = (item, resource) => ({
+  id: item.id,
+  resource: item.resource || resource,
+  name: item.name,
+  artist: item.artist,
+  album: item.album,
+  album_img: item.album_img,
+  year: item.year,
+});
+
 exports.main = async (
   { title, artist, album, resource = 'qmusic', mode },
   context,
@@ -55,7 +65,7 @@ exports.main = async (
       callback(
         null,
         slicedMusics.map((item, index) => ({
-          ...item,
+          ...getSong(item, resource),
           lyric: lyrics[index]?.data?.data,
         })),
       );
@@ -63,21 +73,17 @@ exports.main = async (
     }
 
     const song = musics.data.find((m) => m.is_lyric);
-
     const { data: lyric } = await request('fetch_lyric', token, {
       song_id: song.id,
       resource: song.resource || resource,
     });
 
     callback(null, {
-      name: song.name,
-      year: song.year,
-      artist: song.artist,
-      album: song.album,
-      album_img: song.album_img,
+      ...getSong(song, resource),
       lyric: lyric.data,
     });
   } catch (err) {
+    console.log(err);
     if (err.status === 401) {
       updateToken();
     }

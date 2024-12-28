@@ -17,6 +17,7 @@ ComponentWithStore({
         'musicName',
         'musicCover',
         'musicLyricCurrent',
+        'primaryColor',
       ] as const,
       actions: [] as const,
     },

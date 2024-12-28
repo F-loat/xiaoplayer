@@ -203,7 +203,8 @@ export class LyricModule {
               name: result.name || musicName,
               artist: result.artist || musicArtist,
               album: result.album || musicAlbum,
-              album_img: tags.picture || result.album_img || DEFAULT_COVER,
+              album_img:
+                tags.picture || result.album_img?.replace('http:', 'https:'),
               lyric: result.lyric,
             },
             !tags.picture,
@@ -250,9 +251,9 @@ export class LyricModule {
     }
 
     wx.request({
-      url: tag.album_img.replace('http:', 'https:'),
+      url: tag.album_img,
       responseType: 'arraybuffer',
-      success: (res) => {
+      success: async (res) => {
         request({
           url: '/setmusictag',
           method: 'POST',

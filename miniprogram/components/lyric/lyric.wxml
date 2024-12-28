@@ -1,4 +1,4 @@
-<view class="h-8 -mb-8 z-10 pointer-events-none" style="background: linear-gradient(to bottom, #7e7a91, transparent);">
+<view class="h-8 -mb-8 z-10 pointer-events-none" style="background: linear-gradient(to bottom, {{primaryColor}}, transparent);">
 </view>
 
 <scroll-view class="h-[154px] text-[16px] text-center leading-[22px]" enhanced scroll-y type="list" scroll-into-view="item-{{isPC ? musicLyricCurrent.index - 3 : musicLyricCurrent.index}}" scroll-into-view-offset="{{-66}}" scroll-with-animation show-scrollbar="{{false}}">
@@ -14,5 +14,5 @@
   <view class="h-32"></view>
 </scroll-view>
 
-<view class="h-8 -mt-8 z-10 pointer-events-none" style="background: linear-gradient(to top, #7e7a91, transparent);">
+<view class="h-8 -mt-8 z-10 pointer-events-none" style="background: linear-gradient(to top, {{primaryColor}}, transparent);">
 </view>

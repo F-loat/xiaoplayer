@@ -9,6 +9,7 @@ ComponentWithStore({
       'musicLyric',
       'musicLyricCurrent',
       'musicLyricLoading',
+      'primaryColor',
     ] as const,
     actions: [] as const,
   },

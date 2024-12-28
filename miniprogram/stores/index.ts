@@ -1,5 +1,5 @@
 import { reaction, makeAutoObservable } from 'mobx-miniprogram';
-import { removeProtocol, request } from '../utils';
+import { getImageColor, removeProtocol, request } from '../utils';
 import { Device, PlayOrderType, ServerConfig } from '../types';
 import { HostPlayerModule } from './modules/host';
 import { XiaomusicPlayerModule } from './modules/xiaomusic';
@@ -36,6 +36,7 @@ export interface MusicPlayer {
 export class Store {
   did: null | string = wx.getStorageSync('did');
   status: 'paused' | 'loading' | 'playing' = 'paused';
+  primaryColor = '#7e7a91';
 
   musicName: string;
   musicCover: string;
@@ -84,11 +85,20 @@ export class Store {
     this.musicName = musicInfo.name || '';
     this.musicAlbum = musicInfo.album || '';
     this.musicLyric = musicInfo.lyric || [];
-    this.musicCover = musicInfo.cover || DEFAULT_COVER;
+    this.musicCover = musicInfo.cover;
 
     reaction(
       () => this.did,
       (val) => wx.setStorageSync('did', val),
+    );
+    reaction(
+      () => this.musicCover,
+      async (val) => {
+        this.primaryColor = val ? await getImageColor(val) : '#7e7a91';
+      },
+      {
+        fireImmediately: true,
+      },
     );
     reaction(
       () => ({

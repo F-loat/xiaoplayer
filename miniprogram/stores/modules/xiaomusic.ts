@@ -23,7 +23,7 @@ export class XiaomusicPlayerModule implements MusicPlayer {
         if (name) {
           store.lyric.fetchMusicTag();
         } else {
-          store.setData({ musicCover: DEFAULT_COVER });
+          store.setData({ musicCover: null });
         }
       },
     );

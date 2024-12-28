@@ -1,3 +1,4 @@
+export { getImageColor, getAverageColor } from './color';
 export { request, getCloudInstance } from './request';
 
 export const getGlobalData = (key: keyof IAppOption['globalData']) => {
