@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx-miniprogram';
 import { Store } from '..';
-import { request } from '@/miniprogram/utils';
+import { getGlobalData, request } from '@/miniprogram/utils';
 
 interface Item {
   name: string;
@@ -163,6 +163,44 @@ export class PlaylistModule {
       data: {
         name: playlist,
         music_list: [music],
+      },
+    });
+  }
+
+  addToList(name: string) {
+    const customLists = this.store.playlist.customPlaylists;
+
+    if (!customLists.length) {
+      wx.showToast({
+        title: '暂无自定义歌单',
+        icon: 'none',
+      });
+      return;
+    }
+
+    if (customLists.length > 6) {
+      wx.showToast({
+        title: '暂只支持至多 6 个自定义歌单',
+        icon: 'none',
+      });
+      return;
+    }
+
+    wx.showActionSheet({
+      itemList: customLists.map((item) => item.name),
+      success: async (res) => {
+        const { name: playlist } = customLists[res.tapIndex];
+
+        await this.addMusic(playlist, name);
+        this.updatePlaylistCount(playlist, 1);
+
+        const musiclist = getGlobalData('musiclist');
+        musiclist[playlist]?.push(name);
+
+        wx.showToast({
+          title: '添加成功',
+          icon: 'none',
+        });
       },
     });
   }

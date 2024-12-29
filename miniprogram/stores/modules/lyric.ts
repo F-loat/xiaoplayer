@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction } from 'mobx-miniprogram';
-import { DEFAULT_COVER, Store } from '..';
+import { Store } from '..';
 import { getCloudInstance, request } from '@/miniprogram/utils';
 
 export interface Lyric {

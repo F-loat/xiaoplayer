@@ -116,6 +116,7 @@ export class HostPlayerModule implements MusicPlayer {
       const bgAudioContext = wx.getBackgroundAudioManager();
       bgAudioContext.audioType = 'music';
       bgAudioContext.title = this.store.musicName;
+      bgAudioContext.singer = this.store.musicAlbum;
       bgAudioContext.coverImgUrl = this.store.musicCover;
       bgAudioContext.playbackRate = this.speed;
       bgAudioContext.src = this.store.getResourceUrl(url);
@@ -150,6 +151,7 @@ export class HostPlayerModule implements MusicPlayer {
       wx.hideLoading();
     });
     context.onPlay(() => {
+      wx.hideLoading();
       this.store.setData({
         status: 'playing',
         duration: context.duration,

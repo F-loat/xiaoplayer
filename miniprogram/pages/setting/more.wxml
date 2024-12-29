@@ -58,6 +58,6 @@
 		</xiao-cell>
 	</block>
 	<div class="flex justify-center my-2 pb-12">
-		<button class="bg-[#f3f4f6] dark:bg-[#111827]" bind:tap="handleSaveConfig">保存</button>
+		<button class="bg-[#f3f4f6] dark:bg-[#111827]" bind:tap="handleSaveConfig">保存服务配置</button>
 	</div>
 </scroll-view>

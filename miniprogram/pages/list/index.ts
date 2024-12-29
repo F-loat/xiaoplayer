@@ -205,7 +205,7 @@ Component({
           const { value } = items[res.tapIndex];
           switch (value) {
             case 'addTo':
-              this.handleAddToList(name);
+              store.playlist.addToList(name);
               break;
             case 'remove':
               this.handleRemoveMusic(name, index);

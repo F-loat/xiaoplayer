@@ -1,10 +1,10 @@
 <view class="absolute top-0 right-0 left-0 h-8 z-10 pointer-events-none" style="background: linear-gradient(to bottom, {{primaryColor}}, transparent);">
 </view>
 
-<scroll-view class="absolute -top-2 pt-6 right-0 left-0 bottom-0 px-4 box-border z-10 transition-colors" style="background-color:{{primaryColor}}" enhanced scroll-y type="list" scroll-into-view="item-{{isPC ? musicLyricCurrent.index - 1 : musicLyricCurrent.index}}" scroll-with-animation show-scrollbar="{{false}}" scroll-into-view-offset="{{musicLyricCurrent.index ? -56 : 0}}">
+<scroll-view class="absolute -top-2 pt-6 right-0 left-0 bottom-0 px-4 box-border z-10 transition-colors" style="background-color:{{primaryColor}}" enhanced scroll-y type="list" scroll-into-view="item-{{isPC ? musicLyricCurrent.index - 1 : musicLyricCurrent.index}}" scroll-with-animation show-scrollbar="{{false}}" scroll-into-view-offset="{{musicLyricCurrent.index ? -48 : 0}}">
   <block wx:if="{{musicLyric.length}}">
     <view wx:for="{{musicLyric}}" wx:key="time" id="item-{{index}}"
-      class="transition-all {{index === musicLyricCurrent.index ? 'text-xl font-semibold opacity-100': 'text-base opacity-60'}} mb-4">
+      class="transition-all {{index === musicLyricCurrent.index ? 'text-xl font-semibold opacity-100': 'text-base opacity-60'}}" style="min-height: 34px; padding-bottom: 14px">
       {{item.lrc}}</view>
   </block>
   <view wx:else class="pt-4 text-xl font-semibold">{{musicLyricLoading ? '歌词加载中...' : '暂无歌词'}}</view>

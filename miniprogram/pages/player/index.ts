@@ -239,6 +239,10 @@ ComponentWithStore({
       store.favorite.toggleFavorite(store.musicName);
     },
 
+    handleAddToList() {
+      store.playlist.addToList(store.musicName);
+    },
+
     handleMoreOperation() {
       const items = [
         { label: '定时关闭', value: 'schedule' },

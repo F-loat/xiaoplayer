@@ -31,6 +31,5 @@ App<IAppOption>({
       }
     }
     await store.initSettings();
-    store.player.syncMusic();
   },
 });
