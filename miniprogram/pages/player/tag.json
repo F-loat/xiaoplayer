@@ -1,6 +1,0 @@
-{
-  "usingComponents": {
-    "music-item": "/components/music-item/music-item",
-    "navigation-bar": "/components/navigation-bar/navigation-bar"
-  }
-}

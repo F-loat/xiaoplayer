@@ -244,10 +244,7 @@ ComponentWithStore({
         { label: '定时关闭', value: 'schedule' },
         { label: '歌词调整', value: 'lyric' },
         { label: '歌曲刮削', value: 'scrape' },
-        {
-          label: '模式切换',
-          value: 'mode',
-        },
+        { label: '模式切换', value: 'mode' },
       ];
       wx.showActionSheet({
         alertText: '更多操作',
@@ -262,9 +259,7 @@ ComponentWithStore({
               this.hanldeLyricOffset();
               break;
             case 'scrape':
-              wx.navigateTo({
-                url: '/pages/player/tag',
-              });
+              this.handleFetchLyric();
               break;
             case 'mode':
               this.handleModeToggle();

@@ -39,7 +39,7 @@ const getSong = (item, resource) => ({
 });
 
 exports.main = async (
-  { title, artist, album, resource = 'qmusic', mode },
+  { title, artist, album, resource = 'qmusic' },
   context,
   callback,
 ) => {
@@ -51,26 +51,6 @@ exports.main = async (
       album,
       resource,
     });
-
-    if (mode === 'list') {
-      const slicedMusics = musics.data.slice(0, 10);
-      const lyrics = await Promise.all(
-        slicedMusics.map((item) =>
-          request('fetch_lyric', token, {
-            song_id: item.id,
-            resource: item.resource || resource,
-          }),
-        ),
-      );
-      callback(
-        null,
-        slicedMusics.map((item, index) => ({
-          ...getSong(item, resource),
-          lyric: lyrics[index]?.data?.data,
-        })),
-      );
-      return;
-    }
 
     const song = musics.data.find((m) => m.is_lyric);
     const { data: lyric } = await request('fetch_lyric', token, {

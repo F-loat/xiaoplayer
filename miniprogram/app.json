@@ -4,7 +4,6 @@
     "pages/list/index",
     "pages/list/playing",
     "pages/player/index",
-    "pages/player/tag",
     "pages/setting/index",
     "pages/setting/more"
   ],
