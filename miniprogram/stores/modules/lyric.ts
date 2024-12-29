@@ -113,7 +113,7 @@ export class LyricModule {
 
   fetchMusicTag = async (
     name: string = this.store.musicName.replace(/^\d+\.\s?/g, ''),
-    album: string = this.store.musicAlbum?.replace(/（.*）/g, ''),
+    album: string = this.store.musicAlbum?.replace(/（.*）/g, '') || '',
     artist = '',
     force?: boolean,
   ) => {

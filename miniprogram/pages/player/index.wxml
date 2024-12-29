@@ -48,10 +48,10 @@
   <view class="flex justify-between items-center px-3 mt-2 opacity-80">
     <image class="w-6 h-6 opacity-60" src="/assets/icon/{{orderIconMap[playOrder] || 'liebiaoxunhuan'}}.svg"
       bind:tap="handleSwitchOrder" />
-    <image class="w-8 h-8" src="/assets/icon/shangyiqu.svg" bind:tap="playPrevMusic" />
+    <image class="w-8 h-8" src="/assets/icon/shangyiqu.svg" bind:tap="handlePlayPrevMusic" />
     <image class="w-12 h-12" src="{{status === 'paused' ? '/assets/icon/zanting.svg' : '/assets/icon/bofangzhong.svg'}}"
       bind:tap="handlePlayToggle" />
-    <image class="w-8 h-8" src="/assets/icon/xiayiqu.svg" bind:tap="playNextMusic" />
+    <image class="w-8 h-8" src="/assets/icon/xiayiqu.svg" bind:tap="handlePlayNextMusic" />
     <image class="w-5 h-5 opacity-60" src="/assets/icon/bofangliebiao.svg" bind:tap="handlePlayingList" />
   </view>
 

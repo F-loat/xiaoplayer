@@ -15,7 +15,7 @@
 					<image class="w-6 h-6 mr-3 scale-95"
 						src="{{status === 'paused' ? '/assets/icon/zanting.svg' : '/assets/icon/bofangzhong.svg'}}"
 						bind:tap="handlePlayToggle" />
-					<image class="w-6 h-6" src="/assets/icon/xiayiqu.svg" bind:tap="playNextMusic" />
+					<image class="w-6 h-6" src="/assets/icon/xiayiqu.svg" bind:tap="handlePlayNextMusic" />
 				</view>
 			</view>
 		</view>

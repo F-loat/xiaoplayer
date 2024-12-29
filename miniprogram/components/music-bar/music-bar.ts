@@ -21,11 +21,6 @@ ComponentWithStore({
       ] as const,
       actions: [] as const,
     },
-    {
-      store: store.player,
-      fields: [] as const,
-      actions: ['playPrevMusic', 'playNextMusic'] as const,
-    },
   ],
 
   data: {
@@ -60,6 +55,10 @@ ComponentWithStore({
       } else {
         await store.player.pauseMusic();
       }
+    },
+
+    handlePlayNextMusic() {
+      store.player.playNextMusic();
     },
   },
 });
