@@ -1,14 +1,14 @@
 <view class="flex items-center px-2.5 h-14 mb-2 rounded-md cursor-pointer transition-all bg-white dark:bg-gray-800/20">
   <view class="w-8 h-8 rounded-md flex items-center justify-center bg-gray-100 text-gray-500 dark:bg-gray-700/20 dark:text-gray-400">
-    <image wx:if="{{cover}}" fade-in class="w-8 h-8 rounded-md" src="{{cover}}" />
+    <image wx:if="{{!!cover}}" fade-in class="w-8 h-8 rounded-md" src="{{cover}}" />
     <image wx:else class="w-4 h-4 invert-icon" src="/assets/icon/{{icon || 'zhuanji'}}.svg" />
   </view>
   <view class="flex-1 min-w-0 ml-3">
     <view class="flex">
       <text overflow="ellipsis" class="font-medium text-sm">{{title}}</text>
-      <text wx:if="{{subTitle}}" overflow="ellipsis" class="ml-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{subTitle}}</text>
+      <text wx:if="{{!!subTitle}}" overflow="ellipsis" class="ml-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{subTitle}}</text>
     </view>
-    <view wx:if="{{description}}" class="text-xs truncate text-gray-500 dark:text-gray-400">
+    <view wx:if="{{!!description}}" class="text-xs truncate text-gray-500 dark:text-gray-400">
       {{description}}
     </view>
   </view>
