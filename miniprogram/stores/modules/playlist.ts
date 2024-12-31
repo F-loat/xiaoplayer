@@ -36,7 +36,6 @@ export class PlaylistModule {
     try {
       const res = await request<Record<string, string[]>>({
         url: '/playlistnames',
-        timeout: 2500,
       });
       if (res.statusCode !== 200 || !res.data.names) {
         return defaultLists;

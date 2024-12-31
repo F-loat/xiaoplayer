@@ -69,7 +69,6 @@ ComponentWithStore({
         });
         const res = await request<Record<string, string[]>>({
           url: '/musiclist',
-          timeout: 2500,
         });
         if (res.statusCode !== 200) {
           return;
