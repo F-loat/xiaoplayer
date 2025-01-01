@@ -4,6 +4,17 @@
 
 原生小程序开发，采用 Skyline 渲染模式，支持全局工具栏及自定义路由效果，感谢由 [weapp-vite](https://github.com/weapp-vite/weapp-vite) 及 [weapp-tailwindcss](https://github.com/sonofmagic/weapp-tailwindcss) 提供的开箱即用的现代化开发体验
 
+## 功能特性
+
+- 全局工具栏
+- 自定义路由
+- 逐字歌词
+- 后台播放
+- 倍速播放
+- 暗色模式
+- 封面主题色
+- 歌曲刮削
+
 ## 预览
 
 ### 小程序码
@@ -15,10 +26,10 @@
 ### 截图
 
 <p>
-  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/1.jpg" width="24%" />
-  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/2.jpg" width="24%" />
-  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/4.jpg" width="24%" />
-  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/3.jpg" width="24%" />
+  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/5.png" width="24%" />
+  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/6.png" width="24%" />
+  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/7.png" width="24%" />
+  <img src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/screenshot/8.png" width="24%" />
 </p>
 
 ## 运行
