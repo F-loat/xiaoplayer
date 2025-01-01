@@ -52,7 +52,9 @@ const getHostedCloudInstance = () => {
       method: data.method || 'POST',
       data,
       success: (res) => {
-        if (res.statusCode !== 200) return fail(res);
+        if (res.statusCode !== 200 || res.data?.name === 'Error') {
+          return fail(res.data);
+        }
         success({ result: res.data });
       },
       fail,

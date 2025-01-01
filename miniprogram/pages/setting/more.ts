@@ -59,8 +59,8 @@ ComponentWithStore({
           enable_save_tag: data.enable_save_tag,
           pull_ask: !!data.pull_ask_sec,
           device_all:
-            !data.device_list.length ||
-            data.device_list.length === Object.keys(data.devices).length,
+            !data.device_list?.length ||
+            data.device_list?.length === Object.keys(data.devices).length,
           use_music_api: data.use_music_api,
           continue_play: data.continue_play,
           delay_sec: data.delay_sec,

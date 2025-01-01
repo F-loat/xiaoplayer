@@ -21,6 +21,11 @@ ComponentWithStore({
       ] as const,
       actions: [] as const,
     },
+    {
+      store: store.lyric,
+      fields: ['linePercent'] as const,
+      actions: [] as const,
+    },
   ],
 
   data: {

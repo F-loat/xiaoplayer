@@ -25,13 +25,17 @@
 		</xiao-cell>
 	</block>
 	<xiao-cell extClass="justify-between">
+		<view>逐字歌词</view>
+		<switch class="scale-75" type="checkbox" checked="{{lyricMode === 'advance'}}"  bind:change="handleLyricModeChange" />
+	</xiao-cell>
+	<xiao-cell extClass="justify-between">
 		<view>后台播放</view>
-		<switch class="scale-75" type="checkbox" checked="{{mode === 'background'}}"  bind:change="handleHostModeChange" />
+		<switch class="scale-75" type="checkbox" checked="{{playerMode === 'background'}}"  bind:change="handleHostModeChange" />
 	</xiao-cell>
 	<view class="flex justify-center mt-1 mb-3">
 		<button open-type="share" class="bg-white dark:bg-gray-800/40">分享配置</button>
 		<button style="margin-left: 12px" class="bg-white dark:bg-gray-800/40" bind:tap="handleSaveConfig">保存配置</button>
-		<button style="margin-left: 12px; width: 144rpx;" class="flex items-center p-0 bg-white dark:bg-gray-800/40" bind:tap="navigateToMore">
+		<button style="margin-left: 12px; width: 144rpx;" class="flex items-center justify-center p-0 bg-white dark:bg-gray-800/40" bind:tap="navigateToMore">
 			<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduoshezhi.svg" />
 		</button>
 	</view>

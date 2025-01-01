@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx-miniprogram';
-import { DEFAULT_COVER, MusicPlayer, Store } from '..';
+import { MusicPlayer, Store } from '..';
 import { request, sleep } from '@/miniprogram/utils';
 
 export class XiaomusicPlayerModule implements MusicPlayer {
@@ -19,7 +19,6 @@ export class XiaomusicPlayerModule implements MusicPlayer {
       (name) => {
         if (store.did === 'host') return;
         if (store.playTimer) clearTimeout(store.playTimer);
-        store.setData({ musicLyric: [], currentTime: 0, duration: 0 });
         if (name) {
           store.lyric.fetchMusicTag();
         } else {
@@ -73,21 +72,27 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   playPrevMusic = async () => {
     this.store.setData({
       status: 'loading',
+      duration: 0,
       currentTime: 0,
+      musicLyric: [],
+      musicLyricLoading: true,
     });
     await this.store.sendCommand('上一首');
     await sleep(1000);
-    await this.syncMusic();
+    this.syncMusic();
   };
 
   playNextMusic = async () => {
     this.store.setData({
       status: 'loading',
+      duration: 0,
       currentTime: 0,
+      musicLyric: [],
+      musicLyricLoading: true,
     });
     await this.store.sendCommand('下一首');
     await sleep(1000);
-    await this.syncMusic();
+    this.syncMusic();
   };
 
   pauseMusic = async () => {
@@ -112,13 +117,21 @@ export class XiaomusicPlayerModule implements MusicPlayer {
       const { cur_music, cur_playlist, is_playing, offset, duration } =
         res.data;
       if (this.store.did === 'host') return;
-      this.store.setData({
-        musicName: cur_music,
-        musicAlbum: cur_playlist,
-        status: is_playing ? 'playing' : 'paused',
-        currentTime: offset > 0 && offset < duration ? offset : 0,
-        duration: duration > 0 ? duration : 0,
-      });
+      this.store.setData(
+        is_playing
+          ? {
+              musicName: cur_music,
+              musicAlbum: cur_playlist,
+              status: 'playing',
+              currentTime: offset > 0 && offset < duration ? offset : 0,
+              duration: duration > 0 ? duration : 0,
+            }
+          : {
+              musicName: cur_music,
+              musicAlbum: cur_playlist,
+              status: 'paused',
+            },
+      );
       this.store.updateCurrentTime();
     }, 100);
   };

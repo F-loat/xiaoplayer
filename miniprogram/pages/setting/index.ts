@@ -19,7 +19,12 @@ ComponentWithStore({
     },
     {
       store: store.hostPlayer,
-      fields: ['mode'] as const,
+      fields: { playerMode: 'mode' } as const,
+      actions: [] as const,
+    },
+    {
+      store: store.lyric,
+      fields: { lyricMode: 'mode' } as const,
       actions: [] as const,
     },
   ],
@@ -106,6 +111,13 @@ ComponentWithStore({
           [name]: e.detail.value,
         },
       });
+    },
+    handleLyricModeChange(e: {
+      detail: {
+        value: string;
+      };
+    }) {
+      store.lyric.setMode(e.detail.value ? 'advance' : 'base');
     },
     handleHostModeChange(e: {
       detail: {

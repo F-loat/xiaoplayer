@@ -37,8 +37,9 @@ export async function getImageColor(url: string) {
   const canvas = wx.createOffscreenCanvas({ type: '2d', width: 3, height: 3 });
   const context = canvas.getContext('2d');
   const image = canvas.createImage();
-  await new Promise((resolve) => {
+  await new Promise((resolve, reject) => {
     image.onload = resolve;
+    image.onerror = reject;
     image.src = url;
   });
   context.clearRect(0, 0, 3, 3);

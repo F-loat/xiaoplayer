@@ -1,0 +1,7 @@
+.active-text-mask {
+  color: #fff;
+  mask-image: url('../../assets/image/line-mask.png');
+  mask-size: 200% 100%;
+  mask-position: 0 0;
+  mask-repeat: no-repeat;
+}

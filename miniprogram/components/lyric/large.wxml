@@ -1,15 +1,9 @@
-<view class="absolute top-0 right-0 left-0 h-8 z-10 pointer-events-none" style="background: linear-gradient(to bottom, {{primaryColor}}, transparent);">
-</view>
-
-<scroll-view class="absolute -top-2 pt-6 right-0 left-0 bottom-0 px-4 box-border z-10 transition-colors" style="background-color:{{primaryColor}}" enhanced scroll-y type="list" scroll-into-view="item-{{isPC ? musicLyricCurrent.index - 1 : musicLyricCurrent.index}}" scroll-with-animation show-scrollbar="{{false}}" scroll-into-view-offset="{{musicLyricCurrent.index ? -48 : 0}}">
+<scroll-view class="text-mask h-full pt-2"  enhanced scroll-y type="list" scroll-into-view="item-{{musicLyricCurrent.index}}" scroll-with-animation show-scrollbar="{{false}}" scroll-into-view-offset="{{musicLyricCurrent.index ? -48 : 0}}">
   <block wx:if="{{musicLyric.length}}">
-    <view wx:for="{{musicLyric}}" wx:key="time" id="item-{{index}}"
-      class="transition-all {{index === musicLyricCurrent.index ? 'text-xl font-semibold opacity-100': 'text-base opacity-60'}}" style="min-height: 34px; padding-bottom: 14px">
-      {{item.lrc}}</view>
+    <view wx:for="{{musicLyric}}" wx:key="time" id="item-{{index}}" class="min-h-[34px] pb-[14px] {{index === musicLyricCurrent.index ? 'text-xl font-semibold opacity-100': 'text-base opacity-60'}}">
+      <text class="inline-flex active-text-mask {{index === musicLyricCurrent.index && linePercent > 0.1 && linePercent < 1? 'transition-colors' : 'transition-opacity'}}" style="{{index === musicLyricCurrent.index ? 'mask-position:' + (1 - linePercent) * 100 + '% 0' : ''}}">{{item.lrc}}</text>
+    </view>
   </block>
   <view wx:else class="pt-4 text-xl font-semibold">{{musicLyricLoading ? '歌词加载中...' : '暂无歌词'}}</view>
   <view class="h-80"></view>
 </scroll-view>
-
-<view class="absolute bottom-0 right-0 left-0 h-8 z-10 pointer-events-none" style="background: linear-gradient(to top, {{primaryColor}}, transparent);">
-</view>

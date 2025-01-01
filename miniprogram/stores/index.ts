@@ -69,6 +69,8 @@ export class Store {
   hostPlayer: HostPlayerModule;
   xiaomusicPlayer: XiaomusicPlayerModule;
 
+  colorsMap = new Map<string, string>();
+
   constructor() {
     makeAutoObservable(this);
 
@@ -93,9 +95,7 @@ export class Store {
     );
     reaction(
       () => this.musicCover,
-      async (val) => {
-        this.primaryColor = val ? await getImageColor(val) : '#7e7a91';
-      },
+      () => this.updateColor(),
       {
         fireImmediately: true,
       },
@@ -112,8 +112,7 @@ export class Store {
   }
 
   get player() {
-    if (this.did === 'host') return this.hostPlayer;
-    return this.xiaomusicPlayer;
+    return this.did === 'host' ? this.hostPlayer : this.xiaomusicPlayer;
   }
 
   get speed() {
@@ -143,6 +142,18 @@ export class Store {
     this.serverConfig = config;
     wx.setStorageSync('serverConfig', config);
   };
+
+  async updateColor() {
+    const image = this.musicCover;
+    const cachedColor = this.colorsMap.get(image);
+    if (cachedColor) {
+      this.primaryColor = cachedColor;
+      return;
+    }
+    const color = image ? await getImageColor(image) : '#7e7a91';
+    this.colorsMap.set(image, color);
+    this.primaryColor = color;
+  }
 
   initSettings = async () => {
     try {

@@ -304,7 +304,7 @@ ComponentWithStore({
         editable: true,
         success: (e) => {
           if (!e.confirm) return;
-          const offset = parseInt(e.content);
+          const offset = parseInt(e.content || '0');
           if (isNaN(offset)) {
             wx.showToast({
               title: '请输入数字',

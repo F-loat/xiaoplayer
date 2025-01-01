@@ -46,6 +46,8 @@ export class LyricModule {
   ready = false;
   offset = 0;
 
+  mode: 'base' | 'advance' = wx.getStorageSync('lyricMode') || 'base';
+
   constructor(store: Store) {
     this.store = store;
     makeAutoObservable(this);
@@ -53,6 +55,7 @@ export class LyricModule {
     reaction(
       () => this.store.musicLyric,
       () => {
+        this.ready = false;
         this.setOffset(0);
         setTimeout(() => {
           this.syncLyric();
@@ -83,6 +86,23 @@ export class LyricModule {
         }
       },
     );
+  }
+
+  get linePercent() {
+    if (this.store.status !== 'playing' || this.mode === 'base') {
+      return 0;
+    }
+    const { musicLyric, currentTime } = this.store;
+    const { index } = this.store.musicLyricCurrent;
+    const a = musicLyric[index].time;
+    const b = musicLyric[index + 1]?.time;
+    const time = currentTime + this.offset;
+    return b ? (time * 1000 - a) / (b - a) : 0;
+  }
+
+  setMode(mode: 'base' | 'advance') {
+    this.mode = mode;
+    wx.setStorageSync('lyricMode', mode);
   }
 
   syncLyric(currentTime = this.store.currentTime) {

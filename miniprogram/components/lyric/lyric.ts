@@ -2,15 +2,21 @@ import { store } from '@/miniprogram/stores';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 ComponentWithStore({
-  storeBindings: {
-    store,
-    fields: [
-      'isPC',
-      'musicLyric',
-      'musicLyricCurrent',
-      'musicLyricLoading',
-      'primaryColor',
-    ] as const,
-    actions: [] as const,
-  },
+  storeBindings: [
+    {
+      store,
+      fields: [
+        'isPC',
+        'musicLyric',
+        'musicLyricCurrent',
+        'musicLyricLoading',
+      ] as const,
+      actions: [] as const,
+    },
+    {
+      store: store.lyric,
+      fields: ['linePercent'] as const,
+      actions: [] as const,
+    },
+  ],
 });

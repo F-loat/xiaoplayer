@@ -32,7 +32,9 @@ export class HostPlayerModule implements MusicPlayer {
   }
 
   async syncMusic() {
-    if (this.mode !== 'background') return;
+    if (this.store.did !== 'host' || this.mode !== 'background') {
+      return;
+    }
     const bgAudioContext = wx.getBackgroundAudioManager();
     if (bgAudioContext.paused || !bgAudioContext.title) {
       return;
