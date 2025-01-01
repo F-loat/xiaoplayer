@@ -6,7 +6,11 @@ import { sleep } from '@/miniprogram/utils';
 const progress = wx.worklet.shared(0);
 
 ComponentWithStore({
-  properties: {},
+  properties: {
+    src: String,
+    name: String,
+    cover: String,
+  },
 
   data: {
     mode: 'cover' as 'cover' | 'lyric',
@@ -55,6 +59,18 @@ ComponentWithStore({
         mode: mode || 'cover',
       });
 
+      if (this.properties.src) {
+        store.setData({
+          did: 'host',
+          musicName: this.properties.name,
+          musicAlbum: '分享',
+          musicCover: this.properties.cover,
+          musicUrl: decodeURIComponent(this.properties.src),
+          musicLyric: [],
+        });
+        store.lyric.fetchMusicTag(this.properties.name, '');
+      }
+
       store.setData({ showAppBar: false });
 
       wx.setKeepScreenOn({
@@ -70,8 +86,31 @@ ComponentWithStore({
   },
 
   methods: {
+    getSharePath() {
+      return `/pages/player/index?name=${store.musicName}&cover=${store.musicCover}&src=${encodeURIComponent(store.musicUrl || '')}`;
+    },
+    onShareAppMessage() {
+      return {
+        title: store.musicName,
+        imageUrl: store.musicCover,
+        path: this.getSharePath(),
+      };
+    },
+    onShareTimeline() {
+      return {
+        title: store.musicName,
+        imageUrl: store.musicCover,
+        path: this.getSharePath(),
+      };
+    },
+
     handleClose() {
-      wx.navigateBack();
+      const pages = getCurrentPages();
+      if (pages.length > 1) {
+        wx.navigateBack();
+      } else {
+        wx.reLaunch({ url: '/pages/index/index' });
+      }
     },
 
     handleGesture(evt: {
@@ -95,10 +134,16 @@ ComponentWithStore({
     },
 
     async handlePlayToggle() {
-      if (store.status === 'paused') {
-        await store.player.playMusic();
-      } else {
+      if (store.status !== 'paused') {
         await store.player.pauseMusic();
+      } else if (this.properties.src) {
+        await store.player.playMusic(
+          store.musicName,
+          store.musicAlbum,
+          store.musicUrl,
+        );
+      } else {
+        await store.player.playMusic();
       }
     },
 

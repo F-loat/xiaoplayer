@@ -57,10 +57,7 @@ export class LyricModule {
       () => {
         this.ready = false;
         this.setOffset(0);
-        setTimeout(() => {
-          this.syncLyric();
-          this.ready = true;
-        }, 1000);
+        setTimeout(() => this.syncLyric(), 1000);
       },
     );
     reaction(
@@ -90,11 +87,11 @@ export class LyricModule {
 
   get linePercent() {
     if (this.store.status !== 'playing' || this.mode === 'base') {
-      return 0;
+      return 1;
     }
     const { musicLyric, currentTime } = this.store;
     const { index } = this.store.musicLyricCurrent;
-    const a = musicLyric[index].time;
+    const a = musicLyric[index]?.time;
     const b = musicLyric[index + 1]?.time;
     const time = currentTime + this.offset;
     return b ? (time * 1000 - a) / (b - a) : 0;
@@ -115,6 +112,7 @@ export class LyricModule {
         lrc: this.store.musicLyric[preIndex]?.lrc,
       },
     });
+    this.ready = true;
   }
 
   setOffset(val: number) {
@@ -244,7 +242,7 @@ export class LyricModule {
   applyScrapedMusicTag(tag: Tag, remote: boolean = true) {
     const cackeKey = `musicInfo:${this.store.musicName}`;
     const cachedInfo = wx.getStorageSync(cackeKey) || {};
-    const musicLyric = this.store.musicM3U8Url ? [] : parseLrc(tag.lyric);
+    const musicLyric = this.store.isM3U8 ? [] : parseLrc(tag.lyric);
 
     this.store.setData({
       musicLyric,

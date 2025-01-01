@@ -45,7 +45,7 @@ export class Store {
   musicLyricCurrent: { index: number; lrc: string } = { index: 0, lrc: '' };
   musicLyricLoading = false;
 
-  musicM3U8Url?: string;
+  musicUrl?: string;
 
   duration = 0;
   currentTime = 0;
@@ -88,6 +88,7 @@ export class Store {
     this.musicAlbum = musicInfo.album || '';
     this.musicLyric = musicInfo.lyric || [];
     this.musicCover = musicInfo.cover;
+    this.musicUrl = musicInfo.url;
 
     reaction(
       () => this.did,
@@ -106,9 +107,17 @@ export class Store {
         album: this.musicAlbum,
         lyric: this.musicLyric,
         cover: this.musicCover,
+        url: this.musicUrl,
       }),
       (val) => wx.setStorageSync('musicInfo', val),
+      {
+        delay: 1000,
+      },
     );
+  }
+
+  get isM3U8() {
+    return this.musicUrl?.split('?')[0].endsWith('m3u8');
   }
 
   get player() {

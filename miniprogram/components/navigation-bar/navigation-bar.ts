@@ -122,10 +122,13 @@ ComponentWithStore({
     },
     back() {
       const { delta } = this.data;
-      if (delta) {
+      const pages = getCurrentPages();
+      if (pages.length > 1) {
         wx.navigateBack({
           delta,
         });
+      } else {
+        wx.reLaunch({ url: '/pages/index/index' });
       }
       this.triggerEvent('back', { delta }, {});
     },

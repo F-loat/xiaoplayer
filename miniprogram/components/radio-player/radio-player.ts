@@ -5,7 +5,7 @@ ComponentWithStore({
   storeBindings: [
     {
       store,
-      fields: ['status', 'musicM3U8Url'] as const,
+      fields: ['status', 'isM3U8', 'musicUrl'] as const,
       actions: [] as const,
     },
   ],

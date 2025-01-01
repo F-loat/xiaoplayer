@@ -70,7 +70,7 @@ export class HostPlayerModule implements MusicPlayer {
     };
   }
 
-  playMusic = async (name?: string, album?: string) => {
+  playMusic = async (name?: string, album?: string, src?: string) => {
     const musicName = name || this.store.musicName;
     const musicAlbum = album || this.store.musicAlbum;
 
@@ -79,7 +79,7 @@ export class HostPlayerModule implements MusicPlayer {
       musicAlbum,
       status: 'playing',
       currentTime: 0,
-      musicM3U8Url: undefined,
+      musicUrl: undefined,
     });
 
     if (!name && this.audioContext?.src) {
@@ -92,19 +92,23 @@ export class HostPlayerModule implements MusicPlayer {
     }
 
     this.setList(musicAlbum);
-
-    const res = await request<{
-      url: string;
-    }>({
-      url: `/musicinfo?name=${musicName}`,
-    });
-
-    const url = res.data.url || '';
     this.innerAudioContext?.destroy();
-    const isM3U8 = url.split('?')[0].endsWith('m3u8');
 
-    if (isM3U8) {
-      this.store.setData({ musicM3U8Url: url });
+    const getMusicUrl = async () => {
+      if (src) return src;
+      const res = await request<{
+        url: string;
+      }>({
+        url: `/musicinfo?name=${musicName}`,
+      });
+      return this.store.getResourceUrl(res.data.url || '');
+    };
+
+    const musicUrl = await getMusicUrl();
+
+    this.store.setData({ musicUrl });
+
+    if (this.store.isM3U8) {
       return;
     }
 
@@ -121,7 +125,7 @@ export class HostPlayerModule implements MusicPlayer {
       bgAudioContext.singer = this.store.musicAlbum;
       bgAudioContext.coverImgUrl = this.store.musicCover;
       bgAudioContext.playbackRate = this.speed;
-      bgAudioContext.src = this.store.getResourceUrl(url);
+      bgAudioContext.src = musicUrl;
       bgAudioContext.play();
       bgAudioContext.onPrev(() => {
         this.playPrevMusic();
@@ -138,7 +142,7 @@ export class HostPlayerModule implements MusicPlayer {
     const innerAudioContext = wx.createInnerAudioContext();
     innerAudioContext.volume = this.volume / 100;
     innerAudioContext.playbackRate = this.speed;
-    innerAudioContext.src = this.store.getResourceUrl(url);
+    innerAudioContext.src = musicUrl;
     innerAudioContext.play();
     this.addCommonListener(innerAudioContext);
     this.innerAudioContext = innerAudioContext;
@@ -157,7 +161,6 @@ export class HostPlayerModule implements MusicPlayer {
       this.store.setData({
         status: 'playing',
         duration: context.duration,
-        currentTime: context.currentTime,
       });
       this.store.updateCurrentTime();
     });
@@ -182,12 +185,6 @@ export class HostPlayerModule implements MusicPlayer {
         });
         this.store.updateCurrentTime();
       }
-    });
-    context.onSeeked(() => {
-      this.store.setData({
-        duration: context.duration,
-        currentTime: context.currentTime,
-      });
     });
     context.onEnded(() => this.handleMusicEnd());
     context.onError((err) => {

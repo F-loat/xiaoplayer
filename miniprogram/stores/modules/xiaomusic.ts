@@ -50,8 +50,12 @@ export class XiaomusicPlayerModule implements MusicPlayer {
     return {};
   }
 
-  playMusic = async (name?: string, album?: string) => {
-    if (name) {
+  playMusic = async (name?: string, album?: string, src?: string) => {
+    if (src) {
+      await request({
+        url: `/playurl?url=${encodeURIComponent(src)}&did=${this.store.did}`,
+      });
+    } else if (name) {
       const list = album ?? this.store.musicAlbum;
       if (list) {
         await this.store.sendCommand(`播放列表${list}|${name}`);

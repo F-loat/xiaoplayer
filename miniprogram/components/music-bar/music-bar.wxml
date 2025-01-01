@@ -7,11 +7,9 @@
 			<view class="flex flex-1 min-w-36 justify-between items-center ml-2">
 				<view class="flex flex-col shrink-0 px-1 min-w-20 flex-1" bind:tap="handleExpand">
 					<text class="truncate">{{musicName || 'xiaoplayer'}}</text>
-					<view>
-					<text class="inline-flex active-text-mask text-xs truncate leading-5 h-5 -mt-0.5 {{linePercent > 0.1 && linePercent < 1? 'transition-colors' : ''}}" style="mask-position: {{(1 - linePercent) * 100}}% 0;">{{status === 'playing' &&
+					<view class="inline-flex active-text-mask text-xs truncate leading-5 h-5 opacity-80 {{linePercent > 0.1 && linePercent < 1? 'transition-colors' : ''}}" style="mask-position: {{(1 - linePercent) * 100}}% 0;">{{status === 'playing' &&
 						musicLyricCurrent.lrc ?
-						musicLyricCurrent.lrc : currentDevice.name}}</text>
-					</view>
+						musicLyricCurrent.lrc : currentDevice.name}}</view>
 				</view>
 				<view class="flex items-center shrink-0 opacity-80">
 					<image class="w-6 h-6 mr-3 scale-95"

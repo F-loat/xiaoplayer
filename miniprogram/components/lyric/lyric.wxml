@@ -4,7 +4,7 @@
   <view id="item--1" class="h-[22px]"></view>
   <block wx:if="{{musicLyric.length}}">
     <view wx:for="{{musicLyric}}" wx:key="time" id="item-{{index}}">
-      <text class="inline-flex active-text-mask {{index === musicLyricCurrent.index && linePercent > 0.1 && linePercent < 1 ? 'transition-colors' : 'transition-opacity'}} {{index === musicLyricCurrent.index ? 'opacity-100': 'opacity-60'}}" style="{{index === musicLyricCurrent.index ? 'mask-position:' + (1 - linePercent) * 100 + '% 0' : ''}}">{{item.lrc}}</text>
+      <view class="inline-flex active-text-mask {{index === musicLyricCurrent.index && linePercent > 0.1 && linePercent < 1 ? 'transition-colors' : 'transition-opacity'}} {{index === musicLyricCurrent.index ? 'opacity-100': 'opacity-60'}}" style="{{index === musicLyricCurrent.index ? 'mask-position:' + (1 - linePercent) * 100 + '% 0' : ''}}">{{item.lrc}}</view>
     </view>
   </block>
   <view wx:else>{{musicLyricLoading ? '歌词加载中...' : '暂无歌词'}}</view>

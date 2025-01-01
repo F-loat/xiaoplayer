@@ -35,7 +35,7 @@ ComponentWithStore({
   storeBindings: [
     {
       store,
-      fields: ['serverConfig', 'isPC', 'status', 'musicM3U8Url'] as const,
+      fields: ['serverConfig', 'isPC', 'status'] as const,
       actions: [] as const,
     },
     {
