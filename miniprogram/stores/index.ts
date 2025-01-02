@@ -36,7 +36,8 @@ export interface MusicPlayer {
 export class Store {
   did: null | string = wx.getStorageSync('did');
   status: 'paused' | 'loading' | 'playing' = 'paused';
-  primaryColor = '#7e7a91';
+
+  primaryColor: string;
 
   musicName: string;
   musicCover: string;
@@ -49,7 +50,7 @@ export class Store {
 
   duration = 0;
   currentTime = 0;
-  playOrder: PlayOrderType = PlayOrderType.All;
+  playOrder: PlayOrderType;
   playTimer: number | null = null;
 
   showAppBar = true;
@@ -89,6 +90,8 @@ export class Store {
     this.musicLyric = musicInfo.lyric || [];
     this.musicCover = musicInfo.cover;
     this.musicUrl = musicInfo.url;
+    this.primaryColor = musicInfo.color || '#7e7a91';
+    this.playOrder = musicInfo.playOrder || PlayOrderType.All;
 
     reaction(
       () => this.did,
@@ -97,9 +100,6 @@ export class Store {
     reaction(
       () => this.musicCover,
       () => this.updateColor(),
-      {
-        fireImmediately: true,
-      },
     );
     reaction(
       () => ({
@@ -108,6 +108,8 @@ export class Store {
         lyric: this.musicLyric,
         cover: this.musicCover,
         url: this.musicUrl,
+        color: this.primaryColor,
+        order: this.playOrder,
       }),
       (val) => wx.setStorageSync('musicInfo', val),
       {
@@ -243,7 +245,8 @@ export class Store {
     }
   };
 
-  getResourceUrl(url: string = '') {
+  getResourceUrl(url?: string) {
+    if (!url) return '';
     const {
       domain,
       publicDomain = '',
@@ -261,13 +264,14 @@ export class Store {
       : url;
   }
 
-  sendCommand = (cmd: String, did?: string) => {
+  sendCommand = (cmd: String, did: string | null = this.did) => {
+    if (did === 'host') return;
     return request({
       url: '/cmd',
       method: 'POST',
       data: {
         cmd,
-        did: did || this.did,
+        did,
       },
     });
   };

@@ -77,13 +77,14 @@ export class HostPlayerModule implements MusicPlayer {
     this.store.setData({
       musicName,
       musicAlbum,
-      status: 'playing',
+      status: 'loading',
       currentTime: 0,
       musicUrl: undefined,
     });
 
     if (!name && this.audioContext?.src) {
       this.store.setData({
+        status: 'playing',
         currentTime: this.audioContext.currentTime,
       });
       this.audioContext.play();
@@ -161,6 +162,7 @@ export class HostPlayerModule implements MusicPlayer {
       this.store.setData({
         status: 'playing',
         duration: context.duration,
+        currentTime: context.currentTime,
       });
       this.store.updateCurrentTime();
     });

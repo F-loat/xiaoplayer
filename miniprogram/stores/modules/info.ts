@@ -79,6 +79,8 @@ export class InfoModule {
       url: `/musicinfos?${params}musictag=true`,
     });
 
+    if (!Array.isArray(infos)) return;
+
     infos.forEach((info) => {
       const cover = this.store.getResourceUrl(info.tags.picture);
       this.coverMap.set(info.name, cover);

@@ -18,14 +18,14 @@ app.get('/', (req, res) => {
 app.post('/proxy', (req, res) => {
   proxy.main(req.body, {}, (err, data) => {
     if (err) res.status(500);
-    res.send(err || data);
+    res.send(err ? { code: err.code, message: err.message } : data);
   });
 });
 
 app.post('/musictag', (req, res) => {
   musictag.main(req.body, {}, (err, data) => {
     if (err) res.status(500);
-    res.send(err || data);
+    res.send(err ? { code: err.code, message: err.message } : data);
   });
 });
 

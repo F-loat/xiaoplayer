@@ -24,6 +24,13 @@
 			<input class="flex-1 ml-2 -mb-1" password value="{{serverConfig.password}}" placeholder="请输入" data-name="password" bind:input="handleFormChange"></input>
 		</xiao-cell>
 	</block>
+	<view class="flex justify-center mb-3">
+		<button open-type="share" class="bg-white dark:bg-gray-800/40">分享配置</button>
+		<button style="margin-left: 12px" class="bg-white dark:bg-gray-800/40" bind:tap="handleSaveConfig">保存配置</button>
+		<button style="margin-left: 12px; width: 144rpx;" class="flex items-center justify-center p-0 bg-white dark:bg-gray-800/40" bind:tap="navigateToMore">
+			<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduoshezhi.svg" />
+		</button>
+	</view>
 	<xiao-cell extClass="justify-between">
 		<view>逐字歌词</view>
 		<switch class="scale-75" type="checkbox" checked="{{lyricMode === 'advance'}}"  bind:change="handleLyricModeChange" />
@@ -32,13 +39,6 @@
 		<view>后台播放</view>
 		<switch class="scale-75" type="checkbox" checked="{{playerMode === 'background'}}"  bind:change="handleHostModeChange" />
 	</xiao-cell>
-	<view class="flex justify-center mt-1 mb-3">
-		<button open-type="share" class="bg-white dark:bg-gray-800/40">分享配置</button>
-		<button style="margin-left: 12px" class="bg-white dark:bg-gray-800/40" bind:tap="handleSaveConfig">保存配置</button>
-		<button style="margin-left: 12px; width: 144rpx;" class="flex items-center justify-center p-0 bg-white dark:bg-gray-800/40" bind:tap="navigateToMore">
-			<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduoshezhi.svg" />
-		</button>
-	</view>
 	<ad-custom wx:if="{{ADUnitId && version}}" unit-id="{{ADUnitId}}" />
 	<view wx:if="{{!!devices.length}}" class="mt-2">
 		<view class="flex items-center justify-between">

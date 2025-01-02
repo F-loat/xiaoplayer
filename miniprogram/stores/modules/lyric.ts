@@ -31,7 +31,7 @@ export const parseLrc = (lrc: string = ''): Lyric[] => {
         if (timeStr[3]) {
           timeMs += parseFloat(timeStr[3]) * 1000;
         }
-        const lrcText = timeMatch[2].trim();
+        const lrcText = timeMatch[2]?.trim();
         return { time: timeMs, lrc: lrcText } as Lyric;
       })
       .filter((item): item is Lyric => !!item?.lrc);

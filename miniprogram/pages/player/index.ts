@@ -49,7 +49,7 @@ ComponentWithStore({
   ],
 
   lifetimes: {
-    attached() {
+    async attached() {
       const mode = wx.getStorageSync('playerMode');
       const { statusBarHeight, screenHeight } = wx.getWindowInfo();
 
@@ -59,7 +59,14 @@ ComponentWithStore({
         mode: mode || 'cover',
       });
 
+      store.setData({ showAppBar: false });
+
+      wx.setKeepScreenOn({
+        keepScreenOn: true,
+      });
+
       if (this.properties.src) {
+        await sleep(600);
         store.setData({
           did: 'host',
           musicName: this.properties.name,
@@ -70,12 +77,6 @@ ComponentWithStore({
         });
         store.lyric.fetchMusicTag(this.properties.name, '');
       }
-
-      store.setData({ showAppBar: false });
-
-      wx.setKeepScreenOn({
-        keepScreenOn: true,
-      });
     },
     detached() {
       store.setData({ showAppBar: true });
@@ -196,8 +197,8 @@ ComponentWithStore({
     },
 
     async handleSwitchOrder() {
-      let cmd = '',
-        playOrder = store.playOrder;
+      let cmd = '';
+      let playOrder = store.playOrder;
       switch (playOrder) {
         case PlayOrderType.One:
           cmd = '随机播放';

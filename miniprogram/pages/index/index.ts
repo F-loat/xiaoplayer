@@ -274,6 +274,11 @@ ComponentWithStore({
         icon: 'none',
       });
     },
+    handleTutorial() {
+      wx.navigateToMiniProgram({
+        shortLink: '#小程序://哔哩哔哩弹幕网/3KvhbCauXD7YiFz',
+      });
+    },
     handleRepoLink() {
       wx.setClipboardData({
         data: 'https://github.com/hanxi/xiaomusic',

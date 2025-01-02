@@ -28,7 +28,7 @@
       </view>
       <view class="mt-2">
         <text class="text-sm">最简部署步骤</text>
-        <view class="p-2 mt-2 text-sm text-gray-600 bg-gray-100 dark:bg-neutral-800 dark:text-gray-300 rounded">
+        <view class="p-2 mt-2 text-sm text-gray-600 bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 bg-opacity-60 dark:bg-opacity-40 rounded">
           <view>docker run -p 8090:8090 \</view>
           <view class="pl-4">-v /xiaomusic/music:/app/music \</view>
           <view class="pl-4">-v /xiaomusic/conf:/app/conf \</view>
@@ -36,6 +36,7 @@
         </view>
       </view>
       <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleSetting">服务配置</button>
+      <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleTutorial">视频教程</button>
     </view>
     <view wx:else>
       <view class="text-center" bind:tap="handleError">
