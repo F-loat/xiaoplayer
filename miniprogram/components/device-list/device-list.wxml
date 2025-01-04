@@ -1,0 +1,19 @@
+<block wx:if="{{devices.length > 1}}">
+  <view class="flex items-center justify-between my-3">
+    <view class="text-base font-bold">设备</view>
+    <view class="text-xs rounded bg-white dark:bg-gray-800/20 py-1 px-2 opacity-80" hover-class="bg-opacity-80" bind:tap="handleStopMusic">一键关闭</view>
+  </view>
+  <view class="flex flex-wrap -ml-2 -mt-2">
+    <view wx:for="{{devices}}" wx:key="did" class="pl-2 pt-2 w-1/2 box-border">
+      <view class="relative p-2 border border-solid rounded-md bg-white dark:bg-gray-800/20 transition-colors {{item.did === did ? 'text-blue-600 dark:text-blue-400 border-blue-400 border-opacity-60' : 'border-gray-200 dark:border-gray-700'}}" data-did="{{item.did}}" bind:tap="handleSwitchDevice">
+        <view class="flex items-center justify-between text-sm font-medium truncate opacity-80">
+          {{item.name}}
+        </view>
+        <view class="flex text-xs truncate opacity-60">
+          {{item.cur_music || '暂无曲目'}}
+        </view>
+        <view wx:if="{{item.did === did}}" class="w-2 h-2 rounded absolute top-2 right-2 bg-blue-600 dark:bg-blue-400 opacity-80" />
+      </view>
+    </view>
+  </view>
+</block>

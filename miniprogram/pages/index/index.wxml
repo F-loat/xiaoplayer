@@ -50,7 +50,7 @@
     </view>
   </view>
 
-  <devices wx:if="{{homeDevices}}" />
+  <device-list wx:if="{{homeDevices}}" />
 
   <block wx:if="{{playlists.length}}">
     <view class="text-base font-bold my-3">歌单</view>

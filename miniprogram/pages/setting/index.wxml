@@ -44,25 +44,5 @@
 		<switch class="scale-75" type="checkbox" checked="{{bgAudio}}"  bind:change="handleBgAudioChange" />
 	</xiao-cell>
 	<ad-custom wx:if="{{ADUnitId && version}}" unit-id="{{ADUnitId}}" />
-	<view wx:if="{{!!devices.length}}" class="mt-2">
-		<view class="flex items-center justify-between">
-			<view>设备列表</view>
-			<view class="text-xs rounded bg-white dark:bg-gray-800/20 py-1 px-2" hover-class="bg-opacity-80" bind:tap="handleStopMusic">一键关闭</view>
-		</view>
-		<view wx:for="{{devices}}" wx:key="did" class="p-2 my-2 border border-solid rounded-md bg-white dark:bg-gray-800/20 {{item.did === did ? 'border-neutral-200 dark:border-gray-600' : 'border-gray-100 dark:border-neutral-800'}}" data-did="{{item.did}}" bind:tap="handleSwitchDevice">
-			<view class="flex items-center justify-between text-sm">
-				<view>{{item.name}}</view>
-				<view class="text-xs">{{status[item.did] === true ? '播放中' : ''}}</view>
-			</view>
-			<view class="flex text-xs" >
-				<block wx:if="{{item.cur_music}}">
-					<view wx:if="{{item.cur_playlist}}">
-						{{item.cur_playlist}}-
-					</view>
-					<view>{{item.cur_music}}</view>
-				</block>
-				<block wx:else>暂无曲目</block>
-			</view>
-		</view>
-	</view>
+	<device-list wx:if="{{!homeDevices}}" class="pb-[env(safe-area-inset-bottom)]" />
 </scroll-view>

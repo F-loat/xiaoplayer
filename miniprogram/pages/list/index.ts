@@ -1,5 +1,5 @@
 import { store } from '@/miniprogram/stores';
-import { getGlobalData, request } from '@/miniprogram/utils';
+import { getGlobalData, request, sleep } from '@/miniprogram/utils';
 
 const pageSize = 25;
 
@@ -111,6 +111,21 @@ Component({
 
       this.setData(data);
     },
+    handleSendToDevice(name: string) {
+      const items = store.devices
+        .filter((item) => item.did !== store.did)
+        .slice(0, 6);
+      wx.showActionSheet({
+        alertText: '设备投放',
+        itemList: items.map((i) => String(i.name || i.did)),
+        success: async (res) => {
+          const device = items[res.tapIndex];
+          const { name: album } = this.data;
+          store.setData({ did: device.did });
+          await store.player.playMusic(name, album);
+        },
+      });
+    },
     handleAddToList(name: string) {
       const customLists = store.playlist.customPlaylists;
 
@@ -191,10 +206,12 @@ Component({
       const items =
         this.data.type === 'playlist'
           ? [
+              { label: '投放到', value: 'sendTo' },
               { label: '移除歌曲', value: 'remove' },
               { label: '删除歌曲', value: 'delete' },
             ]
           : [
+              { label: '投放到', value: 'sendTo' },
               { label: '添加到', value: 'addTo' },
               { label: '删除歌曲', value: 'delete' },
             ];
@@ -204,6 +221,9 @@ Component({
         success: (res) => {
           const { value } = items[res.tapIndex];
           switch (value) {
+            case 'sendTo':
+              this.handleSendToDevice(name);
+              break;
             case 'addTo':
               store.playlist.addToList(name);
               break;

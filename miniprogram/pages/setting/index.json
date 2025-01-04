@@ -1,6 +1,7 @@
 {
   "usingComponents": {
     "xiao-cell": "/components/xiao-cell/xiao-cell",
-    "navigation-bar": "/components/navigation-bar/navigation-bar"
+    "navigation-bar": "/components/navigation-bar/navigation-bar",
+    "device-list": "/components/device-list/device-list"
   }
 }

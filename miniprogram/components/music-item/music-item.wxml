@@ -8,7 +8,7 @@
       <text overflow="ellipsis" class="font-medium text-sm">{{title}}</text>
       <text wx:if="{{!!subTitle}}" overflow="ellipsis" class="ml-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{subTitle}}</text>
     </view>
-    <view wx:if="{{!!description}}" class="text-xs truncate text-gray-500 dark:text-gray-400">
+    <view wx:if="{{!!description}}" class="text-xs truncate opacity-60">
       {{description}}
     </view>
   </view>

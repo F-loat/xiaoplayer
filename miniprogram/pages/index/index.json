@@ -5,6 +5,6 @@
     "music-item": "/components/music-item/music-item",
     "radio-player": "/components/radio-player/radio-player",
     "navigation-bar": "/components/navigation-bar/navigation-bar",
-    "devices": "./components/devices/devices"
+    "device-list": "/components/device-list/device-list"
   }
 }
