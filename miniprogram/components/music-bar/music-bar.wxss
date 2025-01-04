@@ -1,4 +1,4 @@
-.text-mask {
+.fake-line-mask {
   color: #fff;
   mask-image: url('../../assets/image/fake-line-mask.png');
   mask-size: 200% 100%;

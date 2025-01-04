@@ -1,12 +1,12 @@
 .text-mask {
-  mask-image: url('../../assets/image/mask.png');
+  mask-image: url('../../../../assets/image/large-mask.png');
   mask-size: 100% 100%;
   mask-position: center;
 }
 
-.active-text-mask {
+.fake-line-mask {
   color: #fff;
-  mask-image: url('../../assets/image/fake-line-mask.png');
+  mask-image: url('../../../../assets/image/fake-line-mask.png');
   mask-size: 200% 100%;
   mask-position: 0 0;
   mask-repeat: no-repeat;

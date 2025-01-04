@@ -8,7 +8,7 @@
 				<view class="flex flex-col shrink-0 px-1 min-w-20 flex-1" bind:tap="handleExpand">
 					<text class="truncate">{{musicName || 'xiaoplayer'}}</text>
 					<view class="h-5 opacity-80 leading-5 text-xs">
-						<view class="inline-flex text-mask truncate {{linePercent > 0.1 && linePercent < 1? 'transition-colors' : ''}}" style="mask-position: {{(1 - linePercent) * 100}}% 0;">{{status === 'playing' &&
+						<view class="{{mode === 'advance' ? 'inline-flex' : ''}} fake-line-mask truncate {{linePercent > 0.1 && linePercent < 1? 'transition-colors' : ''}}" style="mask-position: {{(1 - linePercent) * 100}}% 0;">{{status === 'playing' &&
 							musicLyricCurrent.lrc ?
 							musicLyricCurrent.lrc : currentDevice.name}}</view>
 					</view>

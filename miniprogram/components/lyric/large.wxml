@@ -1,9 +1,0 @@
-<scroll-view class="text-mask h-full pt-2" enhanced scroll-y type="list" scroll-into-view="item-{{isPC ? musicLyricCurrent.index - 1 : musicLyricCurrent.index}}" scroll-with-animation show-scrollbar="{{false}}" scroll-into-view-offset="{{musicLyricCurrent.index ? -48 : 0}}">
-  <block wx:if="{{musicLyric.length}}">
-    <view wx:for="{{musicLyric}}" wx:key="time" id="item-{{index}}" class="min-h-[34px] pb-[14px] {{index === musicLyricCurrent.index ? 'text-xl font-semibold opacity-100': 'text-base opacity-60'}}">
-      <view class="{{mode === 'advance' ? 'inline-flex max-w-full' : ''}} active-text-mask {{index === musicLyricCurrent.index && linePercent > 0.1 && linePercent < 1? 'transition-colors' : 'transition-opacity'}}" style="{{index === musicLyricCurrent.index ? 'mask-position:' + (1 - linePercent) * 100 + '% 0' : ''}}">{{item.lrc}}</view>
-    </view>
-  </block>
-  <view wx:else class="pt-4 text-xl font-semibold">{{musicLyricLoading ? '歌词加载中...' : '暂无歌词'}}</view>
-  <view class="h-80"></view>
-</scroll-view>

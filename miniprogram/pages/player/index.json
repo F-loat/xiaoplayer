@@ -1,7 +1,7 @@
 {
   "usingComponents": {
-    "lyric": "/components/lyric/lyric",
-    "large-lyric": "/components/lyric/large",
-    "time-bar": "/components/time-bar/time-bar"
+    "lyric": "./components/lyric/lyric",
+    "large-lyric": "./components/lyric/large",
+    "time-bar": "./components/time-bar/time-bar"
   }
 }
