@@ -109,6 +109,7 @@ ComponentWithStore({
           ..._settings,
           ...formData,
           pull_ask_sec: formData.pull_ask ? 1 : 0,
+          enable_pull_ask: formData.pull_ask ? true : false,
           mi_did: formData.device_all
             ? _settings.device_list?.map((item) => item.miotDID).join(',')
             : _settings.mi_did,
@@ -129,7 +130,6 @@ ComponentWithStore({
             ? store.serverConfig.password
             : formData.httpauth_password,
       });
-      wx.hideLoading();
       wx.showToast({
         title: '保存成功',
         icon: 'none',

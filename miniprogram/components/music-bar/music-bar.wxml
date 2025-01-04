@@ -7,10 +7,11 @@
 			<view class="flex flex-1 min-w-36 justify-between items-center ml-2">
 				<view class="flex flex-col shrink-0 text-white px-1 min-w-20 flex-1" bind:tap="handleExpand">
 					<text class="truncate opacity-80">{{musicName || '暂无曲目'}}</text>
-					<view class="h-5 opacity-60 leading-5 text-xs">
+					<view class="flex items-center h-5 opacity-60 leading-5 text-xs">
 						<view class="{{advanceLyric ? 'inline-flex' : ''}} fake-line-mask truncate {{linePercent > 0.1 && linePercent < 1? 'transition-colors' : ''}}" style="mask-position: {{(1 - linePercent) * 100}}% 0;">{{status === 'playing' &&
 							musicLyricCurrent.lrc ?
-							musicLyricCurrent.lrc : currentDevice.name}}</view>
+							musicLyricCurrent.lrc : (homeDevices ? musicAlbum : currentDevice.name)}}</view>
+						<image wx:if="{{status === 'loading'}}" src="/assets/icon/loading.gif" class="w-2 h-2 ml-1" />
 					</view>
 				</view>
 				<view class="flex items-center shrink-0 opacity-80">

@@ -27,7 +27,7 @@
 		<switch class="scale-75" type="checkbox" checked="{{formData.use_music_api}}" data-name="use_music_api" bind:change="handleFormChange" />
 	</xiao-cell>
 	<xiao-cell extClass="justify-between">
-		<view>暂停播放（可能导致兼容性问题）</view>
+		<view>继续播放（可能导致兼容性问题）</view>
 		<switch class="scale-75" type="checkbox" checked="{{formData.continue_play}}" data-name="continue_play" bind:change="handleFormChange" />
 	</xiao-cell>
 	<xiao-cell>

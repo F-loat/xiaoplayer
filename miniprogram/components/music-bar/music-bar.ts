@@ -16,6 +16,7 @@ ComponentWithStore({
         'status',
         'currentDevice',
         'musicName',
+        'musicAlbum',
         'musicCover',
         'musicLyricCurrent',
         'primaryColor',
@@ -29,7 +30,7 @@ ComponentWithStore({
     },
     {
       store: store.feature,
-      fields: ['advanceLyric'] as const,
+      fields: ['homeDevices', 'advanceLyric'] as const,
       actions: [] as const,
     },
   ],

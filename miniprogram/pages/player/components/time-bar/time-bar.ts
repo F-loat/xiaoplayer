@@ -8,7 +8,7 @@ ComponentWithStore({
   },
   storeBindings: {
     store,
-    fields: ['currentTime', 'duration'] as const,
+    fields: ['status', 'currentTime', 'duration'] as const,
     actions: [] as const,
   },
   methods: {

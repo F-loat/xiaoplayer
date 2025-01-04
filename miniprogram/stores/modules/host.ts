@@ -152,6 +152,7 @@ export class HostPlayerModule implements MusicPlayer {
       wx.hideLoading();
     });
     context.onPlay(() => {
+      if (this.store.status === 'playing') return;
       wx.hideLoading();
       this.store.setData({
         status: 'playing',

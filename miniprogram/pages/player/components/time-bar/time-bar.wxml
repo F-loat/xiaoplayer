@@ -17,6 +17,9 @@
 </view>
 
 <view class="flex justify-between text-xs opacity-80">
-	<view>{{render.renderTime(newTime || currentTime)}}</view>
+	<view class="flex items-center">
+    <text>{{render.renderTime(newTime || currentTime)}}</text>
+    <image wx:if="{{status === 'loading'}}" src="/assets/icon/loading.gif" class="w-2 h-2 ml-1" />
+  </view>
 	<view>{{render.renderTime(duration)}}</view>
 </view>
