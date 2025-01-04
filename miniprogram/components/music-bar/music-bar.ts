@@ -2,7 +2,8 @@ import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 import { DEFAULT_COVER, store } from '../../stores';
 import { GestureState } from '../../types';
 
-const progress = wx.worklet.shared(0);
+const progressX = wx.worklet.shared(0);
+const progressY = wx.worklet.shared(0);
 
 ComponentWithStore({
   properties: {},
@@ -23,7 +24,12 @@ ComponentWithStore({
     },
     {
       store: store.lyric,
-      fields: ['mode', 'linePercent'] as const,
+      fields: ['linePercent'] as const,
+      actions: [] as const,
+    },
+    {
+      store: store.feature,
+      fields: ['advanceLyric'] as const,
       actions: [] as const,
     },
   ],
@@ -41,16 +47,23 @@ ComponentWithStore({
     },
 
     handleGesture(evt: {
+      deltaX: number;
       deltaY: number;
-      velocityY: number;
       state: GestureState;
     }) {
       'worklet';
       if (evt.state === GestureState.ACTIVE) {
-        progress.value = progress.value + evt.deltaY;
-      } else if (evt.state === GestureState.END && progress.value < -5) {
-        progress.value = 0;
+        progressX.value = progressX.value + evt.deltaX;
+        progressY.value = progressY.value + evt.deltaY;
+      } else if (evt.state === GestureState.END && progressY.value < -5) {
+        progressY.value = 0;
         wx.worklet.runOnJS(this.handleExpand)('Skyline');
+      } else if (evt.state === GestureState.END && progressX.value > 20) {
+        progressX.value = 0;
+        wx.worklet.runOnJS(this.handlePlayPrevMusic)('Skyline');
+      } else if (evt.state === GestureState.END && progressX.value < -20) {
+        progressX.value = 0;
+        wx.worklet.runOnJS(this.handlePlayNextMusic)('Skyline');
       }
     },
 
@@ -60,6 +73,11 @@ ComponentWithStore({
       } else {
         await store.player.pauseMusic();
       }
+    },
+
+    handlePlayPrevMusic() {
+      console.log(999);
+      store.player.playPrevMusic();
     },
 
     handlePlayNextMusic() {

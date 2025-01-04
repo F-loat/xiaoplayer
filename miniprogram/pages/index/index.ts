@@ -43,6 +43,11 @@ ComponentWithStore({
       fields: ['playlists'] as const,
       actions: [] as const,
     },
+    {
+      store: store.feature,
+      fields: ['homeDevices'] as const,
+      actions: [] as const,
+    },
   ],
   lifetimes: {
     attached() {
@@ -193,10 +198,7 @@ ComponentWithStore({
         .node()
         .exec(async (res) => {
           const scrollView = res[0].node;
-          await store.sendCommand(
-            '刷新列表',
-            Object.values(store.devices)[0]?.did,
-          );
+          await store.sendCommand('刷新列表', store.devices[0]?.did);
           await this.fetchMusicList();
           scrollView.closeRefresh();
           this.handleClearCache();

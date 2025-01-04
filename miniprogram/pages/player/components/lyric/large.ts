@@ -15,7 +15,12 @@ ComponentWithStore({
     },
     {
       store: store.lyric,
-      fields: ['mode', 'linePercent'] as const,
+      fields: ['linePercent'] as const,
+      actions: [] as const,
+    },
+    {
+      store: store.feature,
+      fields: ['advanceLyric'] as const,
       actions: [] as const,
     },
   ],

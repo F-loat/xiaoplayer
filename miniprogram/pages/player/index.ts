@@ -234,13 +234,7 @@ ComponentWithStore({
     },
 
     async handleSwitchDevice() {
-      const items = (
-        Object.values(store.devices || {}) as {
-          name: string | number;
-          did: string;
-        }[]
-      )
-        .concat([{ name: '本机', did: 'host' }])
+      const items = store.devices
         .filter((item) => item.did !== store.did)
         .slice(0, 6);
       wx.showActionSheet({
@@ -248,9 +242,6 @@ ComponentWithStore({
         itemList: items.map((i) => String(i.name || i.did)),
         success: async (res) => {
           const device = items[res.tapIndex];
-          if (device.did === store.did) {
-            return;
-          }
           const status = store.status;
           const album = store.musicAlbum;
           if (status === 'playing') {

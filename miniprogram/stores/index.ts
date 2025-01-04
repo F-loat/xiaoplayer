@@ -55,7 +55,9 @@ export class Store {
 
   showAppBar = true;
   version: null | string = wx.getStorageSync('serverVersion') || null;
-  devices: Record<string, Device> = {};
+
+  devices: Device[] = [];
+
   isPC =
     platform === 'windows' ||
     platform === 'mac' ||
@@ -139,10 +141,8 @@ export class Store {
   }
 
   get currentDevice() {
-    if (!this.did || this.did === 'host') {
-      return { name: '本机' };
-    }
-    return this.devices?.[this.did] || { name: '本机' };
+    const device = this.devices.find((item) => item.did === this.did);
+    return device || { name: '本机' };
   }
 
   setData = (values: any) => {
@@ -170,7 +170,7 @@ export class Store {
     try {
       const res = await request<{
         detail?: string;
-        devices: Record<string, any>;
+        devices: Record<string, Device>;
       }>({
         url: '/getsetting',
       });
@@ -193,22 +193,27 @@ export class Store {
       }
 
       let did = wx.getStorageSync('did');
-      const devices = res.data.devices || {};
 
-      if (!did) {
-        did = Object.keys(devices)[0] || 'host';
-      }
-
-      this.setData({
-        did,
-        devices,
-        playOrder: devices[did]?.play_type ?? PlayOrderType.All,
+      const devices = Object.values(res.data.devices || {}).concat({
+        name: '本机',
+        did: 'host',
+        hardware: '本机',
+        cur_music: store.did === 'host' ? store.musicName : undefined,
+        cur_playlist: store.did === 'host' ? store.musicAlbum : undefined,
       });
 
-      if (
-        !Object.keys(devices).length &&
-        !wx.getStorageSync('disableDeviceTip')
-      ) {
+      if (!did) {
+        did = devices[0]?.did || 'host';
+      }
+
+      if (did !== 'host') {
+        const playOrder = res.data.devices?.[did]?.play_type;
+        this.setData({ playOrder: playOrder ?? PlayOrderType.All });
+      }
+
+      this.setData({ did, devices });
+
+      if (devices.length <= 1 && !wx.getStorageSync('disableDeviceTip')) {
         wx.showModal({
           title: '无可用设备',
           content: '未发现可用设备，仅可使用本机播放',

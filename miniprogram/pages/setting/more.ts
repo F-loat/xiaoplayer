@@ -51,6 +51,8 @@ ComponentWithStore({
       const { data } = await request<any>({
         url: '/getsetting?need_device_list=true',
       });
+      const devices = data.device_list || [];
+      const allDids = Object.keys(data.devices || {});
       this.data._settings = data;
       this.setData({
         formData: {
@@ -58,9 +60,7 @@ ComponentWithStore({
           password: data.password,
           enable_save_tag: data.enable_save_tag,
           pull_ask: !!data.pull_ask_sec,
-          device_all:
-            !data.device_list?.length ||
-            data.device_list?.length === Object.keys(data.devices).length,
+          device_all: !devices.length || devices.length === allDids.length,
           use_music_api: data.use_music_api,
           continue_play: data.continue_play,
           delay_sec: data.delay_sec,

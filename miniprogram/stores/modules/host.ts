@@ -10,8 +10,6 @@ export class HostPlayerModule implements MusicPlayer {
   volume = wx.getStorageSync('hostVolume') || 80;
   list: string[] = [];
 
-  mode: 'inner' | 'background' = wx.getStorageSync('hostMode') || 'inner';
-
   bgAudioContext?: WechatMiniprogram.BackgroundAudioManager;
   innerAudioContext?: WechatMiniprogram.InnerAudioContext;
 
@@ -28,11 +26,13 @@ export class HostPlayerModule implements MusicPlayer {
   }
 
   get audioContext() {
-    return this.mode === 'inner' ? this.innerAudioContext : this.bgAudioContext;
+    return this.store.feature.bgAudio
+      ? this.bgAudioContext
+      : this.innerAudioContext;
   }
 
   async syncMusic() {
-    if (this.store.did !== 'host' || this.mode !== 'background') {
+    if (this.store.did !== 'host' || !this.store.feature.bgAudio) {
       return;
     }
     const bgAudioContext = wx.getBackgroundAudioManager();
@@ -56,12 +56,6 @@ export class HostPlayerModule implements MusicPlayer {
         ? list.sort(() => Math.random() - 0.5)
         : list;
     wx.setStorageSync('musicList', name);
-  }
-
-  setMode(mode: 'inner' | 'background') {
-    this.audioContext?.stop();
-    this.mode = mode;
-    wx.setStorageSync('hostMode', mode);
   }
 
   getMusic() {
@@ -117,7 +111,7 @@ export class HostPlayerModule implements MusicPlayer {
       title: '加载中',
     });
 
-    if (this.mode === 'background') {
+    if (this.store.feature.bgAudio) {
       this.store.setData({ status: 'loading' });
       await this.store.lyric.fetchMusicTag();
       const bgAudioContext = wx.getBackgroundAudioManager();

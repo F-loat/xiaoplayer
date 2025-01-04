@@ -4,6 +4,7 @@
     "search-bar": "/components/search-bar/search-bar",
     "music-item": "/components/music-item/music-item",
     "radio-player": "/components/radio-player/radio-player",
-    "navigation-bar": "/components/navigation-bar/navigation-bar"
+    "navigation-bar": "/components/navigation-bar/navigation-bar",
+    "devices": "./components/devices/devices"
   }
 }

@@ -14,7 +14,7 @@ function adjustBackgroundForWhiteText(r: number, g: number, b: number) {
   if (isColorSuitableForWhiteText(r, g, b)) {
     return darkenColor(r, g, b);
   } else {
-    return `rgb(${r}, ${g}, ${b})`;
+    return `rgb(${r} ${g} ${b} / var(--tw-bg-opacity, 1))`;
   }
 }
 

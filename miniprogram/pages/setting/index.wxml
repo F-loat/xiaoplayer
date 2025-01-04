@@ -32,12 +32,16 @@
 		</button>
 	</view>
 	<xiao-cell extClass="justify-between">
+		<view>首页设备</view>
+		<switch class="scale-75" type="checkbox" checked="{{homeDevices}}"  bind:change="handleHomeDevicesChange" />
+	</xiao-cell>
+	<xiao-cell extClass="justify-between">
 		<view>逐字歌词</view>
-		<switch class="scale-75" type="checkbox" checked="{{lyricMode === 'advance'}}"  bind:change="handleLyricModeChange" />
+		<switch class="scale-75" type="checkbox" checked="{{advanceLyric}}"  bind:change="handleAdvanceLyricChange" />
 	</xiao-cell>
 	<xiao-cell extClass="justify-between">
 		<view>后台播放</view>
-		<switch class="scale-75" type="checkbox" checked="{{playerMode === 'background'}}"  bind:change="handleHostModeChange" />
+		<switch class="scale-75" type="checkbox" checked="{{bgAudio}}"  bind:change="handleBgAudioChange" />
 	</xiao-cell>
 	<ad-custom wx:if="{{ADUnitId && version}}" unit-id="{{ADUnitId}}" />
 	<view wx:if="{{!!devices.length}}" class="mt-2">

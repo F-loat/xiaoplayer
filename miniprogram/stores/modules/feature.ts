@@ -5,6 +5,10 @@ import { compareVersions } from 'compare-versions';
 export class FeatureModule {
   store: Store;
 
+  homeDevices: boolean; // 首页设备
+  advanceLyric: boolean; // 逐字歌词
+  bgAudio: boolean; // 后台播放
+
   musicTags: boolean = true; // 歌曲标签获取
   musicInfos: boolean = true; // 歌曲封面批量获取
   playlist: boolean = false; // 自定义歌单
@@ -15,6 +19,22 @@ export class FeatureModule {
     this.store = store;
     makeAutoObservable(this);
 
+    const featureInfo = wx.getStorageSync('featureInfo') || {};
+    this.homeDevices = featureInfo.homeDevices ?? true;
+    this.advanceLyric = featureInfo.advanceLyric ?? true;
+    this.bgAudio = featureInfo.bgAudio ?? true;
+
+    reaction(
+      () => ({
+        homeDevices: this.homeDevices,
+        advanceLyric: this.advanceLyric,
+        bgAudio: this.bgAudio,
+      }),
+      (val) => wx.setStorageSync('featureInfo', val),
+      {
+        delay: 1000,
+      },
+    );
     reaction(
       () => store.version,
       (version) => {
@@ -29,5 +49,18 @@ export class FeatureModule {
         fireImmediately: true,
       },
     );
+  }
+
+  setHomeDevices(value: boolean) {
+    this.homeDevices = value;
+  }
+
+  setAdvanceLyric(value: boolean) {
+    this.advanceLyric = value;
+  }
+
+  setBgAudio(value: boolean) {
+    this.bgAudio = value;
+    this.store.hostPlayer.audioContext?.stop();
   }
 }

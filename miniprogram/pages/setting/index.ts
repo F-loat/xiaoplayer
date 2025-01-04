@@ -1,5 +1,5 @@
 import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
-import { Device, ServerConfig } from '@/miniprogram/types';
+import { ServerConfig } from '@/miniprogram/types';
 import { isPrivateDomain, request } from '@/miniprogram/utils';
 import { reaction } from 'mobx-miniprogram';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
@@ -7,24 +7,18 @@ import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 ComponentWithStore({
   data: {
     status: {} as Record<string, boolean>,
-    devices: [] as Device[],
     serverConfig: {} as ServerConfig,
     ADUnitId: import.meta.env.VITE_AD_SETTING_UNITID,
   },
   storeBindings: [
     {
       store,
-      fields: ['did', 'version'] as const,
+      fields: ['did', 'version', 'devices'] as const,
       actions: [] as const,
     },
     {
-      store: store.hostPlayer,
-      fields: { playerMode: 'mode' } as const,
-      actions: [] as const,
-    },
-    {
-      store: store.lyric,
-      fields: { lyricMode: 'mode' } as const,
+      store: store.feature,
+      fields: ['homeDevices', 'advanceLyric', 'bgAudio'] as const,
       actions: [] as const,
     },
   ],
@@ -32,13 +26,6 @@ ComponentWithStore({
     attached() {
       store.setData({ showAppBar: false });
       this.setData({
-        devices: Object.values(store.devices).concat({
-          name: '本机',
-          did: 'host',
-          hardware: '本机',
-          cur_music: store.did === 'host' ? store.musicName : undefined,
-          cur_playlist: store.did === 'host' ? store.musicAlbum : undefined,
-        }),
         serverConfig: { ...store.serverConfig },
       });
       this.syncDeviceStatus();
@@ -69,7 +56,7 @@ ComponentWithStore({
       };
     },
     syncDeviceStatus() {
-      this.data.devices.forEach(async (device) => {
+      store.devices.forEach(async (device) => {
         if (device.did === 'host') {
           this.setData({
             status: {
@@ -112,19 +99,26 @@ ComponentWithStore({
         },
       });
     },
-    handleLyricModeChange(e: {
+    handleHomeDevicesChange(e: {
       detail: {
-        value: string;
+        value: boolean;
       };
     }) {
-      store.lyric.setMode(e.detail.value ? 'advance' : 'base');
+      store.feature.setHomeDevices(e.detail.value);
     },
-    handleHostModeChange(e: {
+    handleAdvanceLyricChange(e: {
       detail: {
-        value: string;
+        value: boolean;
       };
     }) {
-      store.hostPlayer.setMode(e.detail.value ? 'background' : 'inner');
+      store.feature.setAdvanceLyric(e.detail.value);
+    },
+    handleBgAudioChange(e: {
+      detail: {
+        value: boolean;
+      };
+    }) {
+      store.feature.setBgAudio(e.detail.value);
     },
     async handleSaveConfig() {
       wx.showToast({
