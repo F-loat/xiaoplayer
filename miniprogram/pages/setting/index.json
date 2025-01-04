@@ -2,6 +2,7 @@
   "usingComponents": {
     "xiao-cell": "/components/xiao-cell/xiao-cell",
     "navigation-bar": "/components/navigation-bar/navigation-bar",
-    "device-list": "/components/device-list/device-list"
+    "device-list": "/components/device-list/device-list",
+    "github-link": "/components/github-link/github-link"
   }
 }

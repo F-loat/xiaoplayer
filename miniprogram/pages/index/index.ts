@@ -283,7 +283,7 @@ ComponentWithStore({
     },
     handleRepoLink() {
       wx.setClipboardData({
-        data: 'https://github.com/hanxi/xiaomusic',
+        data: 'http://xdocs.hanxi.cc',
         success: () => {
           wx.showToast({
             title: '链接已复制，请在浏览器中访问～',

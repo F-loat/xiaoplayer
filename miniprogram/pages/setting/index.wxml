@@ -44,5 +44,6 @@
 		<switch class="scale-75" type="checkbox" checked="{{bgAudio}}"  bind:change="handleBgAudioChange" />
 	</xiao-cell>
 	<ad-custom wx:if="{{ADUnitId && version}}" unit-id="{{ADUnitId}}" />
-	<device-list wx:if="{{!homeDevices}}" class="pb-[env(safe-area-inset-bottom)]" />
+	<device-list wx:if="{{!homeDevices}}" />
+	<github-link title="F-loat/xiaoplayer" link="https://github.com/F-loat/xiaoplayer" />
 </scroll-view>
