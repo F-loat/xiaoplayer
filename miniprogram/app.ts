@@ -32,4 +32,10 @@ App<IAppOption>({
     }
     await store.initSettings();
   },
+  onError(err) {
+    console.log('error', err);
+  },
+  onUnhandledRejection(err) {
+    console.log('rejection', err);
+  },
 });

@@ -12,7 +12,7 @@
         <view class="flex text-xs truncate opacity-60">
           {{item.cur_music || '暂无曲目'}}
         </view>
-        <view wx:if="{{item.did === did}}" class="w-2 h-2 rounded absolute top-2 right-2 bg-blue-600 dark:bg-blue-400 opacity-80" />
+        <view wx:if="{{item.did === did}}" class="w-2 h-2 rounded absolute top-2 right-2 bg-blue-600 dark:bg-blue-400 opacity-60" />
       </view>
     </view>
   </view>

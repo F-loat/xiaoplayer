@@ -186,6 +186,7 @@ ComponentWithStore({
     },
     handleClearCache() {
       const { keys } = wx.getStorageInfoSync();
+      if (!Array.isArray(keys)) return;
       keys.forEach((key) => {
         if (key.startsWith('musicInfo:')) {
           wx.removeStorage({ key });
