@@ -92,7 +92,7 @@ export class LyricModule {
     const a = musicLyric[index]?.time;
     const b = musicLyric[index + 1]?.time;
     const time = currentTime + this.offset;
-    return b ? (time * 1000 - a) / (b - a) : 0;
+    return b ? Math.max((time * 1000 - a) / (b - a), 0) : 0;
   }
 
   syncLyric(currentTime = this.store.currentTime) {
@@ -123,7 +123,7 @@ export class LyricModule {
   };
 
   fetchMusicTag = async (
-    name: string = this.store.musicName.replace(/^\d+\.\s?/g, ''),
+    name: string = this.store.musicName?.replace(/^\d+\.\s?/g, '') || '',
     album: string = this.store.musicAlbum?.replace(/（.*）/g, '') || '',
     artist = '',
     force?: boolean,
@@ -168,7 +168,7 @@ export class LyricModule {
       }
       tags = {
         ...res.data.tags,
-        picture: this.store.getResourceUrl(res.data.tags.picture),
+        picture: this.store.getResourceUrl(res.data.tags?.picture),
       };
       if (tags.title) musicName = tags.title;
       if (tags.album) musicAlbum = tags.album;

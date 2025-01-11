@@ -11,9 +11,11 @@ export class FeatureModule {
 
   musicTags: boolean = true; // 歌曲标签获取
   musicInfos: boolean = true; // 歌曲封面批量获取
+  musicScrape: boolean = false; // 歌曲标签刮削
   playlist: boolean = false; // 自定义歌单
   renamePlaylist: boolean = false; // 重命名自定义歌单
-  musicScrape: boolean = false; // 歌曲标签刮削
+  playText: boolean = false; // 播放文字
+  playApi: boolean = false; // 播放专用接口
 
   constructor(store: Store) {
     this.store = store;
@@ -44,6 +46,8 @@ export class FeatureModule {
         this.musicScrape = compareVersions(version, '0.3.56') >= 0;
         this.playlist = compareVersions(version, '0.3.59') >= 0;
         this.renamePlaylist = compareVersions(version, '0.3.65') >= 0;
+        this.playText = compareVersions(version, '0.3.72') >= 0;
+        this.playApi = compareVersions(version, '0.3.50') >= 0;
       },
       {
         fireImmediately: true,

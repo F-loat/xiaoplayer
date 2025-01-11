@@ -50,5 +50,14 @@ Component({
         value: '',
       });
     },
+    handlePlayText() {
+      this.triggerEvent('playtext', {
+        value: this.data.value,
+      });
+      this.setData({ value: '' });
+      this.triggerEvent('change', {
+        value: '',
+      });
+    },
   },
 });

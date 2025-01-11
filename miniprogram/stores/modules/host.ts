@@ -1,5 +1,5 @@
 import { makeAutoObservable, observable, reaction } from 'mobx-miniprogram';
-import { MusicPlayer, Store } from '..';
+import { DEFAULT_PRIMARY_COLOR, MusicPlayer, Store } from '..';
 import { getGlobalData, request } from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
 
@@ -23,6 +23,30 @@ export class HostPlayerModule implements MusicPlayer {
       () => this.volume,
       (val) => wx.setStorageSync('hostVolume', val),
     );
+    reaction(
+      () => this.store.did,
+      (did) => {
+        if (did === 'host') this.syncMusic();
+      },
+    );
+    reaction(
+      () => ({
+        url: this.store.musicUrl,
+        name: this.store.musicName,
+        album: this.store.musicAlbum,
+        cover: this.store.musicCover,
+        color: this.store.primaryColor,
+        lyric: this.store.musicLyric,
+        order: this.store.playOrder,
+      }),
+      (val) => {
+        if (this.store.did !== 'host') return;
+        wx.setStorageSync('hostMusicInfo', val);
+      },
+      {
+        delay: 300,
+      },
+    );
   }
 
   get audioContext() {
@@ -32,18 +56,24 @@ export class HostPlayerModule implements MusicPlayer {
   }
 
   async syncMusic() {
-    if (this.store.did !== 'host' || !this.store.feature.bgAudio) {
+    if (this.store.did !== 'host') {
       return;
     }
-    const bgAudioContext = wx.getBackgroundAudioManager();
-    if (bgAudioContext.paused || !bgAudioContext.title) {
-      return;
-    }
+    const audioContext = this.audioContext;
+    const musicInfo = wx.getStorageSync('hostMusicInfo') || {};
     this.store.setData({
-      musicName: bgAudioContext.title,
-      musicCover: bgAudioContext.coverImgUrl,
-      duration: bgAudioContext.duration,
-      currentTime: bgAudioContext.currentTime,
+      musicUrl: musicInfo.url,
+      musicName: musicInfo.name || '',
+      musicAlbum: musicInfo.album || '',
+      musicCover: musicInfo.cover,
+      primaryColor: musicInfo.color || DEFAULT_PRIMARY_COLOR,
+      musicLyric: musicInfo.lyric || [],
+      playOrder: musicInfo.playOrder || PlayOrderType.All,
+      ...(audioContext && {
+        status: audioContext.paused ? 'paused' : 'playing',
+        duration: audioContext.duration,
+        currentTime: audioContext.currentTime,
+      }),
     });
     this.store.updateCurrentTime();
   }
@@ -86,7 +116,7 @@ export class HostPlayerModule implements MusicPlayer {
       return;
     }
 
-    this.setList(musicAlbum);
+    if (musicAlbum) this.setList(musicAlbum);
     this.innerAudioContext?.destroy();
 
     const getMusicUrl = async () => {
@@ -116,9 +146,9 @@ export class HostPlayerModule implements MusicPlayer {
       await this.store.lyric.fetchMusicTag();
       const bgAudioContext = wx.getBackgroundAudioManager();
       bgAudioContext.audioType = 'music';
-      bgAudioContext.title = this.store.musicName;
-      bgAudioContext.singer = this.store.musicAlbum;
-      bgAudioContext.coverImgUrl = this.store.musicCover;
+      bgAudioContext.title = this.store.musicName!;
+      bgAudioContext.singer = this.store.musicAlbum!;
+      bgAudioContext.coverImgUrl = this.store.musicCover!;
       bgAudioContext.playbackRate = this.speed;
       bgAudioContext.src = musicUrl;
       bgAudioContext.play();
@@ -127,6 +157,17 @@ export class HostPlayerModule implements MusicPlayer {
       });
       bgAudioContext.onNext(() => {
         this.playNextMusic();
+      });
+      bgAudioContext.onError(() => {
+        this.store.setData({ status: 'paused' });
+        wx.showModal({
+          title: '播放失败，是否关闭后台播放后重试',
+          success: (res) => {
+            if (!res.confirm) return;
+            this.store.feature.setBgAudio(false);
+            this.playMusic(name, album, src);
+          },
+        });
       });
       this.addCommonListener(bgAudioContext);
       this.bgAudioContext = bgAudioContext;
@@ -139,6 +180,13 @@ export class HostPlayerModule implements MusicPlayer {
     innerAudioContext.playbackRate = this.speed;
     innerAudioContext.src = musicUrl;
     innerAudioContext.play();
+    innerAudioContext.onError((err) => {
+      this.store.setData({ status: 'paused' });
+      wx.showToast({
+        title: err.errMsg || '加载失败',
+        icon: 'none',
+      });
+    });
     this.addCommonListener(innerAudioContext);
     this.innerAudioContext = innerAudioContext;
   };
@@ -184,13 +232,6 @@ export class HostPlayerModule implements MusicPlayer {
       }
     });
     context.onEnded(() => this.handleMusicEnd());
-    context.onError((err) => {
-      this.store.setData({ status: 'paused' });
-      wx.showToast({
-        title: err.errMsg || '加载失败',
-        icon: 'none',
-      });
-    });
   }
 
   handleMusicEnd = async () => {
@@ -216,6 +257,7 @@ export class HostPlayerModule implements MusicPlayer {
     if (this.list.length === 1) {
       this.setList(this.store.musicAlbum || '所有歌曲');
     }
+    if (!this.store.musicName) return;
     const index = this.list.indexOf(this.store.musicName);
     if (index === -1) {
       this.playMusic(this.list[0]);
@@ -236,6 +278,7 @@ export class HostPlayerModule implements MusicPlayer {
     if (this.list.length === 1) {
       this.setList(this.store.musicAlbum || '所有歌曲');
     }
+    if (!this.store.musicName) return;
     const index = this.list.indexOf(this.store.musicName);
     if (index === -1) {
       this.playMusic(this.list[0]);

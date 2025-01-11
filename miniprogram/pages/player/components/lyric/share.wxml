@@ -1,0 +1,35 @@
+<button style="width: 40rpx; hright: 40rpx;" class="p-1 bg-transparent" open-type="share">
+  <image class="w-5 h-5 scale-90" src="/assets/icon/geci.svg" />
+</button>
+
+<snapshot
+  id="poster"
+  mode="view"
+  wx:if="{{sharing}}"
+  class="w-screen h-[80vw] absolute"
+  style="transform: scale(0)"
+>
+  <view class="h-full bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center p-4">
+      <view class="w-full h-full max-w-lg bg-black/20 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-white/10">
+        <view class="h-full flex flex-col justify-between">
+          <view class="text-purple-300 font-medium mb-8">Lyrics Share</view>
+          
+          <view class="flex-1 overflow-hidden snapshot-text-mask">
+            <view class="text-white text-3xl font-medium leading-relaxed">
+              {{sharing.lyrics[0] || ''}}
+            </view>
+            <view class="text-white/80 text-2xl font-light leading-relaxed mt-2">
+              {{sharing.lyrics[1] || ''}}
+            </view>
+            <view class="text-white/80 text-2xl font-light leading-relaxed mt-2">
+              {{sharing.lyrics[2] || ''}}
+            </view>
+          </view>
+          
+          <view class="text-purple-300/60 text-sm text-right">
+            分享于 {{sharing.date}}
+          </view>
+        </view>
+      </view>
+    </view>
+</snapshot>

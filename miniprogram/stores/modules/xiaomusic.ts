@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx-miniprogram';
-import { MusicPlayer, Store } from '..';
+import { DEFAULT_PRIMARY_COLOR, MusicPlayer, Store } from '..';
 import { request, sleep } from '@/miniprogram/utils';
 
 export class XiaomusicPlayerModule implements MusicPlayer {
@@ -36,12 +36,26 @@ export class XiaomusicPlayerModule implements MusicPlayer {
         if (did === 'host') return;
         this.syncMusic();
         this.syncVolume();
-        this.syncTimer = setInterval(() => {
-          this.syncMusic();
-        }, 10 * 1000);
+        this.syncTimer = setInterval(() => this.syncMusic(), 10 * 1000);
       },
       {
         fireImmediately: true,
+      },
+    );
+    reaction(
+      () => ({
+        name: this.store.musicName,
+        album: this.store.musicAlbum,
+        cover: this.store.musicCover,
+        color: this.store.primaryColor,
+        lyric: this.store.musicLyric,
+      }),
+      (val) => {
+        if (this.store.did === 'host') return;
+        wx.setStorageSync('xiaoMusicInfo', val);
+      },
+      {
+        delay: 300,
       },
     );
   }
@@ -51,19 +65,44 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   }
 
   playMusic = async (name?: string, album?: string, src?: string) => {
+    const { playApi } = this.store.feature;
+    const handlePlayList = async (listname: string, musicname?: string) => {
+      if (playApi) {
+        await request({
+          url: '/playmusiclist',
+          method: 'POST',
+          data: {
+            did: this.store.did,
+            listname,
+            musicname,
+          },
+        });
+      } else {
+        await this.store.sendCommand(`播放列表${listname}|${musicname}`);
+      }
+    };
+    const handlePlay = async (musicname?: string) => {
+      if (playApi) {
+        await request({
+          url: '/playmusic',
+          method: 'POST',
+          data: {
+            did: this.store.did,
+            musicname,
+          },
+        });
+      } else {
+        const cmd = '播放歌曲' + musicname ? `${musicname}|` : '';
+        await this.store.sendCommand(cmd);
+      }
+    };
     if (src) {
       await request({
         url: `/playurl?url=${encodeURIComponent(src)}&did=${this.store.did}`,
       });
-    } else if (name) {
-      const list = album ?? this.store.musicAlbum;
-      if (list) {
-        await this.store.sendCommand(`播放列表${list}|${name}`);
-      } else {
-        await this.store.sendCommand(`播放歌曲${name}|`);
-      }
     } else {
-      await this.store.sendCommand('播放歌曲');
+      const list = album ?? this.store.musicAlbum;
+      await (list ? handlePlayList(list, name) : handlePlay(name));
     }
     if (album) this.store.setData({ musicAlbum: album });
     this.syncMusic();
@@ -76,7 +115,6 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   playPrevMusic = async () => {
     this.store.setData({
       status: 'loading',
-      duration: 0,
       currentTime: 0,
       musicLyric: [],
       musicLyricLoading: true,
@@ -89,7 +127,6 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   playNextMusic = async () => {
     this.store.setData({
       status: 'loading',
-      duration: 0,
       currentTime: 0,
       musicLyric: [],
       musicLyricLoading: true,
@@ -107,6 +144,16 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   seekMusic = async () => {};
 
   syncMusic = async () => {
+    if (!this.store.musicName) {
+      const musicInfo = wx.getStorageSync('xiaoMusicInfo') || {};
+      this.store.setData({
+        musicName: musicInfo.name || '',
+        musicAlbum: musicInfo.album || '',
+        musicCover: musicInfo.cover,
+        primaryColor: musicInfo.color || DEFAULT_PRIMARY_COLOR,
+        musicLyric: musicInfo.lyric || [],
+      });
+    }
     if (this.deboTimer) clearTimeout(this.deboTimer);
     this.deboTimer = setTimeout(async () => {
       const res = await request<{
@@ -120,7 +167,9 @@ export class XiaomusicPlayerModule implements MusicPlayer {
       });
       const { cur_music, cur_playlist, is_playing, offset, duration } =
         res.data;
-      if (this.store.did === 'host') return;
+      if (this.store.did === 'host' || duration === this.store.duration) {
+        return;
+      }
       this.store.setData(
         is_playing
           ? {

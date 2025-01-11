@@ -1,0 +1,39 @@
+<view class="h-full flex justify-center items-center">
+  <view wx:if="{{!serverConfig.domain}}" class="p-4">
+    <view class="flex items-center justify-center">
+      <text>该小程序需配合</text>
+      <text class="mx-1 -mb-1 text-blue-600" bind:tap="handleRepoLink">xiaomusic</text>
+      <text>服务使用</text>
+    </view>
+    <view class="mt-2">
+      <text class="text-sm">最简部署步骤</text>
+      <view class="p-2 mt-2 text-sm text-gray-600 bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 bg-opacity-60 dark:bg-opacity-40 rounded">
+        <view>docker run -p 8090:8090 \</view>
+        <view class="pl-4">-v /xiaomusic/music:/app/music \</view>
+        <view class="pl-4">-v /xiaomusic/conf:/app/conf \</view>
+        <view class="pl-4">hanxi/xiaomusic</view>
+      </view>
+    </view>
+    <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleSetting">
+      服务配置
+    </button>
+    <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleTutorial">
+      视频教程
+    </button>
+  </view>
+  <view wx:else>
+    <view class="text-center" bind:tap="handleError">
+      网络异常，请确认服务地址配置正确
+    </view>
+    <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleSetting">
+      服务配置
+    </button>
+    <button
+      wx:if="{{serverConfig.privateDomain && serverConfig.publicDomain}}" 
+      class="mt-4 bg-white dark:bg-gray-800/40"
+      bind:tap="handleSwitchDomain"
+    >
+      {{serverConfig.domain === serverConfig.privateDomain ? '切换为公网连接' : '切换为内网连接'}}
+    </button>
+  </view>
+</view>

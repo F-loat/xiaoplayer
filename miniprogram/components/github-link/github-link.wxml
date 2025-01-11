@@ -1,4 +1,4 @@
 <view class="flex items-center justify-center opacity-60 mt-4 pb-8" bind:tap="handleLink">
-  <image src="/assets/icon/github.svg" class="w-4 h-4 invert-icon" />
+  <image src="/assets/icon/github.svg" class="w-6 h-6 invert-icon" />
   <view class="ml-2 text-sm -mb-1">{{title}}</view>
 </view>

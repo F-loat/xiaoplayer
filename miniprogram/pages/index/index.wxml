@@ -1,8 +1,7 @@
 <!--index.wxml-->
 <template name="setting">
   <navigator slot="right" url="/pages/setting/index"
-    class="w-full h-full rounded-full border-[0.5px] border-solid border-black border-opacity-10 box-border flex justify-center items-center transition-colors bg-white bg-opacity-60"
-    hover-class="bg-gray-200">
+    class="w-full h-full rounded-full border-[0.5px] border-solid border-black border-opacity-10 box-border flex justify-center items-center bg-white bg-opacity-60" hover-class="bg-gray-200">
     <image src="/assets/icon/shezhi.svg" class="w-3/5 h-3/5" />
   </navigator>
 </template>
@@ -13,46 +12,23 @@
 
 <scroll-view id="scrollview" class="flex-1 overflow-y-hidden px-3 box-border" scroll-y refresher-enabled
   bind:scrolltolower="handleLoadMore" type="list" show-scrollbar="{{false}}" bind:refresherrefresh="handleRefresh">
-  <search-bar placeholder="请输入关键词" btnText="播放" bind:change="handleFilter" bind:search="handleSearch">
+  <search-bar placeholder="请输入关键词" btnText="播放" bind:change="handleFilter" bind:search="handleSearch" bind:playtext="handlePlayText">
     <view wx:if="{{isPC}}" class="h-7 w-7 ml-2">
       <template is="setting" />
     </view>
   </search-bar>
 
-  <view wx:if="{{!serverConfig.domain || !connected}}" class="h-3/4 flex justify-center items-center">
-    <view wx:if="{{!serverConfig.domain}}" class="p-4">
-      <view class="flex items-center justify-center">
-        <text>该小程序需配合</text>
-        <text class="mx-1 -mb-1 text-blue-600" bind:tap="handleRepoLink">xiaomusic</text>
-        <text>服务使用</text>
-      </view>
-      <view class="mt-2">
-        <text class="text-sm">最简部署步骤</text>
-        <view class="p-2 mt-2 text-sm text-gray-600 bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 bg-opacity-60 dark:bg-opacity-40 rounded">
-          <view>docker run -p 8090:8090 \</view>
-          <view class="pl-4">-v /xiaomusic/music:/app/music \</view>
-          <view class="pl-4">-v /xiaomusic/conf:/app/conf \</view>
-          <view class="pl-4">hanxi/xiaomusic</view>
-        </view>
-      </view>
-      <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleSetting">服务配置</button>
-      <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleTutorial">视频教程</button>
-    </view>
-    <view wx:else>
-      <view class="text-center" bind:tap="handleError">
-        网络异常，请确认服务地址配置正确
-      </view>
-      <button class="mt-4 bg-white dark:bg-gray-800/40" bind:tap="handleSetting">服务配置</button>
-      <button wx:if="{{serverConfig.privateDomain && serverConfig.publicDomain}}" class="mt-4 bg-white dark:bg-gray-800/40"
-        bind:tap="handleSwitchDomain">
-        {{serverConfig.domain === serverConfig.privateDomain ? '切换为公网连接' : '切换为内网连接'}}
-      </button>
-    </view>
-  </view>
+  <config
+    wx:if="{{!serverConfig.domain || !connected}}"
+    class="h-3/4"
+    error="{{error}}"
+    bind:refresh="fetchMusicList"
+    bind:switch="handleSwitchDomain"
+  />
 
-  <device-list wx:if="{{homeDevices}}" />
+  <block wx:elif="{{playlists.length}}">
+    <device-list wx:if="{{homeDevices}}" />
 
-  <block wx:if="{{playlists.length}}">
     <view class="text-base font-bold my-3">歌单</view>
 
     <music-item
@@ -73,19 +49,19 @@
       <image class="w-4 h-4 invert-icon" src="/assets/icon/tianjia.svg" />
       <view class="ml-2">新建歌单</view>
     </view>
+
+    <view wx:if="{{list.length}}" class="text-base font-bold my-3">专辑</view>
+
+    <music-item
+      wx:for="{{list}}"
+      wx:key="name"
+      title="{{item.name}}"
+      description="{{item.count}} 首歌曲"
+      cover="{{item.cover || ''}}"
+      data-name="{{item.name}}"
+      bind:tap="handleViewTap"
+    />
   </block>
-
-  <view wx:if="{{list.length}}" class="text-base font-bold my-3">专辑</view>
-
-  <music-item
-    wx:for="{{list}}"
-    wx:key="name"
-    title="{{item.name}}"
-    description="{{item.count}} 首歌曲"
-    cover="{{item.cover || ''}}"
-    data-name="{{item.name}}"
-    bind:tap="handleViewTap"
-  />
 </scroll-view>
 
 <fallback-app-bar />

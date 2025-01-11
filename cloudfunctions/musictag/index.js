@@ -53,6 +53,12 @@ exports.main = async (
     });
 
     const song = musics.data.find((m) => m.is_lyric);
+
+    if (!song) {
+      callback(null, getSong(song, resource));
+      return;
+    }
+
     const { data: lyric } = await request('fetch_lyric', token, {
       song_id: song.id,
       resource: song.resource || resource,

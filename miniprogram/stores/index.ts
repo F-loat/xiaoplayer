@@ -16,6 +16,7 @@ export const SHARE_COVER =
   'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png';
 export const DEFAULT_COVER =
   'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/default_cover.webp';
+export const DEFAULT_PRIMARY_COLOR = '#7e7a91';
 
 export interface MusicPlayer {
   speed: number;
@@ -34,14 +35,14 @@ export interface MusicPlayer {
 }
 
 export class Store {
-  did: null | string = wx.getStorageSync('did');
+  did: string = wx.getStorageSync('did') || 'host';
   status: 'paused' | 'loading' | 'playing' = 'paused';
 
-  primaryColor: string;
+  primaryColor: string = DEFAULT_PRIMARY_COLOR;
 
-  musicName: string;
-  musicCover: string;
-  musicAlbum: string;
+  musicName?: string;
+  musicCover?: string;
+  musicAlbum?: string;
   musicLyric: { time: number; lrc: string }[] = [];
   musicLyricCurrent: { index: number; lrc: string } = { index: 0, lrc: '' };
   musicLyricLoading = false;
@@ -50,7 +51,7 @@ export class Store {
 
   duration = 0;
   currentTime = 0;
-  playOrder: PlayOrderType;
+  playOrder: PlayOrderType = PlayOrderType.All;
   playTimer: number | null = null;
 
   showAppBar = true;
@@ -85,16 +86,6 @@ export class Store {
     this.hostPlayer = new HostPlayerModule(this);
     this.xiaomusicPlayer = new XiaomusicPlayerModule(this);
 
-    const musicInfo = wx.getStorageSync('musicInfo') || {};
-
-    this.musicName = musicInfo.name || '';
-    this.musicAlbum = musicInfo.album || '';
-    this.musicLyric = musicInfo.lyric || [];
-    this.musicCover = musicInfo.cover;
-    this.musicUrl = musicInfo.url;
-    this.primaryColor = musicInfo.color || '#7e7a91';
-    this.playOrder = musicInfo.playOrder || PlayOrderType.All;
-
     reaction(
       () => this.did,
       (val) => wx.setStorageSync('did', val),
@@ -104,18 +95,12 @@ export class Store {
       () => this.updateColor(),
     );
     reaction(
-      () => ({
-        name: this.musicName,
-        album: this.musicAlbum,
-        lyric: this.musicLyric,
-        cover: this.musicCover,
-        url: this.musicUrl,
-        color: this.primaryColor,
-        order: this.playOrder,
-      }),
-      (val) => wx.setStorageSync('musicInfo', val),
-      {
-        delay: 1000,
+      () => this.musicName,
+      () => {
+        if (this.deviceIndex === -1) return;
+        const newDevices = [...this.devices];
+        newDevices[this.deviceIndex].cur_music = this.musicName;
+        this.devices = newDevices;
       },
     );
   }
@@ -137,12 +122,15 @@ export class Store {
   }
 
   get isFavorite() {
-    return this.favorite.isFavorite(this.musicName);
+    return this.musicName && this.favorite.isFavorite(this.musicName);
+  }
+
+  get deviceIndex() {
+    return this.devices.findIndex((item) => item.did === this.did);
   }
 
   get currentDevice() {
-    const device = this.devices.find((item) => item.did === this.did);
-    return device || { name: '本机' };
+    return this.devices[this.deviceIndex] || { name: '本机', cur_music: '' };
   }
 
   setData = (values: any) => {
@@ -156,12 +144,12 @@ export class Store {
 
   async updateColor() {
     const image = this.musicCover;
-    const cachedColor = this.colorsMap.get(image);
-    if (cachedColor) {
-      this.primaryColor = cachedColor;
+    const cachedColor = image && this.colorsMap.get(image);
+    if (cachedColor || !image) {
+      this.primaryColor = cachedColor || DEFAULT_PRIMARY_COLOR;
       return;
     }
-    const color = image ? await getImageColor(image) : '#7e7a91';
+    const color = await getImageColor(image);
     this.colorsMap.set(image, color);
     this.primaryColor = color;
   }
@@ -192,26 +180,22 @@ export class Store {
         return;
       }
 
-      let did = wx.getStorageSync('did');
-
-      const devices = Object.values(res.data.devices || {}).concat({
+      const cachedHost = wx.getStorageSync('hostMusicInfo') || {};
+      const host: Device = {
         name: '本机',
         did: 'host',
         hardware: '本机',
-        cur_music: store.did === 'host' ? store.musicName : undefined,
-        cur_playlist: store.did === 'host' ? store.musicAlbum : undefined,
-      });
+        cur_music: this.did === 'host' ? store.musicName : cachedHost.name,
+        cur_playlist: this.did === 'host' ? store.musicAlbum : cachedHost.album,
+      };
+      const devices = [host].concat(Object.values(res.data.devices || {}));
 
-      if (!did) {
-        did = devices[0]?.did || 'host';
-      }
-
-      if (did !== 'host') {
-        const playOrder = res.data.devices?.[did]?.play_type;
+      if (this.did !== 'host') {
+        const playOrder = res.data.devices?.[this.did]?.play_type;
         this.setData({ playOrder: playOrder ?? PlayOrderType.All });
       }
 
-      this.setData({ did, devices });
+      this.setData({ devices });
 
       if (devices.length <= 1 && !wx.getStorageSync('disableDeviceTip')) {
         wx.showModal({
@@ -252,16 +236,9 @@ export class Store {
 
   getResourceUrl(url?: string) {
     if (!url) return '';
-    const {
-      domain,
-      publicDomain = '',
-      privateDomain: _privateDomain,
-    } = this.serverConfig;
+    const { domain, publicDomain = '', privateDomain } = this.serverConfig;
     const protocol = publicDomain.match(/(.*):\/\//)?.[1] || 'http';
-    const privateDomain =
-      _privateDomain || url.match(/^https?:\/\/(.*?)\//)?.[1] || '';
-    return domain === publicDomain &&
-      url.includes(removeProtocol(privateDomain))
+    return domain === publicDomain && privateDomain
       ? `${protocol}://${removeProtocol(url).replace(
           removeProtocol(privateDomain),
           removeProtocol(publicDomain),

@@ -1,5 +1,5 @@
 <view class="flex items-center">
   <input class="flex-1 h-8 leading-8 px-2 bg-white dark:bg-gray-800/20 rounded-lg border border-solid border-gray-200 dark:border-gray-700 text-sm" value="{{value}}" placeholder="{{placeholder}}" placeholder-style="font-size: 14px;" bind:focus="handleFocus" bind:blur="handleBlur" bind:confirm="handleConfirm" bind:input="handleInput"></input>
-  <button wx:if="{{focus && value}}" size="mini" class="ml-2 bg-white dark:bg-gray-800/40" bind:tap="handleSearch">{{btnText}}</button>
+  <button wx:if="{{focus && value}}" size="mini" class="ml-2 bg-white dark:bg-gray-800/40" bind:tap="handleSearch" bind:longpress="handlePlayText">{{btnText}}</button>
   <slot></slot>
 </view>

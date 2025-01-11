@@ -9,7 +9,7 @@
         <image class="w-6 h-6 opacity-80 scale-80 invert-icon" mode="aspectFill" src="/assets/icon/fanhui.svg" />
       </view>
       <text wx:if="{{title}}" class="truncate font-bold text-[17px]" bind:tap="handleTitleTap">{{title}}</text>
-      <image wx:if="{{title && serverConfig.domain !== serverConfig.privateDomain}}" class="ml-1 pt-px w-3.5 h-3 invert-icon" src="/assets/icon/daili.svg" />
+      <image wx:if="{{title && serverConfig.domain !== serverConfig.privateDomain}}" class="ml-1 pt-px w-3.5 h-3 invert-icon shrink-0" src="/assets/icon/daili.svg" />
       <block wx:else>
         <slot name="left"></slot>
       </block>

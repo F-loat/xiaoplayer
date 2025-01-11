@@ -77,7 +77,6 @@ ComponentWithStore({
     },
 
     handlePlayPrevMusic() {
-      console.log(999);
       store.player.playPrevMusic();
     },
 

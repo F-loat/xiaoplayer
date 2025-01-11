@@ -21,6 +21,7 @@ ComponentWithStore({
       [PlayOrderType.Rnd]: 'suijibofang',
       [PlayOrderType.All]: 'liebiaoxunhuan',
     },
+    sharing: null as null | { date: string; lyrics: string[] },
     DEFAULT_COVER,
   },
 
@@ -64,19 +65,6 @@ ComponentWithStore({
       wx.setKeepScreenOn({
         keepScreenOn: true,
       });
-
-      if (this.properties.src) {
-        await sleep(600);
-        store.setData({
-          did: 'host',
-          musicName: this.properties.name,
-          musicAlbum: '分享',
-          musicCover: this.properties.cover,
-          musicUrl: decodeURIComponent(this.properties.src),
-          musicLyric: [],
-        });
-        store.lyric.fetchMusicTag(this.properties.name, '');
-      }
     },
     detached() {
       store.setData({ showAppBar: true });
@@ -86,23 +74,40 @@ ComponentWithStore({
     },
   },
 
+  pageLifetimes: {
+    show() {
+      this.setData({ sharing: null });
+      if (!this.properties.src) return;
+      store.setData({
+        did: 'host',
+        musicName: this.properties.name,
+        musicAlbum: '分享',
+        musicUrl: decodeURIComponent(this.properties.src),
+        musicLyric: [],
+      });
+      store.lyric.fetchMusicTag(this.properties.name, '');
+    },
+  },
+
   methods: {
-    getSharePath() {
-      return `/pages/player/index?name=${store.musicName}&cover=${store.musicCover}&src=${encodeURIComponent(store.musicUrl || '')}`;
-    },
-    onShareAppMessage() {
-      return {
+    getShareMessage({ from }: { from: 'button' | 'menu' }) {
+      const defaultShartMessage = {
         title: store.musicName,
         imageUrl: store.musicCover,
-        path: this.getSharePath(),
+        path: `/pages/player/index?name=${store.musicName}&src=${encodeURIComponent(store.musicUrl || '')}`,
+      };
+      const lyricShare = this.selectComponent('#lyric-share');
+      const promise = lyricShare.getSharePromise(from, defaultShartMessage);
+      return {
+        ...defaultShartMessage,
+        promise,
       };
     },
-    onShareTimeline() {
-      return {
-        title: store.musicName,
-        imageUrl: store.musicCover,
-        path: this.getSharePath(),
-      };
+    onShareAppMessage(options: { from: 'button' | 'menu' }) {
+      return this.getShareMessage(options);
+    },
+    onShareTimeline(options: { from: 'button' | 'menu' }) {
+      return this.getShareMessage(options);
     },
 
     handleClose() {
@@ -275,11 +280,11 @@ ComponentWithStore({
     },
 
     handleToggleFavorite() {
-      store.favorite.toggleFavorite(store.musicName);
+      store.favorite.toggleFavorite(store.musicName!);
     },
 
     handleAddToList() {
-      store.playlist.addToList(store.musicName);
+      store.playlist.addToList(store.musicName!);
     },
 
     handleMoreOperation() {

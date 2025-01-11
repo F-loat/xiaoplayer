@@ -9,9 +9,7 @@
         <view class="flex items-center justify-between text-sm font-medium truncate opacity-80">
           {{item.name}}
         </view>
-        <view class="flex text-xs truncate opacity-60">
-          {{item.cur_music || '暂无曲目'}}
-        </view>
+        <text overflow="ellipsis" class="flex text-xs truncate opacity-60">{{item.cur_music || '暂无曲目'}}</text>
         <view wx:if="{{item.did === did}}" class="w-2 h-2 rounded absolute top-2 right-2 bg-blue-600 dark:bg-blue-400 opacity-60" />
       </view>
     </view>

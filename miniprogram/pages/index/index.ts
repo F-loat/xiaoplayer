@@ -1,10 +1,5 @@
 import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
-import {
-  isPrivateDomain,
-  parseAuthUrl,
-  request,
-  setGlobalData,
-} from '@/miniprogram/utils';
+import { request, setGlobalData } from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 interface Item {
@@ -107,7 +102,7 @@ ComponentWithStore({
         setGlobalData('musiclist', res.data);
         store.playlist.setPlaylists(playlists);
         store.favorite.setMusics(res.data['收藏']);
-        store.hostPlayer.setList(store.musicAlbum);
+        store.hostPlayer.setList(store.musicAlbum!);
         this.handleFetchInfos();
       } catch (err) {
         const message = (err as { errMsg: string }).errMsg || '';
@@ -199,7 +194,7 @@ ComponentWithStore({
         .node()
         .exec(async (res) => {
           const scrollView = res[0].node;
-          await store.sendCommand('刷新列表', store.devices[0]?.did);
+          await store.sendCommand('刷新列表', store.devices[1]?.did);
           await this.fetchMusicList();
           scrollView.closeRefresh();
           this.handleClearCache();
@@ -220,37 +215,6 @@ ComponentWithStore({
       const { name, type } = e.currentTarget.dataset;
       wx.navigateTo({
         url: `/pages/list/index?name=${name}&type=${type}`,
-      });
-    },
-    handleSetting() {
-      const { domain, username, password } = store.serverConfig;
-      const account = username ? `${username}:${password || ''}@` : '';
-      wx.showModal({
-        title: '请输入 xiaomusic 的服务地址',
-        placeholderText: '192.168.1.6:8090',
-        content: `${account}${domain || ''}`,
-        editable: true,
-        success: (res) => {
-          if (!res.confirm || !res.content) return;
-          const config = {
-            ...store.serverConfig,
-            ...parseAuthUrl(res.content),
-          };
-          store.setServerConfig(config);
-          store.initSettings();
-          this.fetchMusicList();
-          const isPrivate = isPrivateDomain(config.domain);
-          if (isPrivate && this.data.isPC) {
-            wx.setClipboardData({
-              data: 'https://github.com/F-loat/xiaoplayer/issues/3',
-            });
-            wx.showToast({
-              title:
-                'PC 端可能不支持内网访问，请尝试配置公网服务地址或参考剪贴板中教程配置',
-              icon: 'none',
-            });
-          }
-        },
       });
     },
     async handleSwitchDomain() {
@@ -277,33 +241,6 @@ ComponentWithStore({
         icon: 'none',
       });
     },
-    handleTutorial() {
-      wx.navigateToMiniProgram({
-        shortLink: '#小程序://哔哩哔哩弹幕网/3KvhbCauXD7YiFz',
-      });
-    },
-    handleRepoLink() {
-      wx.setClipboardData({
-        data: 'http://xdocs.hanxi.cc',
-        success: () => {
-          wx.showToast({
-            title: '链接已复制，请在浏览器中访问～',
-            icon: 'none',
-          });
-        },
-      });
-    },
-    handleError() {
-      wx.setClipboardData({
-        data: this.data.error || '未知异常',
-        success: () => {
-          wx.showToast({
-            title: '错误日志已复制～',
-            icon: 'none',
-          });
-        },
-      });
-    },
     handleFilter(e: {
       detail: {
         value: string;
@@ -326,6 +263,41 @@ ComponentWithStore({
     }) {
       store.player.playMusic(e.detail.value, '');
       this.handleFilter({ detail: { value: '' } });
+    },
+    async handlePlayText(e: {
+      detail: {
+        value: string;
+      };
+    }) {
+      const text = e.detail.value;
+      if (!text || store.did === 'host') {
+        return;
+      }
+      if (!store.feature.playText) {
+        wx.showToast({
+          title: 'xiaomusic 版本较低，暂不支持文本播放',
+          icon: 'none',
+        });
+        return;
+      }
+      try {
+        await request({
+          url: '/playtts',
+          data: {
+            text,
+            did: store.did,
+          },
+        });
+        wx.showToast({
+          title: '文本内容已播放',
+          icon: 'none',
+        });
+      } catch {
+        wx.showToast({
+          title: '文本内容播放失败',
+          icon: 'none',
+        });
+      }
     },
     handleCreateList() {
       if (!store.feature.playlist) {
