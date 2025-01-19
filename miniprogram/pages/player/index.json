@@ -2,7 +2,6 @@
   "usingComponents": {
     "lyric": "./components/lyric/lyric",
     "lyric-large": "./components/lyric/large",
-    "lyric-share": "./components/lyric/share",
     "time-bar": "./components/time-bar/time-bar"
   }
 }

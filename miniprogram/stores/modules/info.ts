@@ -84,7 +84,7 @@ export class InfoModule {
     infos.forEach((info) => {
       const cover = this.store.getResourceUrl(info.tags?.picture);
       this.coverMap.set(info.name, cover);
-      this.albumMap.set(info.name, info.tags.album);
+      this.albumMap.set(info.name, info.tags?.album);
     });
   };
 }

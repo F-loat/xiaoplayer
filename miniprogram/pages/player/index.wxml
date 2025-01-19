@@ -40,7 +40,6 @@
       <view class="flex absolute right-0 bottom-0 opacity-60 z-10">
         <image wx:if="{{did !== 'host' || playlist}}" class="w-5 h-5 p-1 mr-1" src="/assets/icon/{{isFavorite ? 'yishoucang' : 'shoucang'}}.svg"
               catch:tap="handleToggleFavorite" catch:longpress="handleAddToList" />
-        <lyric-share id="lyric-share" />
         <image class="w-5 h-5 p-1 ml-1" src="/assets/icon/gengduo.svg" catch:tap="handleMoreOperation" />
       </view>
     </view>
