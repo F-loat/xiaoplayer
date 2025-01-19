@@ -14,8 +14,7 @@ const { platform } = wx.getDeviceInfo();
 export const SLOGAN = '无限听歌，解放小爱音箱';
 export const SHARE_COVER =
   'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/cover.png';
-export const DEFAULT_COVER =
-  'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/default_cover.webp';
+export const DEFAULT_COVER = '/assets/icon/changpian.svg';
 export const DEFAULT_PRIMARY_COLOR = '#7e7a91';
 
 export interface MusicPlayer {
@@ -137,9 +136,10 @@ export class Store {
     Object.assign(this, values);
   };
 
-  setServerConfig = (config: ServerConfig) => {
+  updateServerConfig = async (config: ServerConfig) => {
     this.serverConfig = config;
     wx.setStorageSync('serverConfig', config);
+    await store.initServer();
   };
 
   async updateColor() {
@@ -154,7 +154,7 @@ export class Store {
     this.primaryColor = color;
   }
 
-  initSettings = async () => {
+  initServer = async () => {
     try {
       const res = await request<{
         detail?: string;

@@ -34,7 +34,7 @@ ComponentWithStore({
   methods: {
     onShareAppMessage() {
       return {
-        path: `/pages/index/index?serverConfig=${JSON.stringify(this.data.serverConfig)}`,
+        path: `/pages/index/index?shareConfig=${JSON.stringify(this.data.serverConfig)}`,
         title: SLOGAN,
         imageUrl: SHARE_COVER,
       };
@@ -95,8 +95,7 @@ ComponentWithStore({
             ? privateDomain || publicDomain!
             : publicDomain || privateDomain!,
       };
-      store.setServerConfig(config);
-      await store.initSettings();
+      await store.updateServerConfig(config);
       wx.reLaunch({ url: '/pages/index/index' });
     },
     navigateToMore() {

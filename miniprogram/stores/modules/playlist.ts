@@ -47,6 +47,13 @@ export class PlaylistModule {
   }
 
   createPlaylist() {
+    if (!this.store.feature.playlist) {
+      wx.showToast({
+        title: 'xiaomusic 版本较低，请更新后使用',
+        icon: 'none',
+      });
+      return;
+    }
     wx.showModal({
       title: '新建歌单',
       content: '',

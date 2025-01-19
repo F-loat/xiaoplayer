@@ -39,8 +39,7 @@ ComponentWithStore({
             ...store.serverConfig,
             ...parseAuthUrl(res.content),
           };
-          store.setServerConfig(config);
-          store.initSettings();
+          store.updateServerConfig(config);
           this.triggerEvent('refresh');
           const isPrivate = isPrivateDomain(config.domain);
           if (isPrivate && store.isPC) {
@@ -58,7 +57,7 @@ ComponentWithStore({
     },
     handleTutorial() {
       wx.navigateToMiniProgram({
-        shortLink: '#小程序://哔哩哔哩弹幕网/3KvhbCauXD7YiFz',
+        shortLink: '#小程序://哔哩哔哩弹幕网/Vu3EuhwzXicgAbk',
       });
     },
     handleError() {

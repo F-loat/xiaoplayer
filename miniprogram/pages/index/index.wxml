@@ -45,7 +45,7 @@
       bind:operation="handleListOperation"
     />
 
-    <view class="flex items-center w-full p-2.5 rounded-md transition-all text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800/20" bind:tap="handleCreateList">
+    <view class="flex items-center w-full p-2.5 rounded-md transition-all text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800/20" bind:tap="createPlaylist">
       <image class="w-4 h-4 invert-icon" src="/assets/icon/tianjia.svg" />
       <view class="ml-2">新建歌单</view>
     </view>

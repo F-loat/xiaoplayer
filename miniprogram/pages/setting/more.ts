@@ -121,7 +121,7 @@ ComponentWithStore({
           user_key_word_dict: undefined,
         },
       });
-      store.setServerConfig({
+      await store.updateServerConfig({
         ...store.serverConfig,
         auth: formData.auth,
         username: formData.httpauth_username,
@@ -134,7 +134,6 @@ ComponentWithStore({
         title: '保存成功',
         icon: 'none',
       });
-      await store.initSettings();
       wx.reLaunch({ url: '/pages/index/index' });
     },
   },

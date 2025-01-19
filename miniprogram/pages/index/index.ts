@@ -1,5 +1,11 @@
 import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
-import { request, setGlobalData } from '@/miniprogram/utils';
+import { ServerConfig } from '@/miniprogram/types';
+import {
+  parseAuthUrl,
+  request,
+  safeJSONParse,
+  setGlobalData,
+} from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 interface Item {
@@ -20,6 +26,10 @@ const playlistIconMap: Record<string, string> = {
 };
 
 ComponentWithStore({
+  properties: {
+    scene: String,
+    shareConfig: String,
+  },
   data: {
     connected: true,
     list: [] as Item[],
@@ -36,7 +46,7 @@ ComponentWithStore({
     {
       store: store.playlist,
       fields: ['playlists'] as const,
-      actions: [] as const,
+      actions: ['createPlaylist'] as const,
     },
     {
       store: store.feature,
@@ -47,6 +57,31 @@ ComponentWithStore({
   lifetimes: {
     attached() {
       this.fetchMusicList();
+    },
+  },
+  pageLifetimes: {
+    show() {
+      const { shareConfig, scene } = this.properties;
+      if (shareConfig) {
+        const config = safeJSONParse<ServerConfig>(shareConfig);
+        if (config) store.updateServerConfig(config);
+        return;
+      }
+      if (!scene) return;
+      const { domain } = decodeURIComponent(scene)
+        .split('&')
+        .reduce(
+          (result, current: string) => {
+            const [key, val] = current.split('=');
+            return { ...result, [key]: val };
+          },
+          {} as Record<string, string>,
+        );
+      if (!domain) return;
+      store.updateServerConfig({
+        ...store.serverConfig,
+        ...parseAuthUrl(domain),
+      });
     },
   },
   methods: {
@@ -232,8 +267,7 @@ ComponentWithStore({
       wx.showLoading({
         title: '网络切换中',
       });
-      store.setServerConfig(config);
-      await store.initSettings();
+      await store.updateServerConfig(config);
       this.fetchMusicList();
       wx.hideLoading();
       wx.showToast({
@@ -298,16 +332,6 @@ ComponentWithStore({
           icon: 'none',
         });
       }
-    },
-    handleCreateList() {
-      if (!store.feature.playlist) {
-        wx.showToast({
-          title: 'xiaomusic 版本较低，请更新后使用',
-          icon: 'none',
-        });
-        return;
-      }
-      store.playlist.createPlaylist();
     },
     handleListOperation(e: {
       detail: {
