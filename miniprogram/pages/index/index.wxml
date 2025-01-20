@@ -6,7 +6,7 @@
   </navigator>
 </template>
 
-<navigation-bar back="{{false}}" title="音乐列表" bind:titletap="handleSwitchDomain">
+<navigation-bar back="{{false}}" title="卯卯音乐" bind:titletap="handleSwitchDomain">
   <template is="setting" />
 </navigation-bar>
 

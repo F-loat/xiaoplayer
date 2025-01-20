@@ -90,24 +90,18 @@ ComponentWithStore({
   },
 
   methods: {
-    getShareMessage({ from }: { from: 'button' | 'menu' }) {
-      const defaultShartMessage = {
+    getShareMessage() {
+      return {
         title: store.musicName,
         imageUrl: store.musicCover,
         path: `/pages/player/index?name=${store.musicName}&src=${encodeURIComponent(store.musicUrl || '')}`,
       };
-      const lyricShare = this.selectComponent('#lyric-share');
-      const promise = lyricShare.getSharePromise(from, defaultShartMessage);
-      return {
-        ...defaultShartMessage,
-        promise,
-      };
     },
-    onShareAppMessage(options: { from: 'button' | 'menu' }) {
-      return this.getShareMessage(options);
+    onShareAppMessage() {
+      return this.getShareMessage();
     },
-    onShareTimeline(options: { from: 'button' | 'menu' }) {
-      return this.getShareMessage(options);
+    onShareTimeline() {
+      return this.getShareMessage();
     },
 
     handleClose() {
