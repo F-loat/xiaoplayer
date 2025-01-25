@@ -89,10 +89,11 @@ export class XiaomusicPlayerModule implements MusicPlayer {
           data: {
             did: this.store.did,
             musicname,
+            searchkey: musicname,
           },
         });
       } else {
-        const cmd = '播放歌曲' + musicname ? `${musicname}|` : '';
+        const cmd = `播放歌曲${musicname ? `|${musicname}` : ''}`;
         await this.store.sendCommand(cmd);
       }
     };
@@ -167,7 +168,13 @@ export class XiaomusicPlayerModule implements MusicPlayer {
       });
       const { cur_music, cur_playlist, is_playing, offset, duration } =
         res.data;
-      if (this.store.did === 'host' || duration === this.store.duration) {
+      if (this.store.did === 'host') {
+        return;
+      }
+      if (duration === this.store.duration) {
+        this.store.setData({
+          status: is_playing ? 'playing' : 'paused',
+        });
         return;
       }
       this.store.setData(

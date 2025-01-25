@@ -200,6 +200,7 @@ export class HostPlayerModule implements MusicPlayer {
       wx.hideLoading();
     });
     context.onPlay(() => {
+      if (this.store.did !== 'host') return;
       if (this.store.status === 'playing') return;
       wx.hideLoading();
       this.store.setData({
@@ -210,12 +211,14 @@ export class HostPlayerModule implements MusicPlayer {
       this.store.updateCurrentTime();
     });
     context.onPause(() => {
+      if (this.store.did !== 'host') return;
       this.store.setData({ status: 'paused' });
       if (this.store.playTimer) {
         clearTimeout(this.store.playTimer);
       }
     });
     context.onStop(() => {
+      if (this.store.did !== 'host') return;
       this.store.setData({ status: 'paused' });
       if (this.store.playTimer) {
         clearTimeout(this.store.playTimer);

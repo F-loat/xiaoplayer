@@ -55,11 +55,6 @@ ComponentWithStore({
         },
       });
     },
-    handleTutorial() {
-      wx.navigateToMiniProgram({
-        shortLink: '#小程序://哔哩哔哩弹幕网/Vu3EuhwzXicgAbk',
-      });
-    },
     handleError() {
       wx.setClipboardData({
         data: this.data.error || '未知异常',

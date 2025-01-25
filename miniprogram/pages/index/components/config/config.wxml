@@ -6,10 +6,7 @@
       <text>服务使用</text>
     </view>
     <view class="mt-2">
-      <view class="flex items-center">
-        <text class="text-sm">最简部署步骤</text>
-        <text class="text-xs text-blue-600" bind:tap="handleTutorial">（视频教程）</text>
-      </view>
+      <text class="text-sm">最简部署步骤</text>
       <view class="p-2 mt-2 text-sm text-gray-600 bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 bg-opacity-60 dark:bg-opacity-40 rounded">
         <view>docker run -p 8090:8090 \</view>
         <view class="pl-4">-v /xiaomusic/music:/app/music \</view>
