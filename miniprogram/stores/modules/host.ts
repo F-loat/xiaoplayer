@@ -99,8 +99,6 @@ export class HostPlayerModule implements MusicPlayer {
     const musicAlbum = album || this.store.musicAlbum;
 
     this.store.setData({
-      musicName,
-      musicAlbum,
       status: 'loading',
       currentTime: 0,
       musicUrl: undefined,
@@ -108,6 +106,8 @@ export class HostPlayerModule implements MusicPlayer {
 
     if (!name && this.audioContext?.src) {
       this.store.setData({
+        musicName,
+        musicAlbum,
         status: 'playing',
         currentTime: this.audioContext.currentTime,
       });
@@ -116,7 +116,6 @@ export class HostPlayerModule implements MusicPlayer {
       return;
     }
 
-    if (musicAlbum) this.setList(musicAlbum);
     this.innerAudioContext?.destroy();
 
     const getMusicUrl = async () => {
@@ -131,7 +130,21 @@ export class HostPlayerModule implements MusicPlayer {
 
     const musicUrl = await getMusicUrl();
 
-    this.store.setData({ musicUrl });
+    if (!musicUrl.match(/\/music\/(.*?)\?/)?.[1]) {
+      wx.showToast({
+        title: '播放地址获取失败',
+        icon: 'none',
+      });
+      this.pauseMusic();
+      return;
+    }
+
+    this.store.setData({
+      musicName,
+      musicAlbum,
+      musicUrl,
+    });
+    if (musicAlbum) this.setList(musicAlbum);
 
     if (this.store.isM3U8) {
       return;

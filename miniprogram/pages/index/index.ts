@@ -1,6 +1,7 @@
 import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
 import { ServerConfig } from '@/miniprogram/types';
 import {
+  getGlobalData,
   parseAuthUrl,
   request,
   safeJSONParse,
@@ -33,6 +34,7 @@ ComponentWithStore({
   data: {
     connected: true,
     list: [] as Item[],
+    musics: [] as string[],
     infos: {} as Record<string, string>,
     error: null as null | string,
     filterValue: '',
@@ -252,6 +254,16 @@ ComponentWithStore({
         url: `/pages/list/index?name=${name}&type=${type}`,
       });
     },
+    async handlePlayMusic(e: {
+      target: {
+        dataset: {
+          name: string;
+        };
+      };
+    }) {
+      const { name } = e.target.dataset;
+      await store.player.playMusic(name);
+    },
     async handleSwitchDomain() {
       const { serverConfig } = store;
       if (!serverConfig.privateDomain || !serverConfig.publicDomain) {
@@ -281,12 +293,26 @@ ComponentWithStore({
       };
     }) {
       const { value } = e.detail;
-      const filteredList = value
-        ? list.filter((item) => item.name.includes(value))
-        : list;
+      if (!value) {
+        this.setData({
+          filterValue: value,
+          list: list.slice(0, pageSize),
+          musics: [],
+        });
+        this.handleFetchInfos();
+        return;
+      }
+      const filteredList = list.filter((item) => item.name.includes(value));
+      const musiclist = getGlobalData('musiclist');
+      const searchKey = value.toLocaleLowerCase();
+      const allmusics = Object.values(musiclist).flat(1) as string[];
+      const musics = allmusics.filter((item) => {
+        return (item as string).toLocaleLowerCase().includes(searchKey);
+      });
       this.setData({
         filterValue: value,
         list: filteredList.slice(0, pageSize),
+        musics: Array.from(new Set(musics)),
       });
       this.handleFetchInfos();
     },

@@ -61,6 +61,16 @@
       data-name="{{item.name}}"
       bind:tap="handleViewTap"
     />
+
+    <view wx:if="{{musics.length}}" class="text-base font-bold my-3">歌曲</view>
+
+    <music-item
+      wx:for="{{musics}}"
+      wx:key="*this"
+      title="{{item}}"
+      data-name="{{item}}"
+      bind:tap="handlePlayMusic"
+    />
   </block>
 </scroll-view>
 

@@ -7,8 +7,8 @@
 			<view class="flex flex-1 min-w-36 justify-between items-center ml-2">
 				<view class="flex flex-col shrink-0 text-white px-1 min-w-20 flex-1" bind:tap="handleExpand">
 					<text class="truncate opacity-80">{{musicName || '暂无曲目'}}</text>
-					<view class="flex items-center h-5 opacity-60 leading-5 text-xs">
-						<view class="{{advanceLyric ? 'inline-flex' : ''}} fake-line-mask truncate {{linePercent > 0.1 && linePercent < 1? 'transition-colors' : ''}}" style="mask-position: {{(1 - linePercent) * 100}}% 0;">
+					<view class="flex items-center h-5 opacity-80 leading-5 text-xs">
+						<view class="{{advanceLyric ? 'inline-flex' : ''}} fake-line-mask truncate {{linePercent > 0.1 && linePercent < 1? 'transition-colors' : ''}}" style="mask-position: {{(1 - linePercent) * 100}}% 0%;">
 							<block wx:if="{{status === 'playing' && musicLyricCurrent.lrc}}">
 								{{musicLyricCurrent.lrc}}
 							</block>
