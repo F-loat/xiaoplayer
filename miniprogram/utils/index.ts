@@ -15,6 +15,9 @@ export const setGlobalData = (
 
 export const noop = () => {};
 
+export const random = <T>(arr: T[]) =>
+  arr[Math.floor(Math.random() * arr.length)];
+
 export const safeJSONParse = <T>(
   str: string,
   defaultValue?: T,

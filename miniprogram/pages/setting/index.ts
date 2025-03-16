@@ -1,12 +1,16 @@
 import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
 import { ServerConfig } from '@/miniprogram/types';
-import { isPrivateDomain } from '@/miniprogram/utils';
+import { isPrivateDomain, random } from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 ComponentWithStore({
   data: {
     serverConfig: {} as ServerConfig,
     ADUnitId: import.meta.env.VITE_AD_SETTING_UNITID,
+    notice: wx.getStorageSync('notice') || {
+      text: '',
+      link: '',
+    },
   },
   storeBindings: [
     {
@@ -26,6 +30,7 @@ ComponentWithStore({
       this.setData({
         serverConfig: { ...store.serverConfig },
       });
+      this.fetchNotice();
     },
     detached() {
       store.setData({ showAppBar: true });
@@ -38,6 +43,38 @@ ComponentWithStore({
         title: SLOGAN,
         imageUrl: SHARE_COVER,
       };
+    },
+    async fetchNotice() {
+      wx.request({
+        url: 'https://assets-1251785959.cos.ap-beijing.myqcloud.com/xiaoplayer/assets/notices.json',
+        success: (res) => {
+          if (!Array.isArray(res.data) || !res.data.length) {
+            this.setData({ notice: [] });
+            wx.removeStorageSync('notice');
+            return;
+          }
+          const notice = random(res.data);
+          this.setData({ notice });
+          wx.setStorageSync('notice', notice);
+        },
+      });
+    },
+    handleNotice() {
+      const { link } = this.data.notice;
+
+      if (!link) {
+        return;
+      }
+
+      wx.setClipboardData({
+        data: link,
+        success: () => {
+          wx.showToast({
+            title: '链接已复制，请在浏览器中访问～',
+            icon: 'none',
+          });
+        },
+      });
     },
     handleFormChange(e: {
       currentTarget: {

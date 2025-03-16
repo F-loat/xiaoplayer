@@ -1,6 +1,8 @@
 <!--index.wxml-->
 <navigation-bar back title="配置" />
 
+<text wx:if="{{notice.text}}"  class="px-2 py-1 mb-2 bg-[#fcf6ed] text-[#de8c17] dark:bg-opacity-40 dark:text-white text-xs truncate" bind:tap="handleNotice">{{notice.text}}</text>
+
 <scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
   <xiao-cell>
 		<view>内网服务地址</view>
