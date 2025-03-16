@@ -1,7 +1,7 @@
 <!--index.wxml-->
 <navigation-bar back title="服务配置 {{version ? 'v' + version : ''}}" />
 
-<scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y type="list" show-scrollbar="{{false}}">
+<scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y show-scrollbar="{{false}}">
 	<xiao-cell>
 		<view>小米账号</view>
 		<input class="flex-1 ml-2 -mb-1" value="{{formData.account}}"  placeholder="请输入" data-name="account" bind:input="handleFormChange"></input>
