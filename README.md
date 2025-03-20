@@ -76,5 +76,5 @@ pnpm dev
 ## 赞赏
 
 <p>
-  <img alt="赞赏码" src="https://6361-cards-ahoy-3g50hglqe5f630e4-1325577246.tcb.qcloud.la/github/reward.jpg" width="24%" />
+  <img alt="赞赏码" src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/reward.png" width="24%" />
 </p>

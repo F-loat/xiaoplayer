@@ -130,7 +130,7 @@ export class HostPlayerModule implements MusicPlayer {
 
     const musicUrl = await getMusicUrl();
 
-    if (!musicUrl.match(/\/music\/(.*?)\?/)?.[1]) {
+    if (!musicUrl.replace(/\?.*$/, '').match(/\/music\/(.*)/)?.[1]) {
       wx.showToast({
         title: '播放地址获取失败',
         icon: 'none',
