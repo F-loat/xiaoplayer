@@ -8,12 +8,14 @@
     "pages/setting/more"
   ],
   "window": {
-    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "@navBgColor",
+    "navigationBarTextStyle": "@navTxtStyle",
     "navigationStyle": "custom"
   },
   "appBar": {},
   "style": "v2",
   "darkmode": true,
+  "themeLocation": "theme.json",
   "renderer": "skyline",
   "rendererOptions": {
     "skyline": {

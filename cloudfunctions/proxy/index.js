@@ -1,6 +1,7 @@
 'use strict';
 
 const axios = require('axios');
+const https = require('https');
 
 exports.main = async (
   { url, method, headers, body, ...params },
@@ -8,6 +9,9 @@ exports.main = async (
   callback,
 ) => {
   try {
+    const agent = new https.Agent({
+      rejectUnauthorized: false,
+    });
     const response = await axios({
       url,
       method,
@@ -16,6 +20,7 @@ exports.main = async (
         ...headers,
       },
       data: JSON.stringify(body),
+      httpsAgent: agent,
       ...params,
     });
 

@@ -1,8 +1,8 @@
 <!--index.wxml-->
 <template name="setting">
   <navigator slot="right" url="/pages/setting/index"
-    class="w-full h-full rounded-full border-[0.5px] border-solid border-black border-opacity-10 box-border flex justify-center items-center bg-white bg-opacity-60" hover-class="bg-gray-200">
-    <image src="/assets/icon/shezhi.svg" class="w-3/5 h-3/5" />
+    class="w-full h-full rounded-full border-[0.5px] border-solid border-black border-opacity-10 box-border flex justify-center items-center bg-white bg-opacity-60 dark:bg-black dark:border-white dark:bg-opacity-10 dark:border-opacity-30" hover-class="bg-gray-200">
+    <image src="/assets/icon/shezhi.svg" class="w-3/5 h-3/5 invert-icon" />
   </navigator>
 </template>
 

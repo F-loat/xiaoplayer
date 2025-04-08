@@ -66,6 +66,13 @@ ComponentWithStore({
         return;
       }
 
+      if (link.startsWith('#小程序')) {
+        wx.navigateToMiniProgram({
+          shortLink: link,
+        });
+        return;
+      }
+
       wx.setClipboardData({
         data: link,
         success: () => {
