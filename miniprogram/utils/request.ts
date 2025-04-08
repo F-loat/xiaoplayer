@@ -31,11 +31,13 @@ const getHostedCloudInstance = () => {
   const callFunction = ({
     name,
     data,
+    method,
     success,
     fail,
     complete,
   }: {
     name: string;
+    method?: RequestParams['method'];
     data: RequestParams & {
       headers: {
         Authorization?: string;
@@ -46,10 +48,8 @@ const getHostedCloudInstance = () => {
     complete: () => void;
   }) => {
     wx.request({
-      ...data,
       url: `${import.meta.env.VITE_CLOUD_HOSTED_SERVER}/${name}`,
-      header: data.headers,
-      method: data.method || 'POST',
+      method: method || 'POST',
       data,
       success: (res) => {
         if (res.statusCode !== 200 || res.data?.name === 'Error') {
