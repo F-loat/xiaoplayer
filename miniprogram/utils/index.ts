@@ -1,4 +1,5 @@
 export { getImageColor, getAverageColor } from './color';
+export { generateCron, CronType } from './cron';
 export { request, getCloudInstance } from './request';
 
 export const getGlobalData = (key: keyof IAppOption['globalData']) => {

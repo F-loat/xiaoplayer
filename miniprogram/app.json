@@ -5,7 +5,8 @@
     "pages/list/playing",
     "pages/player/index",
     "pages/setting/index",
-    "pages/setting/more"
+    "pages/setting/more",
+    "pages/schedule/index"
   ],
   "window": {
     "navigationBarBackgroundColor": "@navBgColor",

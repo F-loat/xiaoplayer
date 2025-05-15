@@ -1,0 +1,80 @@
+<navigation-bar back title="定时播放" />
+
+<scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y show-scrollbar="{{false}}">
+  <view class="mb-4 p-4 bg-white dark:bg-gray-800/40 rounded-lg">
+    <view class="text-sm text-gray-500 dark:text-gray-400 mb-1">下次执行时间</view>
+    <view class="text-base">{{nextExecution}}</view>
+  </view>
+
+  <xiao-cell>
+    <view>定时类型</view>
+    <picker class="flex-1 ml-2" bindchange="bindTypeChange" value="{{typeIndex}}" range="{{types}}">
+      <view class="text-right text-gray-600 dark:text-gray-300">
+        {{types[typeIndex]}}
+      </view>
+    </picker>
+  </xiao-cell>
+
+  <xiao-cell>
+    <view>播放时间</view>
+    <picker class="flex-1 ml-2" mode="time" value="{{time}}" bindchange="bindTimeChange">
+      <view class="text-right text-gray-600 dark:text-gray-300">
+        {{time}}
+      </view>
+    </picker>
+  </xiao-cell>
+
+  <block wx:if="{{typeIndex === 2}}">
+    <xiao-cell>
+      <view>星期几</view>
+      <view class="flex-1 ml-2 flex flex-wrap gap-2 justify-end">
+        <view
+          wx:for="{{weekdays}}"
+          wx:key="index"
+          class="w-8 h-8 rounded-full flex items-center justify-center border {{selectedWeekdays[index] ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/40'}}"
+          bindtap="toggleWeekday"
+          data-index="{{index}}"
+        >
+          {{item}}
+        </view>
+      </view>
+    </xiao-cell>
+  </block>
+
+  <view class="flex justify-center my-4">
+    <button class="bg-blue-500 text-white" bindtap="saveSchedule">保存定时播放</button>
+  </view>
+
+  <block wx:if="{{schedules.length > 0}}">
+    <view class="text-sm text-gray-500 dark:text-gray-400 mb-2 px-2">已设置的定时播放</view>
+    <view class="space-y-2">
+      <view
+        wx:for="{{schedules}}"
+        wx:key="id"
+        class="flex items-center justify-between p-4 bg-white dark:bg-gray-800/40 rounded-lg"
+      >
+        <view class="flex-1">
+          <view class="text-sm mb-1">{{getScheduleTypeText(item.type)}} {{item.weekdays}}</view>
+          <view class="text-xs text-gray-500 dark:text-gray-400">{{item.time}}</view>
+        </view>
+        <view>
+          <button
+            size="mini"
+            class="!bg-red-500 !text-white"
+            bindtap="deleteSchedule"
+            data-id="{{item.id}}"
+          >删除</button>
+        </view>
+      </view>
+    </view>
+  </block>
+</scroll-view>
+
+<wxs module="getScheduleTypeText">
+  module.exports = function(type) {
+    if (type === 'once') return '单次';
+    if (type === 'daily') return '每天';
+    if (type === 'weekly') return '每周';
+    return '';
+  }
+</wxs>

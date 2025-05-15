@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "navigation-bar": "/components/navigation-bar/navigation-bar",
+    "xiao-cell": "/components/xiao-cell/xiao-cell"
+  }
+}

@@ -147,5 +147,10 @@ ComponentWithStore({
         url: '/pages/setting/more',
       });
     },
+    navigateToSchedule() {
+      wx.navigateTo({
+        url: '/pages/schedule/index',
+      });
+    },
   },
 });
