@@ -37,7 +37,7 @@
 1. 克隆仓库
 
 ```sh
-git clone https://github.com/F-loat/cards-ahoy.git
+git clone https://github.com/F-loat/xiaoplayer.git
 ```
 
 2. 安装依赖
@@ -74,6 +74,8 @@ pnpm dev
   每 5 分钟内最多创建 20 个 TCPSocket
 
 ## 赞赏
+
+> Tip: 点击小程序设置页面底部 5 次可关闭小程序内部广告
 
 <p>
   <img alt="赞赏码" src="https://assets-1251785959.cos.ap-beijing.myqcloud.com/reward.png" width="24%" />

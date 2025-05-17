@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "compare-versions": "^6.1.1",
+    "cron-parser": "^5.2.0",
+    "intl": "^1.2.5",
     "mobx-miniprogram": "^6.12.3",
     "mobx-miniprogram-bindings": "^5.0.0"
   }

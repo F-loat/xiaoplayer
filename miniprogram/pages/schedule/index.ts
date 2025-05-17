@@ -1,153 +1,228 @@
-import { generateCron, CronType } from '../../utils/index';
+import 'intl';
+import { Device } from '@/miniprogram/types';
+import {
+  generateCron,
+  CronType,
+  request,
+  safeJSONParse,
+} from '../../utils/index';
+import { CronExpressionParser } from 'cron-parser';
+import { store } from '@/miniprogram/stores';
 
 // 定义定时任务接口
 interface Schedule {
-  id: string;
-  type: CronType;
-  time: string;
-  date?: string;
-  weekdays?: number[];
-  cron: string;
+  did: string;
+  name: string;
+  expression: string;
+  arg1?: string | number;
 }
 
 Page({
   data: {
+    devices: [] as {
+      did: string;
+      name: string;
+    }[],
     types: ['单次', '每天', '每周'],
+    tasks: [
+      { id: 'play', name: '播放歌曲', arg: true },
+      { id: 'play_music_list', name: '播放列表', arg: true },
+      { id: 'tts', name: '文字转语音', arg: true },
+      { id: 'refresh_music_list', name: '刷新播放列表', arg: false },
+      { id: 'set_volume', name: '设置音量', arg: true, argType: 'number' },
+      { id: 'set_play_type', name: '设置播放类型', arg: true },
+      {
+        id: 'set_pull_ask',
+        name: '设置是否拉取对话记录，每天定时关闭，可缓解风控问题',
+        arg: true,
+      },
+      {
+        id: 'reinit',
+        name: '重新初始化，每天执行一次可缓解登录失效问题',
+        arg: false,
+      },
+      { id: 'stop', name: '关机', arg: false },
+    ],
+    playTypes: [
+      {
+        id: 0,
+        name: '单曲循环',
+      },
+      {
+        id: 1,
+        name: '全部循环',
+      },
+      {
+        id: 2,
+        name: '随机播放',
+      },
+      {
+        id: 3,
+        name: '单曲播放',
+      },
+      {
+        id: 4,
+        name: '顺序播放',
+      },
+    ],
     typeIndex: 1, // 默认选择"每天"
+    deviceIndex: 0,
+    taskIndex: 0,
+    taskArg: undefined as string | number | undefined,
+    playTypeIndex: 0,
     time: '08:00',
-    date: '',
     weekdays: ['日', '一', '二', '三', '四', '五', '六'],
     selectedWeekdays: [false, true, true, true, true, true, false], // 默认选择周一到周五
     schedules: [] as Schedule[],
-    nextExecution: '暂无定时任务', // 最近执行时间
+    nextExecution: {
+      date: null as string | null,
+      task: '暂无定时任务',
+    },
+    _settings: {},
   },
 
   onLoad() {
-    // 设置默认日期为今天
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    this.setData({
-      date: `${year}-${month}-${day}`,
-    });
-
-    // 加载已保存的定时任务
+    this.loadAd();
     this.loadSchedules();
-    this.calculateNextExecution();
+  },
+
+  loadAd() {
+    if (!wx.createInterstitialAd) {
+      return;
+    }
+    if (!store.feature.ad) {
+      return;
+    }
+    const interstitialAd = wx.createInterstitialAd({
+      adUnitId: 'adunit-8c7b9cad4f6b1d28',
+    });
+    interstitialAd.onError((err) => {
+      console.error('插屏广告加载失败', err);
+    });
+    interstitialAd.show().catch((err) => {
+      console.error('插屏广告显示失败', err);
+    });
   },
 
   // 计算最近一次执行时间
   calculateNextExecution() {
     const { schedules } = this.data;
+
     if (!schedules || schedules.length === 0) {
-      this.setData({ nextExecution: '暂无定时任务' });
+      this.setData({
+        nextExecution: {
+          date: null,
+          task: '暂无定时任务',
+        },
+      });
       return;
     }
 
-    const now = new Date();
-    let nextExecTime = '';
-    let closestTime = Infinity;
-
-    schedules.forEach((schedule) => {
-      const [hours, minutes] = schedule.time.split(':').map(Number);
-      let nextExecDate = new Date();
-
-      switch (schedule.type) {
-        case CronType.ONCE:
-          if (schedule.date) {
-            const [year, month, day] = schedule.date.split('-').map(Number);
-            nextExecDate = new Date(year, month - 1, day, hours, minutes);
-            if (nextExecDate > now && nextExecDate.getTime() < closestTime) {
-              closestTime = nextExecDate.getTime();
-              nextExecTime = `${schedule.date} ${schedule.time}`;
-            }
-          }
-          break;
-
-        case CronType.DAILY:
-          nextExecDate.setHours(hours, minutes, 0, 0);
-          if (nextExecDate <= now) {
-            nextExecDate.setDate(nextExecDate.getDate() + 1);
-          }
-          if (nextExecDate.getTime() < closestTime) {
-            closestTime = nextExecDate.getTime();
-            const month = String(nextExecDate.getMonth() + 1).padStart(2, '0');
-            const day = String(nextExecDate.getDate()).padStart(2, '0');
-            nextExecTime = `${nextExecDate.getFullYear()}-${month}-${day} ${schedule.time}`;
-          }
-          break;
-
-        case CronType.WEEKLY:
-          if (schedule.weekdays) {
-            const today = now.getDay(); // 0是周日
-            let daysToAdd = 0;
-            let found = false;
-
-            // 查找下一个符合条件的星期几
-            for (let i = 0; i < 7; i++) {
-              const checkDay = (today + i) % 7;
-              if (schedule.weekdays.includes(checkDay)) {
-                daysToAdd = i;
-                found = true;
-                break;
-              }
-            }
-
-            if (found) {
-              nextExecDate.setDate(nextExecDate.getDate() + daysToAdd);
-              nextExecDate.setHours(hours, minutes, 0, 0);
-              if (nextExecDate.getTime() < closestTime) {
-                closestTime = nextExecDate.getTime();
-                const month = String(nextExecDate.getMonth() + 1).padStart(
-                  2,
-                  '0',
-                );
-                const day = String(nextExecDate.getDate()).padStart(2, '0');
-                nextExecTime = `${nextExecDate.getFullYear()}-${month}-${day} ${schedule.time}`;
-              }
-            }
-          }
-          break;
-      }
+    const dates = schedules.map((item) => {
+      const cron = CronExpressionParser.parse(item.expression, {
+        startDate: new Date(),
+      });
+      return {
+        date: cron.next().toDate(),
+        name: item.name,
+        arg1: item.arg1,
+      };
     });
+    const [nextExecution] = dates
+      .flat()
+      .sort((a, b) => (a.date > b.date ? 1 : -1));
 
+    const find = (id: string) => this.data.tasks.find((item) => item.id === id);
     this.setData({
-      nextExecution: nextExecTime || '暂无即将执行的任务',
+      nextExecution: nextExecution
+        ? {
+            date: nextExecution.date.toLocaleString(),
+            task: `${find(nextExecution.name)?.name?.split('，')[0] || ''} ${nextExecution.arg1 || ''}`,
+          }
+        : {
+            date: null,
+            task: '暂无即将执行的任务',
+          },
     });
   },
 
   // 加载已保存的定时任务
-  loadSchedules() {
+  async loadSchedules() {
     try {
-      const schedules = wx.getStorageSync('schedules') || [];
-      this.setData({ schedules });
+      wx.showLoading({
+        title: '加载中',
+      });
+      const res = await request<{
+        devices: Device[];
+        crontab_json: string;
+      }>({
+        url: '/getsetting',
+      });
+      const schedules = safeJSONParse(res.data.crontab_json, []);
+      const devices = Object.values(res.data.devices);
+      this.data._settings = res.data;
+      this.setData({ schedules, devices });
+      this.calculateNextExecution();
     } catch (e) {
       console.error('加载定时任务失败', e);
       wx.showToast({
         title: '加载定时任务失败',
         icon: 'none',
       });
+    } finally {
+      wx.hideLoading();
     }
   },
 
   // 保存定时任务到本地存储
-  saveSchedulesToStorage(schedules: Schedule[]) {
+  async saveSchedules(schedules: Schedule[]) {
     try {
-      wx.setStorageSync('schedules', schedules);
+      wx.showLoading({
+        title: '保存中',
+      });
+      await request({
+        url: '/savesetting',
+        method: 'POST',
+        data: {
+          ...this.data._settings,
+          crontab_json: JSON.stringify(schedules, null, 2),
+        },
+      });
     } catch (e) {
       console.error('保存定时任务失败', e);
       wx.showToast({
         title: '保存定时任务失败',
         icon: 'none',
       });
+    } finally {
+      wx.hideLoading();
     }
   },
 
-  // 定时类型选择器变化事件
+  bindDeviceChange(e: any) {
+    this.setData({
+      deviceIndex: Number(e.detail.value),
+    });
+  },
+
+  bindTaskChange(e: any) {
+    this.setData({
+      taskIndex: Number(e.detail.value),
+      taskArg: undefined,
+    });
+  },
+
   bindTypeChange(e: any) {
     this.setData({
       typeIndex: Number(e.detail.value),
+    });
+  },
+
+  bindPlayTypeChange(e: any) {
+    const val = Number(e.detail.value);
+    this.setData({
+      playTypeIndex: val,
+      taskArg: this.data.playTypes[val].id,
     });
   },
 
@@ -169,9 +244,13 @@ Page({
     });
   },
 
+  bindArgChange(e: any) {
+    this.setData({ taskArg: e.detail.value });
+  },
+
   // 保存定时播放设置
-  saveSchedule() {
-    const { typeIndex, time, date, selectedWeekdays } = this.data;
+  async saveSchedule() {
+    const { typeIndex, time, selectedWeekdays } = this.data;
 
     // 解析时间
     const [hours, minutes] = time.split(':').map(Number);
@@ -204,15 +283,9 @@ Page({
               )
             : today;
 
-        const year = execDate.getFullYear();
-        const month = String(execDate.getMonth() + 1).padStart(2, '0');
-        const day = String(execDate.getDate()).padStart(2, '0');
-        const dateStr = `${year}-${month}-${day}`;
-
         cronType = CronType.ONCE;
         cronOptions.type = cronType;
         cronOptions.date = execDate;
-        this.setData({ date: dateStr }); // 更新日期
         break;
       case 1: // 每天
         cronType = CronType.DAILY;
@@ -241,70 +314,21 @@ Page({
     }
 
     try {
-      // 生成cron表达式
-      const cron = generateCron(cronOptions);
-
-      // 创建新的定时任务
       const newSchedule: Schedule = {
-        id: Date.now().toString(),
-        type: cronType,
-        time,
-        cron,
+        did: this.data.devices[this.data.deviceIndex].did,
+        name: this.data.tasks[this.data.taskIndex].id,
+        arg1: this.data.taskArg,
+        expression: generateCron(cronOptions),
       };
 
-      if (cronType === CronType.ONCE) {
-        // 使用我们在case 0中计算的dateStr
-        const dateStr = this.data.date;
-        newSchedule.date = dateStr;
-      } else if (cronType === CronType.DAILY) {
-        // 计算下次执行时间
-        const nextDate = new Date();
-        nextDate.setHours(hours, minutes, 0, 0);
-        if (nextDate <= new Date()) {
-          nextDate.setDate(nextDate.getDate() + 1);
-        }
-      } else if (cronType === CronType.WEEKLY) {
-        newSchedule.weekdays = cronOptions.daysOfWeek;
-
-        // 计算下次执行时间
-        const now = new Date();
-        const today = now.getDay(); // 0是周日
-        let daysToAdd = 0;
-        let found = false;
-
-        // 查找下一个符合条件的星期几
-        for (let i = 0; i < 7; i++) {
-          const checkDay = (today + i) % 7;
-          if (cronOptions.daysOfWeek.includes(checkDay)) {
-            daysToAdd = i;
-            found = true;
-            break;
-          }
-        }
-
-        if (found) {
-          const nextDate = new Date();
-          nextDate.setDate(nextDate.getDate() + daysToAdd);
-          nextDate.setHours(hours, minutes, 0, 0);
-
-          // 如果计算出的时间已经过去，则加7天
-          if (nextDate <= now) {
-            nextDate.setDate(nextDate.getDate() + 7);
-          }
-        }
+      if (newSchedule.name === 'set_pull_ask') {
+        newSchedule.arg1 = newSchedule.arg1 ? 'enable' : 'disable';
       }
 
-      // 添加到定时任务列表
       const schedules = [...this.data.schedules, newSchedule];
+
+      await this.saveSchedules(schedules);
       this.setData({ schedules });
-
-      // 保存到本地存储
-      this.saveSchedulesToStorage(schedules);
-
-      wx.showToast({
-        title: '定时播放已设置',
-        icon: 'success',
-      });
       this.calculateNextExecution();
     } catch (error) {
       wx.showToast({
@@ -315,12 +339,13 @@ Page({
   },
 
   // 删除定时任务
-  deleteSchedule(e: any) {
-    const id = e.currentTarget.dataset.id;
-    const schedules = this.data.schedules.filter((item) => item.id !== id);
+  async deleteSchedule(e: any) {
+    const idx = e.currentTarget.dataset.index;
+    const schedules = this.data.schedules.filter((_, index) => index !== idx);
 
+    await this.saveSchedules(schedules);
     this.setData({ schedules });
-    this.saveSchedulesToStorage(schedules);
+    this.calculateNextExecution();
 
     wx.showToast({
       title: '已删除',

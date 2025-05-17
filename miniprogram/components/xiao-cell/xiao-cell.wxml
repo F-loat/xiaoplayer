@@ -1,3 +1,3 @@
-<view class="flex items-center px-2.5 py-3 rounded-md bg-white dark:bg-gray-800/20 mb-2 {{extClass}}">
+<view class="flex items-center px-2.5 py-3 rounded-md bg-white dark:bg-gray-800/20 {{merge ? (merge === 'top' ? 'pb-1 rounded-b-none' : 'pt-1 rounded-t-none mb-2') : 'mb-2'}} {{extClass}}">
 	<slot></slot>
 </view>

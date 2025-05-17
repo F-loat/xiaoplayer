@@ -8,6 +8,7 @@ export class FeatureModule {
   homeDevices: boolean; // 首页设备
   advanceLyric: boolean; // 逐字歌词
   bgAudio: boolean; // 后台播放
+  ad: boolean; // 小程序内广告
 
   musicTags: boolean = true; // 歌曲标签获取
   musicInfos: boolean = true; // 歌曲封面批量获取
@@ -16,6 +17,7 @@ export class FeatureModule {
   renamePlaylist: boolean = false; // 重命名自定义歌单
   playText: boolean = false; // 播放文字
   playApi: boolean = false; // 播放专用接口
+  schedule: boolean = false; // 定时播放
 
   constructor(store: Store) {
     this.store = store;
@@ -25,12 +27,14 @@ export class FeatureModule {
     this.homeDevices = featureInfo.homeDevices ?? true;
     this.advanceLyric = featureInfo.advanceLyric ?? true;
     this.bgAudio = featureInfo.bgAudio ?? true;
+    this.ad = featureInfo.ad ?? true;
 
     reaction(
       () => ({
         homeDevices: this.homeDevices,
         advanceLyric: this.advanceLyric,
         bgAudio: this.bgAudio,
+        ad: this.ad,
       }),
       (val) => wx.setStorageSync('featureInfo', val),
       {
@@ -48,6 +52,7 @@ export class FeatureModule {
         this.renamePlaylist = compareVersions(version, '0.3.65') >= 0;
         this.playText = compareVersions(version, '0.3.72') >= 0;
         this.playApi = compareVersions(version, '0.3.50') >= 0;
+        this.schedule = compareVersions(version, '0.3.38') >= 0;
       },
       {
         fireImmediately: true,
@@ -66,5 +71,9 @@ export class FeatureModule {
   setBgAudio(value: boolean) {
     this.bgAudio = value;
     this.store.hostPlayer.audioContext?.stop();
+  }
+
+  setAd(value: boolean) {
+    this.ad = value;
   }
 }

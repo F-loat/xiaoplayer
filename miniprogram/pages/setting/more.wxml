@@ -58,7 +58,7 @@
 		</xiao-cell>
 	</block>
 	<div class="flex justify-center my-2">
-		<button class="bg-[#f3f4f6] dark:bg-[#111827]" bind:tap="handleSaveConfig">保存服务配置</button>
+		<button class="bg-blue-500/80 dark:bg-blue-500/60 text-white" bind:tap="handleSaveConfig">保存服务配置</button>
 	</div>
 	<github-link title="Hanxi/xiaomusic" link="https://github.com/hanxi/xiaomusic" />
 </scroll-view>

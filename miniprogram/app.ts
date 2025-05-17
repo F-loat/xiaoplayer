@@ -1,5 +1,7 @@
 import { store } from './stores';
 
+globalThis.global = globalThis;
+
 App<IAppOption>({
   globalData: {
     musiclist: {},

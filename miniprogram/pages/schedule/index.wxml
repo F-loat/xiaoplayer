@@ -1,48 +1,76 @@
 <navigation-bar back title="定时播放" />
 
 <scroll-view class="flex-1 overflow-y-hidden px-4 box-border" scroll-y show-scrollbar="{{false}}">
-  <view class="mb-4 p-4 bg-white dark:bg-gray-800/40 rounded-lg">
-    <view class="text-sm text-gray-500 dark:text-gray-400 mb-1">下次执行时间</view>
-    <view class="text-base">{{nextExecution}}</view>
+  <view class="mb-4 p-4 bg-white dark:bg-gray-800/20 rounded-lg">
+    <view class="flex items-center justify-between">
+      <view class="text-sm text-gray-500 dark:text-gray-400 mb-1">下次执行时间</view>
+      <view class="text-base">{{nextExecution.date}}</view>
+    </view>
+    <text truncate class="text-right">{{nextExecution.task}}</text>
   </view>
 
   <xiao-cell>
-    <view>定时类型</view>
-    <picker class="flex-1 ml-2" bindchange="bindTypeChange" value="{{typeIndex}}" range="{{types}}">
+    <view>设备</view>
+    <picker class="flex-1 ml-2" bindchange="bindDeviceChange" value="{{deviceIndex}}" range="{{devices}}" range-key="name">
       <view class="text-right text-gray-600 dark:text-gray-300">
-        {{types[typeIndex]}}
+        {{devices[deviceIndex].name}}
       </view>
     </picker>
   </xiao-cell>
 
-  <xiao-cell>
-    <view>播放时间</view>
-    <picker class="flex-1 ml-2" mode="time" value="{{time}}" bindchange="bindTimeChange">
+  <xiao-cell merge="{{tasks[taskIndex].arg ? 'top' : ''}}">
+    <view>任务类型</view>
+    <picker class="flex-1 ml-2" bindchange="bindTaskChange" value="{{taskIndex}}" range="{{tasks}}" range-key="name">
       <view class="text-right text-gray-600 dark:text-gray-300">
-        {{time}}
+        {{getSplitedText(tasks[taskIndex].name)}}
       </view>
     </picker>
   </xiao-cell>
 
-  <block wx:if="{{typeIndex === 2}}">
-    <xiao-cell>
-      <view>星期几</view>
-      <view class="flex-1 ml-2 flex flex-wrap gap-2 justify-end">
-        <view
-          wx:for="{{weekdays}}"
-          wx:key="index"
-          class="w-8 h-8 rounded-full flex items-center justify-center border {{selectedWeekdays[index] ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/40'}}"
-          bindtap="toggleWeekday"
-          data-index="{{index}}"
-        >
-          {{item}}
+  <xiao-cell wx:if="{{tasks[taskIndex].arg}}" merge="bottom">
+    <picker wx:if="{{tasks[taskIndex].id === 'set_play_type'}}" class="flex-1 ml-2" bindchange="bindPlayTypeChange" value="{{playTypeIndex}}" range="{{playTypes}}" range-key="name">
+      <view class="text-right text-gray-600 dark:text-gray-300">
+        {{playTypes[playTypeIndex].name}}
+      </view>
+    </picker>
+    <view wx:elif="{{tasks[taskIndex].id === 'set_pull_ask'}}" class="flex-1 text-right">
+      <switch class="scale-75 -mr-2" value="{{taskArg}}" bindchange="bindArgChange" />
+    </view>
+    <input wx:else class="flex-1 ml-2 text-right" placeholder="{{getArgPlaceholder(tasks[taskIndex].id)}}" type="tasks[taskIndex].argType || 'text'" value="{{taskArg}}" bindchange="bindArgChange" />
+  </xiao-cell>
+
+  <xiao-cell merge="{{typeIndex === 2 ? 'top' : ''}}">
+    <view>执行时间</view>
+    <view class="flex items-center justify-end flex-1">
+      <picker class="ml-2" bindchange="bindTypeChange" value="{{typeIndex}}" range="{{types}}">
+        <view class="text-right text-gray-600 dark:text-gray-300">
+          {{types[typeIndex]}}
         </view>
+      </picker>
+      <picker class="ml-2" mode="time" value="{{time}}" bindchange="bindTimeChange">
+        <view class="text-right text-gray-600 dark:text-gray-300">
+          {{time}}
+        </view>
+      </picker>
+    </view>
+  </xiao-cell>
+
+  <xiao-cell wx:if="{{typeIndex === 2}}" merge="bottom">
+    <view class="flex-1 ml-2 flex flex-wrap justify-end">
+      <view
+        wx:for="{{weekdays}}"
+        wx:key="index"
+        class="w-6 h-6 ml-2 text-xs rounded-full flex items-center justify-center border {{selectedWeekdays[index] ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/40'}}"
+        bindtap="toggleWeekday"
+        data-index="{{index}}"
+      >
+        {{item}}
       </view>
-    </xiao-cell>
-  </block>
+    </view>
+  </xiao-cell>
 
   <view class="flex justify-center my-4">
-    <button class="bg-blue-500 text-white" bindtap="saveSchedule">保存定时播放</button>
+    <button class="bg-blue-500/80 dark:bg-blue-500/60 text-white" bindtap="saveSchedule">新增定时任务</button>
   </view>
 
   <block wx:if="{{schedules.length > 0}}">
@@ -54,27 +82,56 @@
         class="flex items-center justify-between p-4 bg-white dark:bg-gray-800/40 rounded-lg"
       >
         <view class="flex-1">
-          <view class="text-sm mb-1">{{getScheduleTypeText(item.type)}} {{item.weekdays}}</view>
-          <view class="text-xs text-gray-500 dark:text-gray-400">{{item.time}}</view>
+          <view class="text-sm mb-1 flex">
+            <text class="mr-2">{{getSplitedText(getScheduleTypeText(tasks, item.name))}}</text>
+            <text wx:if="{{item.name === 'set_play_type'}}">{{getScheduleTypeText(playTypes, item.arg1)}}</text>
+            <text wx:else>{{item.arg1}}</text>
+          </view>
+          <view class="text-xs text-gray-500 dark:text-gray-400">{{item.expression}}</view>
         </view>
-        <view>
-          <button
-            size="mini"
-            class="!bg-red-500 !text-white"
-            bindtap="deleteSchedule"
-            data-id="{{item.id}}"
-          >删除</button>
-        </view>
+        <button
+          size="mini"
+          class="!bg-red-500 !text-white scale-75 -mr-2"
+          bindtap="deleteSchedule"
+          data-index="{{index}}"
+        >删除</button>
       </view>
     </view>
   </block>
 </scroll-view>
 
 <wxs module="getScheduleTypeText">
-  module.exports = function(type) {
-    if (type === 'once') return '单次';
-    if (type === 'daily') return '每天';
-    if (type === 'weekly') return '每周';
+  module.exports = function(tasks, type) {
+    tasks = tasks.filter(function (task) {
+      return task.id === type
+    })
+    return tasks.length ? tasks[0].name : ''
+  }
+</wxs>
+
+<wxs module="getSplitedText">
+  module.exports = function(text) {
+    return text ? text.split('，')[0] : '';
+  }
+</wxs>
+
+<wxs module="getArgPlaceholder">
+  module.exports = function(id) {
+    if (id === 'play') {
+      return '请输入歌曲名称'
+    }
+    if (id === 'play_music_list') {
+      return '请输入列表名称'
+    }
+    if (id === 'tts') {
+      return '请输入文字内容'
+    }
+    if (id === 'set_volume') {
+      return '请输入音量'
+    }
+    if (id === 'play') {
+      return '请输入歌曲名称'
+    }
     return '';
   }
 </wxs>

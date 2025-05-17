@@ -28,9 +28,9 @@
 	</block>
 	<view class="flex justify-center mb-3">
 		<button open-type="share" class="bg-white dark:bg-gray-800/40">分享配置</button>
-		<button style="margin-left: 12px" class="bg-white dark:bg-gray-800/40" bind:tap="handleSaveConfig">保存配置</button>
+		<button style="margin-left: 12px" class="bg-blue-500/80 dark:bg-blue-500/60 text-white" bind:tap="handleSaveConfig">保存配置</button>
 		<button style="margin-left: 12px; width: 144rpx;" class="flex items-center justify-center p-0 bg-white dark:bg-gray-800/40" bind:tap="navigateToMore">
-			<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduoshezhi.svg" />
+			<image class="w-4 h-4 invert-icon" src="/assets/icon/gengduoshezhi.svg" />
 		</button>
 	</view>
 	<xiao-cell extClass="justify-between">
@@ -45,11 +45,11 @@
 		<view>后台播放</view>
 		<switch class="scale-75" type="checkbox" checked="{{bgAudio}}"  bind:change="handleBgAudioChange" />
 	</xiao-cell>
-	<xiao-cell bind:tap="navigateToSchedule" extClass="justify-between">
+	<xiao-cell wx:if="{{schedule}}" bind:tap="navigateToSchedule" extClass="justify-between">
 		<view>定时播放</view>
-		<image class="w-4 h-4 brightness-0 dark:brightness-100" src="/assets/icon/gengduo.svg" />
+		<image class="w-4 h-4 mr-2.5 invert-icon" src="/assets/icon/jiantou.svg" />
 	</xiao-cell>
-	<ad-custom wx:if="{{ADUnitId && version}}" unit-id="{{ADUnitId}}" />
+	<ad-custom wx:if="{{ADUnitId && ad && version}}" unit-id="{{ADUnitId}}" />
 	<device-list wx:if="{{!homeDevices}}" />
 	<github-link title="F-loat/xiaoplayer" link="https://github.com/F-loat/xiaoplayer" />
 </scroll-view>

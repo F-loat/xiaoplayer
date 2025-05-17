@@ -20,7 +20,13 @@ ComponentWithStore({
     },
     {
       store: store.feature,
-      fields: ['homeDevices', 'advanceLyric', 'bgAudio'] as const,
+      fields: [
+        'homeDevices',
+        'advanceLyric',
+        'bgAudio',
+        'ad',
+        'schedule',
+      ] as const,
       actions: [] as const,
     },
   ],

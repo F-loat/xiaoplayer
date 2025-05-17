@@ -10,6 +10,12 @@ importers:
       compare-versions:
         specifier: ^6.1.1
         version: 6.1.1
+      cron-parser:
+        specifier: ^5.2.0
+        version: 5.2.0
+      intl:
+        specifier: ^1.2.5
+        version: 1.2.5
       mobx-miniprogram:
         specifier: ^6.12.3
         version: 6.12.3
@@ -1967,6 +1973,13 @@ packages:
         integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==,
       }
 
+  cron-parser@5.2.0:
+    resolution:
+      {
+        integrity: sha512-ED2qJtcjelmUEuoV3btwxiOm3NI8H4/eCZNX3adUkrm+/b3Xq05+YoDXyjIN57VGhskuHx/KzC367GAklo1lRg==,
+      }
+    engines: { node: '>=18' }
+
   cross-spawn@7.0.6:
     resolution:
       {
@@ -2454,6 +2467,12 @@ packages:
       }
     engines: { node: '>=0.8.19' }
 
+  intl@1.2.5:
+    resolution:
+      {
+        integrity: sha512-rK0KcPHeBFBcqsErKSpvZnrOmWOj+EmDkyJ57e90YWaQNqbcivcqmKDlHEeNprDWOsKzPsh1BfSpPQdDvclHVw==,
+      }
+
   ip-address@9.0.5:
     resolution:
       {
@@ -2725,6 +2744,13 @@ packages:
       {
         integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==,
       }
+
+  luxon@3.6.1:
+    resolution:
+      {
+        integrity: sha512-tJLxrKJhO2ukZ5z0gyjY1zPh3Rh88Ej9P7jNrZiHMUXHae1yvI2imgOZtL1TO8TW6biMMKfTtAOoEJANgtWBMQ==,
+      }
+    engines: { node: '>=12' }
 
   magic-string@0.30.12:
     resolution:
@@ -5177,6 +5203,10 @@ snapshots:
 
   core-util-is@1.0.3: {}
 
+  cron-parser@5.2.0:
+    dependencies:
+      luxon: 3.6.1
+
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -5496,6 +5526,8 @@ snapshots:
 
   imurmurhash@0.1.4: {}
 
+  intl@1.2.5: {}
+
   ip-address@9.0.5:
     dependencies:
       jsbn: 1.1.0
@@ -5626,6 +5658,8 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  luxon@3.6.1: {}
 
   magic-string@0.30.12:
     dependencies:
