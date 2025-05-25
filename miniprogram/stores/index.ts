@@ -166,16 +166,7 @@ export class Store {
 
       if (res.statusCode !== 200) {
         if (res.statusCode === 401) {
-          wx.showModal({
-            title: '鉴权失败',
-            content: '请确认账号密码是否配置正确',
-            success: (res) => {
-              if (!res.confirm) return;
-              wx.navigateTo({
-                url: '/pages/setting/index',
-              });
-            },
-          });
+          throw new Error('Request failed with status code 401');
         }
         return;
       }
@@ -229,7 +220,19 @@ export class Store {
         version: data.version,
       });
       wx.setStorageSync('serverVersion', data.version);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.message.includes(401)) {
+        wx.showModal({
+          title: '鉴权失败',
+          content: '请确认账号密码是否配置正确',
+          success: (res) => {
+            if (!res.confirm) return;
+            wx.navigateTo({
+              url: '/pages/setting/index',
+            });
+          },
+        });
+      }
       console.error(err);
     }
   };
