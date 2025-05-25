@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const proxy = require('./proxy');
 const musictag = require('./musictag');
 const qrcode = require('./qrcode');
@@ -9,6 +10,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 7529;
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
