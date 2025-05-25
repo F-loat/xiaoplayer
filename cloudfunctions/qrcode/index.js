@@ -1,21 +1,19 @@
-const cloud = require('wx-server-sdk');
+const { MiniAPI } = require('wechat-api-next');
 
-cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
+const client = new MiniAPI({
+  appid: process.env.WEAPP_APPID,
+  appsecret: process.env.WEAPP_APPSECRET,
+});
 
-exports.main = async ({ host, protocol }, context) => {
+exports.main = async ({ host, protocol }, context, callback) => {
   try {
-    const result = await cloud
-      .openapi({
-        appid: 'wxbbabf21880e09bf9',
-      })
-      .wxacode.getUnlimited({
-        page: 'pages/index/index',
-        scene: `domain=${protocol}//${host}`,
-        checkPath: true,
-        // env_version: 'trial'
-      });
-    return result;
+    const result = await client.wxacode.getUnlimited({
+      page: 'pages/index/index',
+      scene: `domain=${protocol}//${host}`,
+      // env_version: 'trial'
+    });
+    callback(null, result);
   } catch (err) {
-    return err;
+    callback(err);
   }
 };

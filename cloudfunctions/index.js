@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const proxy = require('./proxy');
 const musictag = require('./musictag');
+const qrcode = require('./qrcode');
 
 const app = express();
 const bodyParser = require('body-parser');
@@ -24,6 +25,13 @@ app.post('/proxy', (req, res) => {
 
 app.post('/musictag', (req, res) => {
   musictag.main(req.body, {}, (err, data) => {
+    if (err) res.status(500);
+    res.send(err ? { code: err.code, message: err.message } : data);
+  });
+});
+
+app.post('/qrcode', (req, res) => {
+  qrcode.main(req.body, {}, (err, data) => {
     if (err) res.status(500);
     res.send(err ? { code: err.code, message: err.message } : data);
   });
