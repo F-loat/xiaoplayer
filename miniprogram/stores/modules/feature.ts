@@ -18,6 +18,7 @@ export class FeatureModule {
   playText: boolean = false; // 播放文字
   playApi: boolean = false; // 播放专用接口
   schedule: boolean = false; // 定时播放
+  scheduleHolidays: boolean = false; // 节假日定时播放
 
   constructor(store: Store) {
     this.store = store;
@@ -53,6 +54,7 @@ export class FeatureModule {
         this.playText = compareVersions(version, '0.3.72') >= 0;
         this.playApi = compareVersions(version, '0.3.50') >= 0;
         this.schedule = compareVersions(version, '0.3.38') >= 0;
+        this.scheduleHolidays = compareVersions(version, '0.3.81') >= 0;
       },
       {
         fireImmediately: true,

@@ -288,6 +288,9 @@ ComponentWithStore({
         { label: '歌曲刮削', value: 'scrape' },
         { label: '模式切换', value: 'mode' },
       ];
+      if (this.data.mode === 'lyric') {
+        items.push({ label: '倍速播放', value: 'speed' });
+      }
       wx.showActionSheet({
         alertText: '更多操作',
         itemList: items.map((i) => i.label),
@@ -305,6 +308,9 @@ ComponentWithStore({
               break;
             case 'mode':
               this.handleModeToggle();
+              break;
+            case 'speed':
+              this.handleSpeed();
               break;
             default:
               break;

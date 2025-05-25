@@ -82,12 +82,14 @@
         class="flex items-center justify-between p-4 bg-white dark:bg-gray-800/40 rounded-lg"
       >
         <view class="flex-1">
-          <view class="text-sm mb-1 flex">
-            <text class="mr-2">{{getSplitedText(getScheduleTypeText(tasks, item.name))}}</text>
-            <text wx:if="{{item.name === 'set_play_type'}}">{{getScheduleTypeText(playTypes, item.arg1)}}</text>
+          <view class="text-sm mb-1 flex items-center">
+            <text class="mr-2">{{getSplitedText(getListName(tasks, item.name))}}</text>
+            <text wx:if="{{item.name === 'set_play_type'}}">{{getListName(playTypes, item.arg1)}}</text>
             <text wx:else>{{item.arg1}}</text>
           </view>
-          <view class="text-xs text-gray-500 dark:text-gray-400">{{item.expression}}</view>
+          <view class="text-xs text-gray-500 dark:text-gray-400">
+            {{getListName(devices, item.did, 'did')}} - {{item.expression}}
+          </view>
         </view>
         <button
           size="mini"
@@ -100,12 +102,12 @@
   </block>
 </scroll-view>
 
-<wxs module="getScheduleTypeText">
-  module.exports = function(tasks, type) {
-    tasks = tasks.filter(function (task) {
-      return task.id === type
+<wxs module="getListName">
+  module.exports = function(list, value, key) {
+    list = list.filter(function (task) {
+      return task[key || 'id'] === value
     })
-    return tasks.length ? tasks[0].name : ''
+    return list.length ? list[0].name : ''
   }
 </wxs>
 

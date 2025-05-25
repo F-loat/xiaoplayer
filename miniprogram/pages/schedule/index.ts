@@ -84,6 +84,11 @@ Page({
   onLoad() {
     this.loadAd();
     this.loadSchedules();
+    if (store.feature.scheduleHolidays) {
+      this.setData({
+        types: ['单次', '每天', '每周', '工作日', '节假日'],
+      });
+    }
   },
 
   loadAd() {
@@ -132,12 +137,15 @@ Page({
       .flat()
       .sort((a, b) => (a.date > b.date ? 1 : -1));
 
-    const find = (id: string) => this.data.tasks.find((item) => item.id === id);
+    const findTask = (id: string) =>
+      this.data.tasks.find((item) => item.id === id);
+    const findPlayType = (id?: string | number) =>
+      this.data.playTypes.find((item) => item.id === id);
     this.setData({
       nextExecution: nextExecution
         ? {
             date: nextExecution.date.toLocaleString(),
-            task: `${find(nextExecution.name)?.name?.split('，')[0] || ''} ${nextExecution.arg1 || ''}`,
+            task: `${findTask(nextExecution.name)?.name?.split('，')[0] || ''} ${nextExecution.name === 'set_play_type' ? findPlayType(nextExecution.arg1)?.name : nextExecution.arg1 || ''}`,
           }
         : {
             date: null,
@@ -288,6 +296,8 @@ Page({
         cronOptions.date = execDate;
         break;
       case 1: // 每天
+      case 3: // 工作日
+      case 4: // 节假日
         cronType = CronType.DAILY;
         cronOptions.type = cronType;
         break;
@@ -309,16 +319,23 @@ Page({
         }
 
         cronOptions.daysOfWeek = weekdays;
-
         break;
     }
 
     try {
+      let expression = generateCron(cronOptions);
+
+      if (typeIndex === 3) {
+        expression += ' #workday';
+      } else if (typeIndex === 4) {
+        expression += ' #offday';
+      }
+
       const newSchedule: Schedule = {
         did: this.data.devices[this.data.deviceIndex].did,
         name: this.data.tasks[this.data.taskIndex].id,
         arg1: this.data.taskArg,
-        expression: generateCron(cronOptions),
+        expression,
       };
 
       if (newSchedule.name === 'set_pull_ask') {
