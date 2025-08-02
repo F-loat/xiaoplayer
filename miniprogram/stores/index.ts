@@ -59,9 +59,10 @@ export class Store {
   devices: Device[] = [];
 
   isPC =
-    platform === 'windows' ||
-    platform === 'mac' ||
-    !wx.getSkylineInfoSync?.().isSupported;
+    platform !== 'ohos' &&
+    (platform === 'windows' ||
+      platform === 'mac' ||
+      !wx.getSkylineInfoSync?.().isSupported);
   serverConfig: ServerConfig = wx.getStorageSync('serverConfig') || {};
 
   info: InfoModule;

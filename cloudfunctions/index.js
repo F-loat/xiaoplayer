@@ -11,8 +11,8 @@ const bodyParser = require('body-parser');
 const port = process.env.PORT || 7529;
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb' }));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
