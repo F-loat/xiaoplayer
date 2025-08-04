@@ -1,6 +1,6 @@
 <pan-gesture-handler worklet:ongesture="handleGesture">
 	<view
-		class="px-4 overflow-hidden transition-colors pb-[env(safe-area-inset-bottom)] {{did ? 'opacity-100' : 'opacity-0'}}" style="background-color:{{primaryColor}}">
+		class="px-4 overflow-hidden transition-colors pb-[env(safe-area-inset-bottom)] {{!!version || devices.length ? 'opacity-100' : 'opacity-0'}}" style="background-color:{{primaryColor}}">
 		<view class="flex items-center py-2">
 			<image mode="aspectFill" class="shrink-0 rounded-full w-14 h-14 bg-cover bg-center" src="{{musicCover}}" style="background-color: #fff1;background-image: url({{DEFAULT_COVER}});"
 				bind:tap="handleExpand" />

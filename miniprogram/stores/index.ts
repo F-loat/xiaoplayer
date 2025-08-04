@@ -222,7 +222,7 @@ export class Store {
       });
       wx.setStorageSync('serverVersion', data.version);
     } catch (err: any) {
-      if (err.message.includes(401)) {
+      if (err.message?.includes(401)) {
         wx.showModal({
           title: '鉴权失败',
           content: '请确认账号密码是否配置正确',

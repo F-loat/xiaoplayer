@@ -20,6 +20,8 @@ ComponentWithStore({
         'musicCover',
         'musicLyricCurrent',
         'primaryColor',
+        'version',
+        'devices',
       ] as const,
       actions: [] as const,
     },
