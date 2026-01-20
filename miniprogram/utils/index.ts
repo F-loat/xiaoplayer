@@ -94,3 +94,14 @@ export const parseAuthUrl = (url: string = '') => {
     password,
   };
 };
+
+/**
+ * Natural sort comparator for strings with numbers
+ * Handles alphanumeric sorting (e.g., "01. Song", "13. Song", "71. Song")
+ */
+export const naturalSort = (a: string, b: string): number => {
+  return a.localeCompare(b, undefined, {
+    numeric: true,
+    sensitivity: 'base',
+  });
+};

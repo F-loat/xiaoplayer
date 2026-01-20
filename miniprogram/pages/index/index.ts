@@ -2,6 +2,7 @@ import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
 import { ServerConfig } from '@/miniprogram/types';
 import {
   getGlobalData,
+  naturalSort,
   parseAuthUrl,
   request,
   safeJSONParse,
@@ -110,9 +111,17 @@ ComponentWithStore({
         if (res.statusCode !== 200) {
           return;
         }
+        // Sort each music list using natural sort
+        const sortedMusicList = Object.entries(res.data).reduce(
+          (acc, [name, items]) => {
+            acc[name] = [...items].sort(naturalSort);
+            return acc;
+          },
+          {} as Record<string, string[]>,
+        );
         const playlists: Item[] = [];
         const listNames = await store.playlist.fetchPlaylists();
-        list = Object.entries(res.data)
+        list = Object.entries(sortedMusicList)
           .map(([name, items]) => ({
             name,
             count: items.length,
@@ -136,9 +145,9 @@ ComponentWithStore({
           connected: true,
           list: filteredList.slice(0, pageSize),
         });
-        setGlobalData('musiclist', res.data);
+        setGlobalData('musiclist', sortedMusicList);
         store.playlist.setPlaylists(playlists);
-        store.favorite.setMusics(res.data['收藏']);
+        store.favorite.setMusics(sortedMusicList['收藏']);
         store.hostPlayer.setList(store.musicAlbum!);
         this.handleFetchInfos();
       } catch (err) {

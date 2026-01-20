@@ -80,7 +80,7 @@ export class HostPlayerModule implements MusicPlayer {
 
   setList(name: string) {
     const musiclist = getGlobalData('musiclist');
-    const list = musiclist[name] || [];
+    const list = [...(musiclist[name] || [])];
     this.list =
       this.store.playOrder === PlayOrderType.Rnd
         ? list.sort(() => Math.random() - 0.5)
