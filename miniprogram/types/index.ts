@@ -4,6 +4,8 @@ export enum PlayOrderType {
   Rnd = 2, // 随机播放
 }
 
+export type BackendType = 'xiaomusic' | 'songloft';
+
 export interface ServerConfig {
   domain: string;
   privateDomain?: string;
@@ -11,6 +13,9 @@ export interface ServerConfig {
   auth?: boolean;
   username?: string;
   password?: string;
+  backendType?: BackendType;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 export interface Device {

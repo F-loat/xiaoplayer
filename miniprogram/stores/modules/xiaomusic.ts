@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx-miniprogram';
 import { DEFAULT_PRIMARY_COLOR, MusicPlayer, Store } from '..';
-import { request, sleep } from '@/miniprogram/utils';
+import { sleep } from '@/miniprogram/utils';
 
 export class XiaomusicPlayerModule implements MusicPlayer {
   store: Store;
@@ -65,45 +65,25 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   }
 
   playMusic = async (name?: string, album?: string, src?: string) => {
-    const { playApi } = this.store.feature;
-    const handlePlayList = async (listname: string, musicname?: string) => {
-      if (playApi) {
-        await request({
-          url: '/playmusiclist',
-          method: 'POST',
-          data: {
-            did: this.store.did,
-            listname,
-            musicname,
-          },
-        });
-      } else {
-        await this.store.sendCommand(`播放列表${listname}|${musicname}`);
-      }
-    };
-    const handlePlay = async (musicname?: string) => {
-      if (playApi) {
-        await request({
-          url: '/playmusic',
-          method: 'POST',
-          data: {
-            did: this.store.did,
-            musicname,
-            searchkey: musicname,
-          },
-        });
-      } else {
-        const cmd = `播放歌曲${musicname ? `|${musicname}` : ''}`;
-        await this.store.sendCommand(cmd);
-      }
-    };
+    const { did, backend, feature } = this.store;
     if (src) {
-      await request({
-        url: `/playurl?url=${encodeURIComponent(src)}&did=${this.store.did}`,
-      });
+      await backend.playUrl(did, src);
     } else {
       const list = album ?? this.store.musicAlbum;
-      await (list ? handlePlayList(list, name) : handlePlay(name));
+      if (list) {
+        if (feature.playApi) {
+          await backend.playMusic(did, name, list);
+        } else {
+          await this.store.sendCommand(`播放列表${list}|${name}`);
+        }
+      } else {
+        if (feature.playApi) {
+          await backend.playMusic(did, name);
+        } else {
+          const cmd = `播放歌曲${name ? `|${name}` : ''}`;
+          await this.store.sendCommand(cmd);
+        }
+      }
     }
     if (album) this.store.setData({ musicAlbum: album });
     this.syncMusic();
@@ -157,38 +137,29 @@ export class XiaomusicPlayerModule implements MusicPlayer {
     }
     if (this.deboTimer) clearTimeout(this.deboTimer);
     this.deboTimer = setTimeout(async () => {
-      const res = await request<{
-        cur_music: string;
-        cur_playlist?: string;
-        is_playing: boolean;
-        offset: number;
-        duration: number;
-      }>({
-        url: `/playingmusic?did=${this.store.did}`,
-      });
-      const { cur_music, cur_playlist, is_playing, offset, duration } =
-        res.data;
+      const { musicName, playlist, isPlaying, offset, duration } =
+        await this.store.backend.getPlayingStatus(this.store.did);
       if (this.store.did === 'host') {
         return;
       }
       if (duration === this.store.duration) {
         this.store.setData({
-          status: is_playing ? 'playing' : 'paused',
+          status: isPlaying ? 'playing' : 'paused',
         });
         return;
       }
       this.store.setData(
-        is_playing
+        isPlaying
           ? {
-              musicName: cur_music,
-              musicAlbum: cur_playlist,
+              musicName,
+              musicAlbum: playlist,
               status: 'playing',
               currentTime: offset > 0 && offset < duration ? offset : 0,
               duration: duration > 0 ? duration : 0,
             }
           : {
-              musicName: cur_music,
-              musicAlbum: cur_playlist,
+              musicName,
+              musicAlbum: playlist,
               status: 'paused',
             },
       );
@@ -197,26 +168,15 @@ export class XiaomusicPlayerModule implements MusicPlayer {
   };
 
   private syncVolume = async () => {
-    const res = await request<{
-      volume: number;
-    }>({
-      url: `/getvolume?did=${this.store.did}`,
-    });
+    const volume = await this.store.backend.getVolume(this.store.did);
     runInAction(() => {
-      this.volume = res.data.volume;
+      this.volume = volume;
     });
   };
 
   setVolume = (volume: number) => {
     this.volume = volume;
-    return request({
-      url: '/setvolume',
-      method: 'POST',
-      data: {
-        volume,
-        did: this.store.did,
-      },
-    });
+    return this.store.backend.setVolume(this.store.did, volume);
   };
 
   setSpeed() {}

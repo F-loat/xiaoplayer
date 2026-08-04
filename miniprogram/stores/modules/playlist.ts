@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx-miniprogram';
 import { Store } from '..';
-import { getGlobalData, request } from '@/miniprogram/utils';
+import { getGlobalData } from '@/miniprogram/utils';
 
 interface Item {
   name: string;
@@ -34,13 +34,8 @@ export class PlaylistModule {
   async fetchPlaylists() {
     if (!this.store.feature.playlist) return defaultLists;
     try {
-      const res = await request<Record<string, string[]>>({
-        url: '/playlistnames',
-      });
-      if (res.statusCode !== 200 || !res.data.names) {
-        return defaultLists;
-      }
-      return defaultLists.concat(res.data.names);
+      const names = await this.store.backend.getPlaylistNames();
+      return defaultLists.concat(names);
     } catch {
       return defaultLists;
     }
@@ -71,13 +66,7 @@ export class PlaylistModule {
           });
           return;
         }
-        await request({
-          url: '/playlistadd',
-          method: 'POST',
-          data: {
-            name: res.content,
-          },
-        });
+        await this.store.backend.createPlaylist(res.content);
         this.playlists = this.playlists.concat({
           name: res.content,
           count: 0,
@@ -104,14 +93,7 @@ export class PlaylistModule {
           });
           return;
         }
-        await request({
-          url: '/playlistupdatename',
-          method: 'POST',
-          data: {
-            oldname: name,
-            newname: res.content,
-          },
-        });
+        await this.store.backend.renamePlaylist(name, res.content);
         const newList = [...this.playlists];
         newList[index].name = res.content;
         this.playlists = newList;
@@ -125,13 +107,7 @@ export class PlaylistModule {
       content: '仅删除歌单，歌曲文件不会被删除',
       success: async (res) => {
         if (!res.confirm) return;
-        await request({
-          url: '/playlistdel',
-          method: 'POST',
-          data: {
-            name,
-          },
-        });
+        await this.store.backend.deletePlaylist(name);
         const newList = [...this.playlists];
         newList.splice(index, 1);
         this.playlists = newList;
@@ -152,25 +128,11 @@ export class PlaylistModule {
   }
 
   addMusic(playlist: string, music: string) {
-    return request({
-      url: '/playlistaddmusic',
-      method: 'POST',
-      data: {
-        name: playlist,
-        music_list: [music],
-      },
-    });
+    return this.store.backend.addMusicToPlaylist(playlist, [music]);
   }
 
   removeMusic(playlist: string, music: string) {
-    return request({
-      url: '/playlistdelmusic',
-      method: 'POST',
-      data: {
-        name: playlist,
-        music_list: [music],
-      },
-    });
+    return this.store.backend.removeMusicFromPlaylist(playlist, [music]);
   }
 
   addToList(name: string) {

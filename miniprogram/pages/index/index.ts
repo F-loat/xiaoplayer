@@ -4,7 +4,6 @@ import {
   getGlobalData,
   naturalSort,
   parseAuthUrl,
-  request,
   safeJSONParse,
   setGlobalData,
 } from '@/miniprogram/utils';
@@ -105,14 +104,9 @@ ComponentWithStore({
         wx.showLoading({
           title: '加载中',
         });
-        const res = await request<Record<string, string[]>>({
-          url: '/musiclist',
-        });
-        if (res.statusCode !== 200) {
-          return;
-        }
+        const data = await store.backend.getMusicList();
         // Sort each music list using natural sort
-        const sortedMusicList = Object.entries(res.data).reduce(
+        const sortedMusicList = Object.entries(data).reduce(
           (acc, [name, items]) => {
             acc[name] = [...items].sort(naturalSort);
             return acc;
@@ -350,13 +344,7 @@ ComponentWithStore({
         return;
       }
       try {
-        await request({
-          url: '/playtts',
-          data: {
-            text,
-            did: store.did,
-          },
-        });
+        await store.backend.playTts(text, store.did);
         wx.showToast({
           title: '文本内容已播放',
           icon: 'none',

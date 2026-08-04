@@ -1,6 +1,5 @@
 import { makeAutoObservable } from 'mobx-miniprogram';
 import { Store } from '..';
-import { request } from '@/miniprogram/utils';
 
 export class InfoModule {
   store: Store;
@@ -61,30 +60,15 @@ export class InfoModule {
       return;
     }
 
-    const params = names
-      .filter((name) => !this.coverMap.has(name))
-      .reduce((result, name) => `${result}name=${name}&`, '');
+    const toFetch = names.filter((name) => !this.coverMap.has(name));
+    if (!toFetch.length) return;
 
-    if (!params) return;
-
-    const { data: infos } = await request<
-      {
-        name: string;
-        tags: {
-          album: string;
-          picture: string;
-        };
-      }[]
-    >({
-      url: `/musicinfos?${params}musictag=true`,
-    });
-
-    if (!Array.isArray(infos)) return;
+    const infos = await this.store.backend.getMusicInfos(toFetch);
 
     infos.forEach((info) => {
-      const cover = this.store.getResourceUrl(info.tags?.picture);
+      const cover = info.cover ? this.store.getResourceUrl(info.cover) : '';
       this.coverMap.set(info.name, cover);
-      this.albumMap.set(info.name, info.tags?.album);
+      if (info.album) this.albumMap.set(info.name, info.album);
     });
   };
 }

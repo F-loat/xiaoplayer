@@ -1,7 +1,9 @@
 import { SHARE_COVER, SLOGAN, store } from '@/miniprogram/stores';
-import { ServerConfig } from '@/miniprogram/types';
+import { BackendType, ServerConfig } from '@/miniprogram/types';
 import { isPrivateDomain, random } from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
+
+const backendTypes: BackendType[] = ['xiaomusic', 'songloft'];
 
 ComponentWithStore({
   data: {
@@ -11,6 +13,8 @@ ComponentWithStore({
       text: '',
       link: '',
     },
+    backendTypes,
+    backendTypeIndex: 0,
   },
   storeBindings: [
     {
@@ -33,8 +37,13 @@ ComponentWithStore({
   lifetimes: {
     attached() {
       store.setData({ showAppBar: false });
+      const serverConfig = { ...store.serverConfig };
+      const backendTypeIndex = backendTypes.indexOf(
+        serverConfig.backendType || 'xiaomusic',
+      );
       this.setData({
-        serverConfig: { ...store.serverConfig },
+        serverConfig,
+        backendTypeIndex: backendTypeIndex >= 0 ? backendTypeIndex : 0,
       });
       this.fetchNotice();
     },
@@ -86,6 +95,16 @@ ComponentWithStore({
             title: '链接已复制，请在浏览器中访问～',
             icon: 'none',
           });
+        },
+      });
+    },
+    handleBackendTypeChange(e: { detail: { value: string } }) {
+      const index = Number(e.detail.value);
+      this.setData({
+        backendTypeIndex: index,
+        serverConfig: {
+          ...this.data.serverConfig,
+          backendType: backendTypes[index],
         },
       });
     },

@@ -1,5 +1,4 @@
 import { store } from '@/miniprogram/stores';
-import { request } from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 ComponentWithStore({
@@ -28,16 +27,11 @@ ComponentWithStore({
           }
           return false;
         }
-        const res = await request<{
-          cur_music: string;
-          is_playing: boolean;
-        }>({
-          url: `/playingmusic?did=${item.did}`,
-        });
-        if (res.data.is_playing) {
+        const status = await store.backend.getPlayingStatus(item.did);
+        if (status.isPlaying) {
           await store.sendCommand('关机', item.did);
         }
-        return res.data.is_playing;
+        return status.isPlaying;
       });
       const res = await Promise.all(queue);
       if (res.every((r) => !r)) {

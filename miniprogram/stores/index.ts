@@ -1,5 +1,5 @@
 import { reaction, makeAutoObservable } from 'mobx-miniprogram';
-import { getImageColor, removeProtocol, request } from '../utils';
+import { getImageColor, removeProtocol } from '../utils';
 import { Device, PlayOrderType, ServerConfig } from '../types';
 import { HostPlayerModule } from './modules/host';
 import { XiaomusicPlayerModule } from './modules/xiaomusic';
@@ -8,6 +8,7 @@ import { LyricModule } from './modules/lyric';
 import { FeatureModule } from './modules/feature';
 import { PlaylistModule } from './modules/playlist';
 import { InfoModule } from './modules/info';
+import { BackendAdapter, createAdapter } from './adapters';
 
 const { platform } = wx.getDeviceInfo();
 
@@ -72,6 +73,7 @@ export class Store {
   playlist: PlaylistModule;
   hostPlayer: HostPlayerModule;
   xiaomusicPlayer: XiaomusicPlayerModule;
+  backend: BackendAdapter;
 
   colorsMap = new Map<string, string>();
 
@@ -85,6 +87,7 @@ export class Store {
     this.playlist = new PlaylistModule(this);
     this.hostPlayer = new HostPlayerModule(this);
     this.xiaomusicPlayer = new XiaomusicPlayerModule(this);
+    this.backend = createAdapter(this.serverConfig.backendType);
 
     reaction(
       () => this.did,
@@ -139,6 +142,7 @@ export class Store {
 
   updateServerConfig = async (config: ServerConfig) => {
     this.serverConfig = config;
+    this.backend = createAdapter(config.backendType);
     wx.setStorageSync('serverConfig', config);
     await store.initServer();
   };
@@ -157,20 +161,8 @@ export class Store {
 
   initServer = async () => {
     try {
-      const res = await request<{
-        detail?: string;
-        devices: Record<string, Device>;
-      }>({
-        url: '/getsetting',
-      });
-      console.info('@@@ settings', res.data);
-
-      if (res.statusCode !== 200) {
-        if (res.statusCode === 401) {
-          throw new Error('Request failed with status code 401');
-        }
-        return;
-      }
+      const { devices, version } = await this.backend.getServerInfo();
+      console.info('@@@ serverInfo', { devices, version });
 
       const cachedHost = wx.getStorageSync('hostMusicInfo') || {};
       const host: Device = {
@@ -180,16 +172,17 @@ export class Store {
         cur_music: this.did === 'host' ? store.musicName : cachedHost.name,
         cur_playlist: this.did === 'host' ? store.musicAlbum : cachedHost.album,
       };
-      const devices = [host].concat(Object.values(res.data.devices || {}));
+      const allDevices = [host].concat(devices);
 
       if (this.did !== 'host') {
-        const playOrder = res.data.devices?.[this.did]?.play_type;
+        const currentDevice = devices.find((d) => d.did === this.did);
+        const playOrder = currentDevice?.play_type;
         this.setData({ playOrder: playOrder ?? PlayOrderType.All });
       }
 
-      this.setData({ devices });
+      this.setData({ devices: allDevices });
 
-      if (devices.length <= 1 && !wx.getStorageSync('disableDeviceTip')) {
+      if (allDevices.length <= 1 && !wx.getStorageSync('disableDeviceTip')) {
         wx.showModal({
           title: '无可用设备',
           content: '未发现可用设备，仅可使用本机播放',
@@ -207,20 +200,10 @@ export class Store {
         });
       }
 
-      const { data } = await request<{
-        version: string;
-      }>({
-        url: '/getversion',
-      });
+      if (!version) return;
 
-      if (!data.version) {
-        return;
-      }
-
-      this.setData({
-        version: data.version,
-      });
-      wx.setStorageSync('serverVersion', data.version);
+      this.setData({ version });
+      wx.setStorageSync('serverVersion', version);
     } catch (err: any) {
       if (err.message?.includes(401)) {
         wx.showModal({
@@ -250,16 +233,9 @@ export class Store {
       : url;
   }
 
-  sendCommand = (cmd: String, did: string | null = this.did) => {
-    if (did === 'host') return;
-    return request({
-      url: '/cmd',
-      method: 'POST',
-      data: {
-        cmd,
-        did,
-      },
-    });
+  sendCommand = (cmd: string, did: string | null = this.did) => {
+    if (!did || did === 'host') return;
+    return this.backend.sendCommand(cmd, did);
   };
 
   updateCurrentTime = () => {

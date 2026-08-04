@@ -1,6 +1,6 @@
 import { makeAutoObservable, observable, reaction } from 'mobx-miniprogram';
 import { DEFAULT_PRIMARY_COLOR, MusicPlayer, Store } from '..';
-import { getGlobalData, request } from '@/miniprogram/utils';
+import { getGlobalData } from '@/miniprogram/utils';
 import { PlayOrderType } from '@/miniprogram/types';
 
 export class HostPlayerModule implements MusicPlayer {
@@ -120,17 +120,13 @@ export class HostPlayerModule implements MusicPlayer {
 
     const getMusicUrl = async () => {
       if (src) return src;
-      const res = await request<{
-        url: string;
-      }>({
-        url: `/musicinfo?name=${musicName}`,
-      });
-      return this.store.getResourceUrl(res.data.url || '');
+      const info = await this.store.backend.getMusicInfo(musicName!);
+      return this.store.getResourceUrl(info.url || '');
     };
 
     const musicUrl = await getMusicUrl();
 
-    if (!musicUrl.replace(/\?.*$/, '').match(/\/music\/(.*)/)?.[1]) {
+    if (!musicUrl.replace(/\?.*$/, '').match(/\/music\/(.*)/) && !musicUrl.includes('/api/v1/songs/')) {
       wx.showToast({
         title: '播放地址获取失败',
         icon: 'none',
