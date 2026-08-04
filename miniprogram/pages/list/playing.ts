@@ -1,5 +1,5 @@
 import { store } from '@/miniprogram/stores';
-import { getGlobalData, request } from '@/miniprogram/utils';
+import { getGlobalData } from '@/miniprogram/utils';
 import { ComponentWithStore } from 'mobx-miniprogram-bindings';
 
 const pageSize = 25;
@@ -34,13 +34,7 @@ ComponentWithStore({
   },
   methods: {
     async fetchPlaylist() {
-      const { data: musicAlbum } = await request({
-        url: '/curplaylist',
-        method: 'GET',
-        data: {
-          did: store.did,
-        },
-      });
+      const musicAlbum = await store.backend.getCurrentPlaylist(store.did);
       store.setData({ musicAlbum });
     },
     async handleViewTap(e: {

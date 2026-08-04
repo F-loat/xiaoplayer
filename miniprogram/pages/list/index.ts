@@ -1,5 +1,5 @@
 import { store } from '@/miniprogram/stores';
-import { getGlobalData, request, sleep } from '@/miniprogram/utils';
+import { getGlobalData, sleep } from '@/miniprogram/utils';
 
 const pageSize = 25;
 
@@ -169,13 +169,7 @@ Component({
         content: '注意：该操作会永久删除该歌曲且不可撤销！',
         success: async (res) => {
           if (!res.confirm) return;
-          await request({
-            url: '/delmusic',
-            method: 'POST',
-            data: {
-              name,
-            },
-          });
+          await store.backend.deleteMusic(name, store.did);
           const newList = [...this.data.list];
           newList.splice(index, 1);
           this.setData({ list: newList });

@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction } from 'mobx-miniprogram';
 import { Store } from '..';
-import { getCloudInstance, request } from '@/miniprogram/utils';
+import { getCloudInstance } from '@/miniprogram/utils';
 
 export interface Lyric {
   time: number;
@@ -158,21 +158,16 @@ export class LyricModule {
     } = {};
 
     if (!force && this.store.feature.musicTags) {
-      const res = await request<{
-        tags: typeof tags;
-      }>({
-        url: `/musicinfo?name=${name}&musictag=true`,
-      });
+      const info = await this.store.backend.getMusicInfo(name);
       if (originMusicName !== this.store.musicName) {
         return;
       }
       tags = {
-        ...res.data.tags,
-        picture: this.store.getResourceUrl(res.data.tags?.picture),
+        picture: this.store.getResourceUrl(info.cover),
+        lyrics: info.lyric,
+        album: info.album,
       };
-      if (tags.title) musicName = tags.title;
       if (tags.album) musicAlbum = tags.album;
-      if (tags.artist) musicArtist = tags.artist;
       if (tags.picture) {
         this.store.setData({
           musicCover: tags.picture,
@@ -265,18 +260,12 @@ export class LyricModule {
       url: tag.album_img,
       responseType: 'arraybuffer',
       success: async (res) => {
-        request({
-          url: '/setmusictag',
-          method: 'POST',
-          data: {
-            musicname: this.store.musicName,
-            title: tag.name,
-            artist: tag.artist,
-            album: tag.album,
-            year: tag.year,
-            lyrics: tag.lyric,
-            picture: wx.arrayBufferToBase64(res.data as ArrayBuffer),
-          },
+        this.store.backend.setMusicTag(this.store.musicName!, {
+          title: tag.name,
+          artist: tag.artist,
+          album: tag.album,
+          cover: wx.arrayBufferToBase64(res.data as ArrayBuffer),
+          lyric: tag.lyric,
         });
       },
     });
