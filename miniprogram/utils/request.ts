@@ -93,10 +93,12 @@ export const request = <T>({ url, method, data, timeout }: RequestParams) => {
   const serverConfig = store
     ? store.serverConfig
     : wx.getStorageSync('serverConfig');
-  const { domain, privateDomain, auth, username, password } =
+  const { domain, privateDomain, auth, username, password, accessToken } =
     serverConfig || {};
   if (!domain) return Promise.reject('domain error');
-  if (auth && username && password) {
+  if (accessToken) {
+    header.Authorization = `******;
+  } else if (auth && username && password) {
     header.Authorization = `Basic ${weBtoa(username + ':' + password)}`;
   }
   return new Promise<{ data: T; statusCode: number }>(

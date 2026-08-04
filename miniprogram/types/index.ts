@@ -14,6 +14,8 @@ export interface ServerConfig {
   username?: string;
   password?: string;
   backendType?: BackendType;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 export interface Device {
